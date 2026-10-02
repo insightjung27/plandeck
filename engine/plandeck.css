@@ -222,6 +222,24 @@
 .page-detail .page-detail-item { padding: 6px 8px; }
 .page-detail .page-detail-item-num { width: 17px; height: 17px; font-size: 10.5px; }
 .page-detail .page-detail-item-text { font-size: 12px; line-height: 1.45; }
+
+/* ═══ Flow Diagram 패널 — 저장 버튼 + 코너 리사이즈 ═══ */
+.page-flow { min-width: 240px; min-height: 160px; }
+.pd-flow-save {
+  height: 26px; padding: 0 10px; margin-right: 4px; border-radius: 7px;
+  border: 1px solid #e5e7eb; background: #f3f4f6; color: #9ca3af;
+  font-size: 12px; font-weight: 700; font-family: "Pretendard", sans-serif;
+  cursor: not-allowed; flex-shrink: 0; white-space: nowrap;
+}
+.pd-flow-save.is-dirty { background: var(--pd-primary); border-color: var(--pd-primary); color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(49,130,246,.3); }
+.pd-flow-save.is-dirty:hover { background: #2a6fe0; }
+/* 좌상단 코너 리사이즈 그립(패널은 우하단 고정 → 좌·상으로 확장) */
+.page-flow .pd-flow-resize {
+  position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; z-index: 6;
+  cursor: nwse-resize; border-top: 2px solid #c4c9d4; border-left: 2px solid #c4c9d4;
+  border-top-left-radius: 7px; opacity: .55; touch-action: none;
+}
+.page-flow .pd-flow-resize:hover { opacity: 1; border-color: var(--pd-primary); }
 .pd-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .pd-chip { font-size: 12px; font-weight: 600; color: #475569; background: var(--pd-soft); border-radius: 8px; padding: 4px 10px; }
 

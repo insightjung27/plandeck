@@ -208,6 +208,83 @@
     clearBtn.addEventListener('click', function () { input.value = ''; apply(); input.focus(); });
   }
 
+  // Flow Diagram 패널 강화: 핀치/휠 줌 + 코너 리사이즈 + 크기·배율 저장(localStorage 영속)
+  function enhanceFlowPanel() {
+    var panel = document.querySelector('.page-flow');
+    if (!panel || panel.__pdFlowEnhanced) return;
+    var body = panel.querySelector('.page-flow-body');
+    var tools = panel.querySelector('.page-flow-header-tools');
+    if (!body || !tools) return;
+    panel.__pdFlowEnhanced = true;
+
+    var KEY = 'pd-flow-prefs:' + (PROJECT.name || 'default');
+    var prefs = {};
+    try { prefs = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+    var zoom = (typeof prefs.zoom === 'number' && prefs.zoom > 0) ? prefs.zoom : 1;
+    if (prefs.w) panel.style.width = prefs.w + 'px';
+    if (prefs.h) panel.style.height = prefs.h + 'px';
+
+    var dirty = false;
+    // 저장 버튼(변경 전까지 비활성)
+    var saveBtn = document.createElement('button');
+    saveBtn.type = 'button'; saveBtn.className = 'pd-flow-save'; saveBtn.textContent = '저장';
+    saveBtn.disabled = true; saveBtn.title = 'Flow 영역 크기·배율을 저장(다음에도 유지)';
+    tools.insertBefore(saveBtn, tools.firstChild);
+    function markDirty() { if (!dirty) { dirty = true; saveBtn.disabled = false; saveBtn.classList.add('is-dirty'); } }
+    saveBtn.addEventListener('click', function () {
+      var r = panel.getBoundingClientRect();
+      prefs = { w: Math.round(r.width), h: Math.round(r.height), zoom: zoom };
+      try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch (e) {}
+      dirty = false; saveBtn.disabled = true; saveBtn.classList.remove('is-dirty');
+      var t = saveBtn.textContent; saveBtn.textContent = '저장됨 ✓';
+      setTimeout(function () { saveBtn.textContent = t; }, 1200);
+    });
+
+    // ── 줌(핀치/휠) — svg를 viewBox 자연크기 × zoom 으로 스케일 ──
+    function svg() { return body.querySelector('svg'); }
+    function applyZoom() {
+      var s = svg(); if (!s) return;
+      if (!s.__natW) { var vb = (s.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number); if (vb.length === 4 && vb[2]) { s.__natW = vb[2]; s.__natH = vb[3]; } }
+      if (s.__natW) { s.style.maxWidth = 'none'; s.style.width = Math.round(s.__natW * zoom) + 'px'; s.style.height = Math.round(s.__natH * zoom) + 'px'; }
+    }
+    function setZoom(z) { var p = zoom; zoom = Math.min(4, Math.max(0.3, z)); if (zoom !== p) { applyZoom(); markDirty(); } }
+    // 트랙패드 핀치 = ctrlKey 휠, Cmd/Ctrl+휠도 지원
+    body.addEventListener('wheel', function (e) {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      setZoom(zoom * (e.deltaY < 0 ? 1.08 : 0.92));
+    }, { passive: false });
+    // 터치 핀치
+    function dist(t) { var dx = t[0].clientX - t[1].clientX, dy = t[0].clientY - t[1].clientY; return Math.sqrt(dx * dx + dy * dy); }
+    var p0 = 0, z0 = 1;
+    body.addEventListener('touchstart', function (e) { if (e.touches.length === 2) { p0 = dist(e.touches); z0 = zoom; } }, { passive: false });
+    body.addEventListener('touchmove', function (e) { if (e.touches.length === 2 && p0) { e.preventDefault(); setZoom(z0 * (dist(e.touches) / p0)); } }, { passive: false });
+    body.addEventListener('touchend', function (e) { if (e.touches.length < 2) p0 = 0; });
+
+    // ── 코너 리사이즈(좌상단 — 패널은 우하단 고정이므로 좌·상으로 확장) ──
+    var handle = document.createElement('div');
+    handle.className = 'pd-flow-resize'; handle.title = '드래그해 Flow 영역 크기 조절';
+    panel.appendChild(handle);
+    var rz = false, sx = 0, sy = 0, sw = 0, sh = 0;
+    handle.addEventListener('pointerdown', function (e) {
+      rz = true; sx = e.clientX; sy = e.clientY;
+      var r = panel.getBoundingClientRect(); sw = r.width; sh = r.height;
+      try { handle.setPointerCapture(e.pointerId); } catch (ex) {}
+      e.preventDefault(); e.stopPropagation();
+    });
+    handle.addEventListener('pointermove', function (e) {
+      if (!rz) return;
+      var w = Math.max(240, Math.min(sw - (e.clientX - sx), window.innerWidth - 80));
+      var h = Math.max(160, Math.min(sh - (e.clientY - sy), window.innerHeight - 80));
+      panel.style.width = w + 'px'; panel.style.height = h + 'px';
+    });
+    handle.addEventListener('pointerup', function (e) { if (rz) { rz = false; markDirty(); try { handle.releasePointerCapture(e.pointerId); } catch (ex) {} } });
+
+    // 저장된 배율 적용(svg 렌더 완료까지 대기)
+    var tries = 0;
+    (function waitSvg() { if (svg()) { applyZoom(); } else if (tries++ < 50) { setTimeout(waitSvg, 150); } })();
+  }
+
   // ═══ 1. 멀티서피스: 현재 화면의 서피스 디바이스로 재적용 ═══
   function surfaceDeviceKey(page) {
     // 화면별 디바이스/방향 override(예: 태블릿 세로 device:'tabletPortrait') 최우선
@@ -846,6 +923,7 @@
     try { injectScreenMeta(); } catch (e) {}
     try { injectStatusChips(); } catch (e) {}
     try { injectNavSearch(); } catch (e) {}
+    try { enhanceFlowPanel(); } catch (e) {}
     try { injectCasesPanel(); } catch (e) {}
     try { injectInterfacePanel(); } catch (e) {}
     try { injectDockButtons(); } catch (e) {}
