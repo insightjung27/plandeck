@@ -243,5 +243,77 @@ window.PLANDECK_SCREENS = [
       },
     ],
   },
+  {
+    category: '운영자 콘솔 (PC웹·태블릿)',
+    pages: [
+      // ── 운영자 대시보드 (PC웹) ──
+      {
+        id: 'SCR-ADMIN-001', label: '운영자 대시보드', href: 'w-dashboard.html',
+        surface: 'pc', entry: true, status: 'wireframed', designed: false, figmaLink: '',
+        context: '도담 운영자가 전체 현황(신규 신청·심사 대기·예약)을 보는 PC웹 대시보드.',
+        components: [
+          { role: '.pd-nav-review', kind: 'button', label: '사이드바: 제공자 심사', action: { on: 'click', do: 'go:SCR-ADMIN-002' } },
+          { role: '.pd-kpi', kind: 'card', label: 'KPI 카드(신청·심사대기·예약·완료)' },
+          { role: '.pd-recent', kind: 'table', label: '최근 신청 테이블' },
+        ],
+        description: [
+          { text: 'KPI 요약 — 신규 신청·심사 대기·오늘 예약', target: '.pd-kpi' },
+          { text: '사이드바 "제공자 심사" → 심사 화면(SCR-ADMIN-002)', target: '.pd-nav-review' },
+          { text: '최근 신청 목록 — 행 클릭 시 상세', target: '.pd-recent' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '대시보드 표시', message: '', target: '.pd-kpi', api: { endpoint: 'GET /admin/overview', status: 200 } },
+          { state: '로딩', trigger: '진입', guard: '', result: '스켈레톤', message: '' },
+          { state: '권한없음', trigger: '진입', guard: '운영자 아님', result: '접근 거부', message: '권한이 없어요', placement: 'full-page', api: { endpoint: 'GET /admin/overview', status: 403 } },
+        ],
+        interface: { reads: [{ id: 'adminOverview', intent: '운영 현황 조회', method: 'GET', path: '/admin/overview', response: '{entities.Provider}[]', auth: 'Bearer(운영자)', target: '.pd-kpi' }], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-ADMIN-002', via: '제공자 심사', trigger: '.pd-nav-review' }] },
+      },
+      // ── 제공자 심사 (PC웹) ──
+      {
+        id: 'SCR-ADMIN-002', label: '제공자 심사', href: 'w-review.html',
+        surface: 'pc', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        context: '심사 대기 제공자 목록을 테이블로 보고 승인/반려하는 PC웹 화면.',
+        components: [
+          { role: '.pd-table-pending', kind: 'table', label: '심사 대기 제공자 테이블' },
+          { role: '.pd-btn-approve', kind: 'button', label: '승인', action: { on: 'click', do: 'write:approveProvider' } },
+        ],
+        description: [
+          { text: '심사 대기 제공자 테이블(이름·지역·서류·신청일)', target: '.pd-table-pending' },
+          { text: '승인 → approveProvider 호출', target: '.pd-btn-approve' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '대기 1건 이상', result: '테이블 표시', message: '', target: '.pd-table-pending', api: { endpoint: 'GET /admin/providers?status=pending', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '대기 0건', result: '빈 상태', message: '심사 대기 중인 제공자가 없어요', placement: 'inline', target: '.pd-table-pending' },
+          { state: '정상', trigger: '승인', guard: '서류 적합', result: '목록에서 제거·검증 배지 부여', message: '승인되었어요', placement: 'toast', target: '.pd-btn-approve', api: { endpoint: 'POST /admin/providers/{id}/approve', status: 200 } },
+        ],
+        interface: {
+          reads: [{ id: 'listPending', intent: '심사 대기 제공자', method: 'GET', path: '/admin/providers', params: [{ in: 'query', name: 'status', type: 'string', required: true, example: 'pending' }], response: '{entities.Provider}[]', auth: 'Bearer(운영자)', target: '.pd-table-pending' }],
+          writes: [{ id: 'approveProvider', intent: '제공자 승인', method: 'POST', path: '/admin/providers/{id}/approve', response: '{entities.Provider}', errors: [{ status: 409, when: '이미 처리됨', message: '이미 처리된 신청이에요' }], auth: 'Bearer(운영자)', target: '.pd-btn-approve' }],
+          events: [{ name: 'provider.approved', when: '승인 시(제공자 알림)', payload: '{entities.Provider}' }],
+        },
+        flow: { to: [{ screen: 'SCR-ADMIN-001', via: '대시보드', kind: 'auto' }] },
+      },
+      // ── 태블릿 대시보드 ──
+      {
+        id: 'SCR-TAB-001', label: '태블릿 대시보드', href: 't-dashboard.html',
+        surface: 'tablet', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        context: '운영자가 태블릿으로 보는 적응형 대시보드(사이드바 접힘·KPI 2열).',
+        components: [
+          { role: '.pd-kpi', kind: 'card', label: 'KPI 카드(2열)' },
+          { role: '.pd-recent', kind: 'table', label: '최근 신청 테이블' },
+        ],
+        description: [
+          { text: 'KPI 카드 — 태블릿은 2열로 적응', target: '.pd-kpi' },
+          { text: '최근 신청 테이블', target: '.pd-recent' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '대시보드 표시', message: '', target: '.pd-kpi' },
+        ],
+        interface: { reads: [{ id: 'adminOverviewTab', intent: '운영 현황 조회(태블릿)', method: 'GET', path: '/admin/overview', response: '{entities.Provider}[]', auth: 'Bearer(운영자)', target: '.pd-kpi' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+    ],
+  },
 ];
 window.PDK_SCREENS = window.PLANDECK_SCREENS;

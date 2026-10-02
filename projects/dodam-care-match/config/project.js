@@ -8,6 +8,8 @@ window.PLANDECK_PROJECT = {
   ],
   surfaces: [
     { key: 'mobile', device: 'mobile', label: '모바일(보호자 앱)' },
+    { key: 'pc', device: 'desktop', label: 'PC웹(운영자 콘솔)' },
+    { key: 'tablet', device: 'tablet', label: '태블릿(운영자)' },
   ],
   constitution: {
     auth: 'Bearer JWT (보호자 로그인). 민감정보(아동 프로필)는 최소수집·암호화 전제',

@@ -173,3 +173,96 @@
 
 /* hover 강조는 그대로(검토/Description) */
 .device-screen > .is-dimming .is-highlighted { outline-offset: 3px; border-radius: 8px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   와이드 레이아웃(PC웹·태블릿) 와이어프레임 — 가로 폭 넓은 화면
+   ═══════════════════════════════════════════════════════════════════ */
+/* PC웹 브라우저 크롬(엔진 자동 주입) */
+.device-stage.pd-wide .device-frame { background: #1b1d21; padding: 10px; border-radius: 16px; box-shadow: 0 0 0 2px #34363b, 0 18px 44px rgba(0,0,0,.2); }
+.device-stage.pd-wide .device-frame::before, .device-stage.pd-wide .device-frame::after { display: none; }
+.device-stage.pd-wide .device-mockup::before { display: none; }
+.device-stage.pd-wide .device-screen { border-radius: 8px; box-shadow: none; }
+.pd-browserbar { position: absolute; top: 0; left: 0; right: 0; height: 40px; background: var(--w-fill); border-bottom: 1px solid var(--w-line); display: flex; align-items: center; gap: 10px; padding: 0 14px; z-index: 35; font-family: var(--w-font); }
+.pd-browserbar .dots { display: flex; gap: 6px; }
+.pd-browserbar .dots i { width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--w-line-2); display: block; }
+.pd-browserbar .url { flex: 1; height: 24px; background: var(--w-white); border: 1px solid var(--w-line); border-radius: 6px; display: flex; align-items: center; padding: 0 10px; font-size: 12px; color: var(--w-label); }
+
+/* 와이드 앱 셸 */
+.pd-screen.pd-web { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 0; margin: 0; gap: 0; background: var(--w-white); font-family: var(--w-font); color: var(--w-ink); overflow: hidden; word-break: keep-all; }
+.pd-web.has-browser { padding-top: 40px; }   /* 브라우저바 자리 */
+
+/* 상단 GNB */
+.pd-gnb { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--w-line); display: flex; align-items: center; gap: 24px; padding: 0 24px; background: var(--w-white); }
+.pd-gnb .logo { font-size: 17px; font-weight: 800; color: var(--w-ink); }
+.pd-gnb .menu { display: flex; gap: 20px; flex: 1; }
+.pd-gnb .menu a { font-size: 14px; font-weight: 600; color: var(--w-sub); text-decoration: none; }
+.pd-gnb .menu a.is-active { color: var(--w-ink); }
+.pd-gnb .gnb-right { display: flex; align-items: center; gap: 12px; }
+
+/* 본문 레이아웃 = 사이드바 + 콘텐츠 */
+.pd-layout { flex: 1; min-height: 0; display: flex; }
+.pd-sidebar { width: 216px; flex-shrink: 0; border-right: 1px solid var(--w-line); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; background: var(--w-white); }
+.pd-sidebar .nav-group-label { font-size: 11px; font-weight: 700; color: var(--w-label); padding: 10px 10px 4px; }
+.pd-sidebar .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--w-sub); cursor: pointer; }
+.pd-sidebar .nav-item.is-active { background: var(--w-fill-2); color: var(--w-ink); }
+.pd-sidebar .nav-item svg { flex-shrink: 0; color: currentColor; }
+.pd-content { flex: 1; min-width: 0; overflow-y: auto; padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; background: var(--w-white); }
+
+/* 페이지 헤더(브레드크럼 + 타이틀 + 액션) */
+.pd-breadcrumb { font-size: 12.5px; color: var(--w-label); }
+.pd-pagehead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.pd-pagehead .pd-wf-title { font-size: 24px; }
+
+/* KPI 카드 그리드 — 기본 2열, PC(와이드·비태블릿)만 4열 */
+.pd-cardgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.device-stage.pd-wide:not(.pd-tablet) .pd-cardgrid { grid-template-columns: repeat(4, 1fr); }
+.pd-cardgrid.c3 { grid-template-columns: repeat(3, 1fr); }
+.pd-stat { border: 1px solid var(--w-line); border-radius: 8px; padding: 16px 18px; }
+.pd-stat .lbl { font-size: 13px; color: var(--w-sub); }
+.pd-stat .num { font-size: 28px; font-weight: 800; color: var(--w-ink); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.pd-stat .delta { font-size: 12px; color: var(--w-label); margin-top: 2px; }
+
+/* 툴바(검색/필터/액션) */
+.pd-toolbar { display: flex; align-items: center; gap: 10px; }
+.pd-toolbar .pd-searchbar { width: 280px; height: 38px; }
+.pd-toolbar .spacer { flex: 1; }
+
+/* 패널(콘텐츠 영역 박스) — 와이드 전용(.pd-wpanel; 모바일 .pd-panel 과 구분) */
+.pd-wpanel { border: 1px solid var(--w-line); border-radius: 8px; overflow: hidden; }
+.pd-wpanel-head { padding: 14px 18px; border-bottom: 1px solid var(--w-line); font-size: 15px; font-weight: 700; color: var(--w-ink); display: flex; align-items: center; justify-content: space-between; }
+.pd-wpanel .pd-table { border: none; border-radius: 0; }
+.pd-wpanel .pd-table th { background: var(--w-fill); }
+
+/* 태블릿: GNB + 콘텐츠(사이드바 숨김) */
+.device-stage.pd-tablet .pd-sidebar { display: none; }
+.device-stage.pd-tablet .pd-content { padding: 20px 22px; }
+
+/* ═══ bare 모드(플로우 썸네일용 — 모든 PlanDeck 크롬 숨김) ═══ */
+.pd-bare .page-nav, .pd-bare .page-detail, .pd-bare .page-flow, .pd-bare .page-flow-modal,
+.pd-bare .pdk-dock, .pd-bare .pd-mode-toggle, .pd-bare .pd-review-banner, .pd-bare .pd-lint-banner,
+.pd-bare .pd-cases, .pd-bare .pd-interface { display: none !important; }
+.pd-bare .device-stage { padding: 0 !important; min-height: 0; align-items: flex-start; justify-content: flex-start; background: #fff; }
+.pd-bare .device-mockup { transform: none !important; filter: none !important; }
+.pd-bare .device-frame { background: transparent !important; padding: 0 !important; border-radius: 0 !important; box-shadow: none !important; width: auto !important; height: auto !important; }
+.pd-bare .device-frame::before, .pd-bare .device-frame::after, .pd-bare .pd-dynamic-island { display: none !important; }
+.pd-bare .device-screen { border-radius: 0 !important; }
+
+/* ═══ 플로우 뷰(flows.html) — 필름스트립 ═══ */
+.pd-flows-doc { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; font-family: var(--w-font); color: var(--w-ink); }
+.pd-flow-block { margin-bottom: 36px; }
+.pd-flow-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.pd-flow-name { font-size: 20px; font-weight: 800; }
+.pd-flow-meta { font-size: 13px; color: var(--w-sub); }
+.pd-flow-desc { font-size: 13.5px; color: var(--w-sub); margin-bottom: 14px; }
+.pd-strip { display: flex; align-items: center; gap: 0; overflow-x: auto; padding: 8px 2px 16px; }
+.pd-strip::-webkit-scrollbar { height: 8px; } .pd-strip::-webkit-scrollbar-thumb { background: var(--w-line); border-radius: 4px; }
+.pd-step { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pd-step-frame { width: 150px; height: 300px; border: 1px solid var(--w-line); border-radius: 14px; overflow: hidden; background: var(--w-white); position: relative; cursor: pointer; }
+.pd-step-frame.wide { width: 260px; height: 170px; border-radius: 10px; }
+.pd-step-frame iframe { border: none; position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
+.pd-step-frame:hover { border-color: var(--w-line-2); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.pd-step-label { font-size: 12.5px; font-weight: 700; color: var(--w-ink); text-align: center; max-width: 160px; }
+.pd-step-id { font-size: 11px; color: var(--w-label); }
+.pd-step-arrow { flex-shrink: 0; color: var(--w-line-2); padding: 0 6px; align-self: center; margin-bottom: 28px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pd-step-arrow .via { font-size: 10.5px; color: var(--w-label); white-space: nowrap; }
+.pd-flow-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }

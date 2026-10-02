@@ -162,6 +162,27 @@
     screen.appendChild(sb); screen.appendChild(di); screen.appendChild(hb);
   }
 
+  // ═══ 1-c. 와이드 크롬(PC웹·태블릿) — GNB/사이드바 셸 + PC 브라우저 크롬 ═══
+  function injectWideChrome() {
+    var d = activeDeviceDef();
+    if (!d || d.type === 'kiosk' || !(d.width && d.width > 430)) return;  // 와이드만(폰·키오스크 제외)
+    var stage = document.querySelector('.device-stage');
+    var screen = document.querySelector('.device-screen');
+    if (!stage || !screen) return;
+    var isTablet = d.width < 1100;
+    stage.classList.add('pd-wide');
+    if (isTablet) stage.classList.add('pd-tablet');
+    var root = screen.querySelector('.pd-screen');
+    if (root) root.classList.add('pd-web');
+    if (!isTablet && root && !screen.querySelector('.pd-browserbar')) {   // PC웹 브라우저 크롬
+      var bb = document.createElement('div');
+      bb.className = 'pd-browserbar';
+      bb.innerHTML = '<div class="dots"><i></i><i></i><i></i></div><div class="url">' + esc((PROJECT.name || 'plandeck') + ' · 관리자 콘솔') + '</div>';
+      screen.appendChild(bb);
+      root.classList.add('has-browser');
+    }
+  }
+
   // ═══ 2. 상태 칩 + 변경 감지 (좌측 목록 각 행에 배지 추가) ═══
   var STATUS_META = {
     'draft':         { label: '초안',    cls: 'is-draft' },
@@ -493,6 +514,7 @@
 
     var quick = '<div class="pd-chip-row" style="margin:14px 0">' +
       '<a class="pd-chip pd-link" href="prd.html">📋 PRD</a>' +
+      '<a class="pd-chip pd-link" href="flows.html">🧭 주요 플로우</a>' +
       '<a class="pd-chip pd-link" href="spec.html">📄 상세 기획서</a>' +
       '<a class="pd-chip pd-link" href="handoff.html">🔌 개발·QA 핸드오프</a>' +
       (n ? '<a class="pd-chip pd-link" href="' + esc((pages.filter(function(p){return p.entry;})[0] || pages[0]).href) + '?mode=review">👁 검토 모드(프로토타입)</a>' : '') +
@@ -658,14 +680,60 @@
       '<p class="pd-dim">문서: <a href="docs/GUIDE.md">GUIDE</a> · <a href="docs/TEAM.md">TEAM</a> · <a href="docs/OPERATIONS.md">OPERATIONS</a></p></div>';
   }
 
+  // ═══ 13. 플로우 뷰(#pd-flows-root) — 플로우별 필름스트립(실제 화면 썸네일) ═══
+  function deviceForPage(p) {
+    var key = (p && surfaceDeviceKey(p)) || PROJECT.device || 'mobile';
+    var d = DEVICES[key]; if (d && d.toggle) d = DEVICES[d.default || d.toggle[0]];
+    return d || { width: 360, height: 782 };
+  }
+  function renderFlows() {
+    var el = document.getElementById('pd-flows-root');
+    el.className = 'pd-flows-doc';
+    var flows = window.PLANDECK_FLOWS || window.PDK_FLOWS || [];
+    var byId = {}; flatPages().forEach(function (p) { byId[p.id] = p; });
+    var head = '<div class="pd-prd-nav"><a href="index.html">← 개요</a><a href="spec.html">상세 기획서 →</a><a href="handoff.html">핸드오프 →</a></div>' +
+      '<h1 style="font-size:28px;font-weight:800;margin-bottom:6px">주요 플로우</h1>' +
+      '<div class="pd-prd-sub">제품의 핵심 여정을 플로우별로 모아 봅니다. 썸네일을 누르면 해당 화면이 열려요. (화면이 많아져도 플로우 단위로 정리됩니다)</div>';
+    if (!flows.length) {
+      el.innerHTML = head + '<div class="pd-empty"><div class="pd-empty-icon">🧭</div><div class="pd-empty-title">등록된 플로우가 없습니다</div><div class="pd-empty-sub"><code>/pd-flow</code> 로 주요 플로우를 정의하세요.</div></div>';
+      return;
+    }
+    var blocks = flows.map(function (f) {
+      var steps = (f.steps || []).map(function (s) { return typeof s === 'string' ? { screen: s } : s; });
+      var strip = '';
+      steps.forEach(function (st, i) {
+        var p = byId[st.screen];
+        if (i > 0) strip += '<div class="pd-step-arrow"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + (st.via ? '<span class="via">' + esc(st.via) + '</span>' : '') + '</div>';
+        if (!p) { strip += '<div class="pd-step"><div class="pd-step-frame" style="display:flex;align-items:center;justify-content:center;color:#9aa0a8">미등록</div><div class="pd-step-label">' + esc(st.screen) + '</div></div>'; return; }
+        var d = deviceForPage(p), devW = d.width, devH = d.height, wide = devW > devH;
+        var fw = wide ? 260 : 150, scale = (fw / devW).toFixed(4);
+        strip += '<div class="pd-step">' +
+          '<a class="pd-step-frame' + (wide ? ' wide' : '') + '" href="' + esc(p.href) + '" title="' + esc(p.label) + '">' +
+          '<iframe src="' + esc(p.href) + '?bare=1" scrolling="no" style="width:' + devW + 'px;height:' + devH + 'px;transform:scale(' + scale + ')"></iframe></a>' +
+          '<div class="pd-step-label">' + esc(p.label) + '</div><div class="pd-step-id">' + esc(p.id) + '</div></div>';
+      });
+      return '<div class="pd-flow-block"><div class="pd-flow-head"><span class="pd-flow-name">' + esc(f.name) + '</span>' +
+        (f.surface ? '<span class="pd-flow-meta">· ' + esc(f.surface) + '</span>' : '') + '<span class="pd-flow-meta">· ' + steps.length + '화면</span></div>' +
+        (f.desc ? '<div class="pd-flow-desc">' + esc(f.desc) + '</div>' : '') +
+        '<div class="pd-strip">' + strip + '</div></div>';
+    }).join('');
+    el.innerHTML = head + blocks;
+  }
+
   // ═══ init ═══
   function init() {
+    var bare = false;
+    try { bare = new URLSearchParams(location.search).get('bare') === '1'; } catch (e) {}
+    if (bare) document.body.classList.add('pd-bare');
     if (document.getElementById('pd-workspace-root')) { try { renderWorkspace(); } catch (e) {} return; }
     if (document.getElementById('pd-prd-root')) { try { renderPRD(); } catch (e) {} return; }
     if (document.getElementById('pd-overview-root')) { try { renderOverview(); } catch (e) {} return; }
     if (document.getElementById('pd-spec-root')) { try { renderSpec(); } catch (e) {} return; }
+    if (document.getElementById('pd-flows-root')) { try { renderFlows(); } catch (e) {} return; }
     try { applySurfaceDevice(); } catch (e) {}
     try { injectMobileChrome(); } catch (e) {}
+    try { injectWideChrome(); } catch (e) {}
+    if (bare) return;   // 썸네일(bare): 디바이스만 렌더, 패널 생략
     try { injectStatusChips(); } catch (e) {}
     try { injectCasesPanel(); } catch (e) {}
     try { injectInterfacePanel(); } catch (e) {}
