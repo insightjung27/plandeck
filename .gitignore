@@ -1,0 +1,12 @@
+# OS / 에디터
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+# 로컬 산출물(핸드오프 내려받기 등)은 커밋하지 않음
+*.openapi.json
+*.bundle.json
+*.handoff.md
+*.qa-checklist.md
+*.feature

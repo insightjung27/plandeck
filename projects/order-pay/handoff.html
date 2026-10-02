@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>간편결제 데모 — 개발·QA 핸드오프</title>
+  <link rel="stylesheet" href="../../engine/common.css" />
+  <link rel="stylesheet" href="../../engine/plandeck.css" />
+  <style>body { user-select: text; overflow: auto; }</style>
+</head>
+<body>
+  <div id="pd-handoff-root"></div>
+  <script>
+    (function () {
+      var v = Date.now();
+      var files = ['config/devices.js','config/project.js','config/entities.js','config/prd.js','config/screens.js','../../engine/handoff.js'];
+      for (var i=0;i<files.length;i++) document.write('<scr'+'ipt src="'+files[i]+'?_='+v+'"></scr'+'ipt>');
+    })();
+  </script>
+</body>
+</html>

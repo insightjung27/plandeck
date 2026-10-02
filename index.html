@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlanDeck — 워크스페이스</title>
+  <link rel="stylesheet" href="engine/common.css" />
+  <link rel="stylesheet" href="engine/plandeck.css" />
+  <style>body { user-select: text; overflow: auto; }</style>
+</head>
+<body>
+  <!-- 워크스페이스 홈: 여러 프로젝트를 한눈에 (engine 이 config/workspace.js 에서 렌더) -->
+  <div id="pd-workspace-root"></div>
+  <script>
+    (function () {
+      var v = Date.now();
+      var files = ['config/workspace.js', 'engine/plandeck.js'];
+      for (var i = 0; i < files.length; i++) {
+        document.write('<scr' + 'ipt src="' + files[i] + '?_=' + v + '"></scr' + 'ipt>');
+      }
+    })();
+  </script>
+</body>
+</html>

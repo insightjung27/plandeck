@@ -1,0 +1,1306 @@
+/* ─────────────────────────────────────────────
+   PDK (Prototype Design Kit) 엔진 공용 스타일
+   디바이스 목업 + 개발 사이드바(페이지목록/플로우/Description) + 스켈레톤
+   디바이스 규격은 config/devices.js 기반 CSS 변수(--pdk-screen-w/h 등)로 제어
+   ───────────────────────────────────────────── */
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+:root {
+  --color-primary: #527EF6;
+  --color-primary-bg: #E7F3FF;
+  --color-secondary-bg: #F2F4F5;
+  --color-secondary-text: #3D3D3D;
+  --color-border: #A0AEC0;
+  --color-text-default: #111;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+  background: #f1f3f7;
+  color: var(--color-text-default);
+  overflow: auto;
+  user-select: none;
+  /* Figma처럼 얇게 렌더 (grayscale AA) — macOS/일부 환경에서 두께 보정 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─── 디바이스 목업 (실제 토스 프론트2) ─────── */
+.device-stage {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f3f7;
+  padding: 40px 20px;
+}
+
+.device-mockup {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.10));
+  transform: scale(var(--pdk-device-scale, 1));   /* 큰 캔버스(데스크탑 등) 뷰포트 맞춤 */
+  transform-origin: center center;
+}
+
+/* 우측 카드리더 돌출부 (몸체 뒤에서 옆으로 튀어나옴) */
+.device-mockup::before {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 150px;
+  background: linear-gradient(90deg, #d0d0d6 0%, #f0f0f3 35%, #e6e6ea 100%);
+  border-radius: 10px;
+  z-index: 0;
+  box-shadow:
+    inset -2px 0 4px rgba(0, 0, 0, 0.08),
+    inset 1px 0 0 rgba(255, 255, 255, 0.6),
+    0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* 단말기 본체 (화이트 케이스) */
+.device-frame {
+  position: relative;
+  z-index: 1;
+  width: 460px;
+  height: 820px;
+  background: linear-gradient(180deg, #fcfcfd 0%, #f0f0f3 100%);
+  border-radius: 42px;
+  padding: 90px 30px 90px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.06),
+    inset 0 2px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* 상단 듀얼 카메라 바 (검정 가로 막대 + 렌즈 2개) */
+.device-frame::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 20px;
+  background:
+    radial-gradient(circle at 42px 10px, #4a4a55 3px, transparent 4px),
+    radial-gradient(circle at 108px 10px, #4a4a55 3px, transparent 4px),
+    linear-gradient(180deg, #2a2a30 0%, #15151a 100%);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 하단 마그네틱 카드 슬롯 (가로로 들어간 홈) */
+.device-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 28px;
+  background: linear-gradient(180deg, #9a9aa2 0%, #c8c8cf 30%, #b0b0b8 70%, #9a9aa2 100%);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+/* 실제 화면 영역 (디바이스 규격은 CSS 변수로 제어; 기본 400×640 = tossfront2) */
+.device-screen {
+  position: relative;
+  width: var(--pdk-screen-w, 400px);
+  height: var(--pdk-screen-h, 640px);
+  background: #ffffff;
+  border-radius: var(--pdk-screen-radius, 18px);
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 0 0 3px rgba(20, 20, 30, 0.03);
+}
+
+/* ─── 디바이스 화면 내 스크롤바 숨김 ─────
+   기능은 유지하되 시각적으로만 숨김 (실제 단말기처럼 보이도록) */
+.device-screen *::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+.device-screen * {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE/Edge */
+}
+
+/* ─── 모든 디바이스 화면 내 버튼 누름 효과 ─────
+   - scale 살짝 축소 + 살짝 어두워짐
+   - .no-press / [disabled] 클래스로 제외 가능 */
+.device-screen button {
+  transition: transform 0.12s ease, filter 0.12s ease, background-color 0.12s ease;
+}
+.device-screen button:active {
+  transform: scale(0.97);
+  filter: brightness(0.92);
+}
+.device-screen button.no-press:active,
+.device-screen button[disabled]:active {
+  transform: none;
+  filter: none;
+}
+
+/* ─── 아이콘 전용 버튼(뒤로가기/홈) — 누름 시 둥근 배경 fill ───
+   aria-label 기반으로 모든 페이지의 뒤로가기/홈 버튼에 일괄 적용 */
+.device-screen button[aria-label="뒤로가기"],
+.device-screen button[aria-label="홈"] {
+  border-radius: 12px;
+}
+.device-screen button[aria-label="뒤로가기"]:active,
+.device-screen button[aria-label="홈"]:active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* 스탠드/베이스는 실제 디바이스에 없음 - 숨김 */
+.device-stand,
+.device-base {
+  display: none;
+}
+
+/* ─── 미니멀 프레임형 디바이스 (desktop / mobile / 커스텀) ───
+   Figma 시안 기반: 베젤 단색 + 둥근 모서리. 키오스크 디테일(카메라/슬롯/리더)은 숨김 */
+.device-stage[data-device-type="frame"] .device-mockup::before { display: none; }
+.device-stage[data-device-type="frame"] .device-frame {
+  width: auto;
+  height: auto;
+  /* 그라데이션 베젤: border 대신 padding(=베젤 두께) + 배경 그라데이션으로
+     둥근 모서리를 유지하면서 입체감(상단 하이라이트 → 하단 음영) 표현 */
+  background: var(--pdk-bezel-grad,
+    linear-gradient(145deg, #5a5a5a 0%, #404040 45%, #2a2a2a 100%));
+  border: none;
+  padding: var(--pdk-bezel-w, 10px);
+  border-radius: var(--pdk-radius, 24px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),   /* 상단 광택 */
+    inset 0 -2px 3px rgba(0, 0, 0, 0.45);       /* 하단 음영 */
+}
+.device-stage[data-device-type="frame"] .device-frame::before,
+.device-stage[data-device-type="frame"] .device-frame::after { display: none; }
+.device-stage[data-device-type="frame"] .device-screen { box-shadow: none; }
+
+/* ─── 반응형 디바이스 토글 (상단 중앙 고정) ─── */
+.pdk-device-toggle {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+.pdk-device-toggle button {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.pdk-device-toggle button.is-active {
+  background: #3182F6;
+  color: #ffffff;
+}
+
+/* ─── 화면 placeholder (UI 미구현 시 중앙에 이름+ID 표기) ─── */
+.placeholder-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  text-align: center;
+  padding: 24px;
+}
+
+.placeholder-screen-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: -0.3px;
+}
+
+.placeholder-screen-id {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+
+/* ─────────────────────────────────────────────
+   와이어프레임 공용 유틸리티
+   ─ 메인페이지 스타일 기반 토큰 + 스켈레톤
+   ───────────────────────────────────────────── */
+
+/* 화면 컨테이너 (400×640, 메인페이지와 동일한 베이스) */
+.wf-screen {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  overflow: hidden;
+  font-family: "Pretendard", -apple-system, sans-serif;
+  color: #111;
+}
+
+/* 헤더 영역 (뒤로가기 + 타이틀) */
+.wf-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+}
+
+.wf-header-back {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #111;
+}
+.wf-header-back:hover { background: #f3f4f6; }
+
+.wf-header-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+  flex: 1;
+  letter-spacing: -0.3px;
+}
+
+/* 본문 영역 (헤더 + 푸터 여백 자동 처리 가능) */
+.wf-body {
+  position: absolute;
+  inset: 56px 0 88px;
+  overflow-y: auto;
+  padding: 0 18px;
+}
+
+.wf-body--no-header { top: 0; }
+.wf-body--no-footer { bottom: 0; }
+
+/* 푸터(하단 고정 버튼 영역) */
+.wf-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 18px 18px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 큰 타이틀 (메인페이지 "여기서 체크해주세요" 스타일) */
+.wf-title {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #111;
+  letter-spacing: -0.8px;
+  margin-top: 8px;
+}
+.wf-title .accent { color: #527EF6; }
+
+.wf-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* 섹션 라벨 (작은 카테고리) */
+.wf-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+  margin: 18px 0 8px;
+}
+
+/* 카드 / 리스트 항목 */
+.wf-card {
+  background: #ffffff;
+  border: 1px solid #eaecef;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.wf-tile {
+  background: #F2F4F5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+.wf-tile:hover { background: #e9edef; }
+
+/* 인풋 */
+.wf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.wf-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+}
+.wf-input {
+  height: 52px;
+  border: 1px solid #d8dde3;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 16px;
+  background: #ffffff;
+  outline: none;
+  font-family: inherit;
+}
+.wf-input:focus { border-color: #527EF6; }
+
+/* 버튼 */
+.wf-btn {
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+.wf-btn:active { transform: scale(0.99); filter: brightness(0.96); }
+
+.wf-btn--primary   { background: #527EF6; color: #ffffff; }
+.wf-btn--secondary { background: #F2F4F5; color: #3D3D3D; }
+.wf-btn--ghost     { background: transparent; color: #527EF6; }
+
+/* 알림/공지 배너 */
+.wf-banner {
+  background: #E7F3FF;
+  border-radius: 14px;
+  padding: 12px 16px;
+  color: #527EF6;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Skeleton UI ── (애매한 영역에 사용) */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #eef0f3 0%,
+    #e2e5e9 50%,
+    #eef0f3 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  border-radius: 8px;
+  color: transparent;
+  user-select: none;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.skeleton-line.lg { height: 22px; border-radius: 8px; }
+.skeleton-line.sm { height: 10px; }
+.skeleton-line.w-30 { width: 30%; }
+.skeleton-line.w-50 { width: 50%; }
+.skeleton-line.w-70 { width: 70%; }
+.skeleton-line.w-90 { width: 90%; }
+
+.skeleton-block {
+  width: 100%;
+  height: 80px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.skeleton-block.h-40 { height: 40px; }
+.skeleton-block.h-56 { height: 56px; }
+.skeleton-block.h-100 { height: 100px; }
+.skeleton-block.h-140 { height: 140px; }
+
+.skeleton-circle {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+}
+.skeleton-circle.sm { width: 32px; height: 32px; }
+.skeleton-circle.lg { width: 72px; height: 72px; }
+
+/* ─── 좌측 페이지 목록 레일 (풀하이트) — Figma 시안 기반 ─── */
+.page-nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  z-index: 100;
+  font-family: "Pretendard", -apple-system, sans-serif;
+  user-select: none;
+}
+
+/* 상단: 현재 화면 헤더 (타이틀 + 코드 + Figma 링크) */
+.page-nav-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.page-nav-head-info {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.page-nav-head-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  letter-spacing: -0.2px;
+  word-break: keep-all;
+}
+.page-nav-head-code {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9ca3af;
+  letter-spacing: 0.2px;
+}
+.page-nav-head-code.is-tbd { font-style: italic; }
+.page-nav-figma {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 6px 8px;
+  background: #374151;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.page-nav-figma:hover { background: #1f2937; }
+.page-nav-figma.is-disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* 스크롤 본문 */
+.page-nav-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.page-nav-scroll::-webkit-scrollbar { width: 8px; }
+.page-nav-scroll::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
+.page-nav-scroll::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+.page-nav-scroll::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+/* 컬럼 헤더 (PAGE NAME / UI DESIGN) */
+.page-nav-cols {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* 카테고리 그룹 */
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-cat {
+  padding: 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+/* 페이지 행 */
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.nav-row:not(.is-active):hover { background: #f3f4f6; }
+.nav-row.is-active { background: #3182f6; }
+.nav-row-title {
+  flex: 1 0 0;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: #374151;
+  word-break: keep-all;
+}
+.nav-row.is-active .nav-row-title { color: #ffffff; }
+
+/* 상태 뱃지 (Figma 에셋 SVG 그대로) */
+.nav-bdg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* ── 우측 하단 화면 플로우 다이어그램 ───────────── */
+.page-flow {
+  position: fixed;
+  right: 16px;
+  bottom: 76px;                /* 우하단 dock 버튼 위로 띄움 */
+  width: 280px;
+  height: 46vh;                /* 높이 고정 → 로딩↔렌더 시 레이아웃 시프트 방지 */
+  overflow: hidden;            /* 패널은 클리핑만, 스크롤은 본문이 담당(헤더 고정) */
+  display: flex;
+  flex-direction: column;
+  overscroll-behavior: contain;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 6px 0 0;
+  z-index: 100;
+  font-family: "Pretendard", -apple-system, sans-serif;
+}
+.page-flow-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 12px 0 16px;
+}
+.page-flow-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.3px;
+}
+.page-flow-hint {
+  font-size: 11px;
+  font-weight: 500;
+  color: #b6bcc6;
+}
+/* 본문 — 다이어그램 자연 크기 유지 + 좌우/상하 스크롤. 시안: 연회색 인셋(#f9fafb) */
+.page-flow-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  cursor: grab;
+  user-select: none;          /* 드래그 패닝 중 텍스트 선택 방지 */
+  background: #f9fafb;
+  padding: 10px;
+}
+.page-flow-body:active { cursor: grabbing; }
+.page-flow-body::-webkit-scrollbar { width: 9px; height: 9px; }
+.page-flow-body::-webkit-scrollbar-track { background: transparent; }
+.page-flow-body::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 5px; border: 2px solid #f9fafb; }
+.page-flow-body::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+.page-flow-body::-webkit-scrollbar-corner { background: transparent; }
+.page-flow .mermaid { margin: 0; line-height: 1; width: max-content; }
+.page-flow .mermaid svg { max-width: none !important; height: auto; display: block; }
+.page-flow .mermaid .node { cursor: pointer; }
+/* 렌더 전 원시 그래프 텍스트 숨김(깜빡임 방지) — 흐름에서 제외해 레이아웃 영향 없음 */
+.page-flow.is-loading .mermaid { position: absolute; visibility: hidden; }
+.page-flow-loading { padding: 16px 4px; font-size: 13px; color: #c4c9d4; }
+.page-flow:not(.is-loading) .page-flow-loading { display: none; }
+
+/* 헤더 도구 버튼 (Figma 아이콘 에셋 32×32) */
+.page-flow-toggle,
+.page-flow-expand,
+.page-flow-locate {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-flow-toggle img,
+.page-flow-expand img { width: 32px; height: 32px; display: block; }
+.page-flow-locate img { width: 16px; height: 16px; display: block; }
+
+/* 헤더 우측 도구 묶음 */
+.page-flow-header-tools { display: flex; align-items: center; gap: 2px; }
+
+/* 전체화면 플로우 모달 */
+.page-flow-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(17, 20, 24, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.page-flow-modal.is-open { display: flex; }
+.page-flow-modal-panel {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.32);
+  font-family: "Pretendard", -apple-system, sans-serif;
+}
+.page-flow-modal-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px 13px 20px;
+  border-bottom: 1px solid #eef0f3;
+}
+.page-flow-modal-title { font-size: 15px; font-weight: 700; color: #363D4A; }
+.page-flow-modal-tools { display: flex; align-items: center; gap: 6px; }
+.page-flow-modal-tools button {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  height: 30px;
+  min-width: 30px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  font-family: inherit;
+}
+.page-flow-modal-tools button:hover { background: #f3f4f6; }
+.page-flow-modal-zoom { font-size: 13px; color: #6b7280; min-width: 48px; text-align: center; }
+.page-flow-modal-close { font-size: 15px !important; margin-left: 4px; }
+.page-flow-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  cursor: grab;
+  user-select: none;
+  background: #fafbfc;
+}
+.page-flow-modal-body:active { cursor: grabbing; }
+.page-flow-modal-body::-webkit-scrollbar { width: 11px; height: 11px; }
+.page-flow-modal-body::-webkit-scrollbar-track { background: transparent; }
+.page-flow-modal-body::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; border: 3px solid #fafbfc; }
+.page-flow-modal-body::-webkit-scrollbar-thumb:hover { background: #b6bcc6; }
+.page-flow-modal .mermaid-modal { margin: 0; line-height: 1; width: max-content; padding: 28px; }
+.page-flow-modal .mermaid-modal svg { max-width: none !important; display: block; }
+.page-flow-modal .mermaid-modal .node { cursor: pointer; }
+/* 모달: 렌더 전 원시 텍스트 숨김 + 로딩 표시 */
+.page-flow-modal .mermaid-modal:not([data-processed]) { position: absolute; visibility: hidden; }
+.page-flow-modal-loading { padding: 28px; font-size: 13px; color: #9ca3af; }
+.page-flow-modal .mermaid-modal[data-processed] ~ .page-flow-modal-loading { display: none; }
+
+/* 페이지 목록 빈 상태(행) */
+.nav-empty-row {
+  padding: 22px 8px;
+  text-align: center;
+  font-size: 12px;
+  color: #9aa3af;
+  line-height: 1.7;
+}
+
+/* ─── 우하단 통합 토글바 (Description / Flow 재열기) — Figma 시안 ─── */
+.pdk-dock {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 101;
+  display: flex;
+  gap: 8px;
+}
+.pdk-dock-btn {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.pdk-dock-btn:hover { background: #ebedf1; color: #6b7280; }
+.pdk-dock-btn svg { display: block; }
+/* hover 라벨 (버튼 위에 표시) */
+.pdk-dock-btn::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  padding: 8px 12px;
+  background: #374151;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.pdk-dock-btn:hover::after { opacity: 0.8; }
+
+/* ─── 우상단 Description 패널 (번호 리스트) — Figma 시안 ─── */
+.page-detail {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+  width: 280px;
+  max-height: 42vh;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;              /* 헤더 ↔ 리스트 간격 (시안 gap-8) */
+  padding: 6px 0;        /* 패널 상하 여백 (시안 py-6) */
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  z-index: 100;
+  font-family: "Pretendard", -apple-system, sans-serif;
+}
+
+.page-detail-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 12px 0 16px;
+}
+
+.page-detail-title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.3px;
+}
+
+.page-detail-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  font-family: inherit;
+}
+.page-detail-close img { width: 32px; height: 32px; display: block; }
+
+/* 리스트 본문 (스크롤) */
+.page-detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 12px 12px;
+}
+.page-detail-body::-webkit-scrollbar { width: 8px; }
+.page-detail-body::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
+.page-detail-body::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 4px; }
+.page-detail-body::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+
+/* Description 번호 리스트 */
+.page-detail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-detail-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background: #ffffff;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.page-detail-item:hover { background: #f3f4f6; }
+.page-detail-item.is-active { background: #ebf3ff; }
+
+.page-detail-item-num {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #585f6c;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.15s ease;
+}
+.page-detail-item:hover .page-detail-item-num,
+.page-detail-item.is-active .page-detail-item-num { background: #3182f6; }
+
+.page-detail-item-text {
+  flex: 1 0 0;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #374151;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+/* Empty state */
+.page-detail-empty {
+  margin: 4px 0 12px;
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #f9fafb;
+  border: 1px dashed #d8dee5;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.page-detail-empty-icon {
+  font-size: 28px;
+  opacity: 0.5;
+  margin-bottom: 2px;
+}
+
+.page-detail-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.page-detail-empty-sub {
+  font-size: 14px;
+  color: #9ca3af;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* ── Hover dim/highlight 효과 (디바이스 내부 화면)
+   .device-screen 의 첫 자식(.main-screen/.auth-screen/.screen 등)에
+   is-dimming 클래스가 붙으면 자식들이 흐려지고,
+   .is-highlighted 와 그 조상(.contains-highlight) 분기만 또렷해짐
+   → nested 타겟도 지원 */
+.device-screen > .is-dimming > * {
+  transition: opacity 0.18s ease, filter 0.18s ease;
+}
+
+/* 1) 스크린 직속 자식 중 highlight 분기가 아닌 것은 dim */
+.device-screen > .is-dimming > *:not(.is-highlighted):not(.contains-highlight) {
+  opacity: 0.12;
+  filter: saturate(0.4);
+}
+
+/* 2) contains-highlight 부모 내부에서도, highlight 분기가 아닌 형제는 dim */
+.device-screen > .is-dimming .contains-highlight > *:not(.is-highlighted):not(.contains-highlight) {
+  transition: opacity 0.18s ease, filter 0.18s ease;
+  opacity: 0.12;
+  filter: saturate(0.4);
+}
+
+/* 3) 실제 강조 대상은 또렷
+      ❗ position 을 강제로 바꾸면 absolute 로 고정된 요소(예: .seat-footer)가
+         자연 흐름으로 떠올라 위치가 깨짐.
+         → outline + box-shadow 로 처리해 원래 position 유지 */
+.device-screen > .is-dimming .is-highlighted {
+  opacity: 1;
+  filter: none;
+  outline: 2px solid #527EF6;
+  outline-offset: 4px;
+  animation: highlight-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes highlight-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(82, 126, 246, 0.35); }
+  50%      { box-shadow: 0 0 0 8px rgba(82, 126, 246, 0); }
+}
+
+/* 좌측 패널 숨김 (좌하단 dock 버튼으로 재열기) */
+.page-detail.is-hidden,
+.page-flow.is-hidden {
+  display: none;
+}
+
+/* 화면 컨테이너 (실제 콘텐츠가 그려지는 곳) */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #f5f6f8;
+}
+
+/* ── 상단 상태바 ───────────────────────────── */
+.status-bar {
+  flex: 0 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: #ffffff;
+  font-size: 12px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.status-bar .time {
+  font-weight: 600;
+}
+
+.status-bar .indicators {
+  display: flex;
+  gap: 6px;
+}
+
+/* ── 헤더 영역 ────────────────────────────── */
+.app-header {
+  flex: 0 0 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #eaecef;
+}
+
+.app-header .title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+}
+
+.app-header .back-btn,
+.app-header .home-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #444;
+}
+
+.app-header .back-btn:active,
+.app-header .home-btn:active {
+  background: #f0f1f3;
+}
+
+/* ── 본문 영역 ────────────────────────────── */
+.screen-body {
+  flex: 1 1 auto;
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+
+/* ── 하단 액션 영역 ───────────────────────── */
+.screen-footer {
+  flex: 0 0 auto;
+  padding: 12px 16px 16px;
+  background: #ffffff;
+  border-top: 1px solid #eaecef;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── 공통 버튼 ────────────────────────────── */
+.btn {
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-primary {
+  background: #3182f6;
+  color: #ffffff;
+}
+.btn-primary:active {
+  background: #1b64da;
+}
+
+.btn-secondary {
+  background: #eef2f6;
+  color: #333;
+}
+.btn-secondary:active {
+  background: #dde3ea;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #3182f6;
+}
+
+/* ── 카드/플레이스홀더 ───────────────────── */
+.placeholder {
+  background: #ffffff;
+  border: 1px dashed #c8ced6;
+  border-radius: 12px;
+  padding: 24px 16px;
+  color: #8a92a0;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 4px 0 8px;
+}
+
+/* ── 메뉴 그리드 (메인 화면) ─────────────── */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.menu-tile {
+  aspect-ratio: 1 / 1;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #eaecef;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.menu-tile:active {
+  transform: scale(0.97);
+  box-shadow: 0 0 0 2px #3182f6 inset;
+}
+
+.menu-tile .icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #eaf2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #3182f6;
+}
+
+.menu-tile .label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* ── 폼/입력 (placeholder) ───────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.field label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.field input {
+  height: 48px;
+  border: 1px solid #d8dde3;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 16px;
+  background: #ffffff;
+  outline: none;
+}
+
+.field input:focus {
+  border-color: #3182f6;
+}
+
+/* 페이지 목록 빈 상태 (/pdk-init 직후 화면 0개) */
+.nav-empty-row code {
+  background: #f1f3f5;
+  border-radius: 5px;
+  padding: 1px 6px;
+  color: #3182f6;
+  font-size: 11px;
+}
+
+/* ─────────────────────────────────────────────
+   PDK 스켈레톤 UI (/pdk-wireframe 산출물 기본 스타일)
+   ※ W-3 규칙: 스켈레톤 루트는 .device-screen 의 직속 단일 자식 .pdk-screen 이어야 한다.
+     (Description hover dimming이 device-screen.firstElementChild 를 화면 래퍼로 가정)
+   ───────────────────────────────────────────── */
+.pdk-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  background: #ffffff;
+}
+/* 회색 블록/라인/박스 — 시각 스타일은 미니멀 (실제 디자인은 Figma에서) */
+.pdk-skeleton,
+.pdk-sk-box { background: #e9ecef; border-radius: 12px; }
+.pdk-sk-line { height: 14px; border-radius: 7px; background: #eef0f2; }
+.pdk-sk-title { height: 36px; border-radius: 10px; background: #e9ecef; }
+.pdk-sk-hero { flex: 1; min-height: 120px; border-radius: 18px; background: #eef0f2; }
+/* 스켈레톤 버튼 자리 (실제 동작/디자인은 이후 단계) */
+.pdk-sk-btn {
+  height: 56px; border: none; border-radius: 14px;
+  background: #3182f6; color: #fff; font-size: 18px; font-weight: 700; cursor: pointer;
+}

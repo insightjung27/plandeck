@@ -1,0 +1,12 @@
+# PlanDeck 역할 레인 — 보호 경로는 운영자(키트 주인) 리뷰 필수
+# (팀원은 config/ 와 각 프로젝트 화면만 편집, 엔진·커맨드·템플릿은 열람만)
+
+# 엔진·커맨드·템플릿 = 운영자 소유 (PR 시 리뷰 강제)
+/engine/            @insightjung27
+/.claude/commands/  @insightjung27
+/templates/         @insightjung27
+/.github/           @insightjung27
+
+# config 와 프로젝트 콘텐츠는 팀원이 편집 (기본 소유자 없음 = 자유 PR)
+# 필요 시 프로젝트별로 소유자를 지정하세요:
+# /projects/order-pay/   @planner-handle

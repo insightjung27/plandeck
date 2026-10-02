@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결제 (SCR-PAY-001)</title>
+  <link rel="stylesheet" href="../../engine/common.css" />
+  <link rel="stylesheet" href="../../engine/plandeck.css" />
+</head>
+<body>
+  <div class="device-stage"><div class="device-mockup"><div class="device-frame"><div class="device-screen">
+    <div class="pd-screen">
+      <div class="pd-sk-header"><button class="pd-back pd-sk-chip" aria-label="뒤로가기" style="width:36px;height:36px;border:none">‹</button><div class="pd-sk-title" style="flex:1;max-width:120px">결제</div></div>
+      <div class="pd-sk-line w-50" style="height:18px">결제수단</div>
+      <div class="pd-method pd-sk-list" style="gap:10px">
+        <div class="pd-sk-row" style="display:flex;align-items:center;padding:0 14px">카드</div>
+        <div class="pd-sk-row" style="display:flex;align-items:center;padding:0 14px">토스페이</div>
+      </div>
+      <div style="flex:1"></div>
+      <div class="pd-sk-box" style="min-height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px"><span>결제 금액</span><b>12,900원</b></div>
+      <button class="pd-btn-confirm pd-sk-btn">결제하기</button>
+    </div>
+  </div></div><div class="device-stand"></div><div class="device-base"></div></div></div>
+  <script>window.PLANDECK_CURRENT='m-pay.html';window.PDK_CURRENT=window.PLANDECK_CURRENT;</script>
+  <script>
+    (function(){var v=Date.now();var files=['config/devices.js','config/project.js','config/entities.js','config/prd.js','config/screens.js','../../engine/common.js','../../engine/plandeck.js'];
+    for(var i=0;i<files.length;i++)document.write('<scr'+'ipt src="'+files[i]+'?_='+v+'"></scr'+'ipt>');})();
+  </script>
+</body>
+</html>
