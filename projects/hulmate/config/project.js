@@ -10,6 +10,7 @@ window.PLANDECK_PROJECT = {
     { key: 'app',   device: 'mobile',  label: '교인앱(모바일)' },
     { key: 'site',  device: 'mobile',  label: '공개홈(모바일)' },
     { key: 'admin', device: 'desktop', label: '관리자콘솔(PC웹)' },
+    { key: 'super', device: 'desktop', label: '슈퍼관리자(PC웹)' },
   ],
   constitution: {
     auth: '교회별 세션(테넌트 격리). 관리자=역할기반(RBAC). 주민번호 등 민감정보=service_role 전용 암호화·마스킹(PIPA 내장)',

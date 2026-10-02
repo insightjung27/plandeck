@@ -1,4 +1,4 @@
-/* 훌메이트 — 소규모 교회 화이트라벨 PWA. 교인앱·공개홈·관리자콘솔 핵심 8화면(파일럿 범위).
+/* 훌메이트 — 소규모 교회 화이트라벨 PWA. 전체 페이지 와이어프레임(4서피스 26화면).
  * 기본은 흑백 와이어프레임(화면설계서 수준). 디자인은 Figma 연동(옵션)으로 승격. */
 window.PLANDECK_SCREENS = [
   {
@@ -8,118 +8,216 @@ window.PLANDECK_SCREENS = [
       {
         id: 'SCR-APP-001', label: '교인앱 홈', href: 'a-home.html',
         surface: 'app', entry: true, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
-        context: '교인앱 첫 화면. 이번 주 설교·공지·바로가기(헌금안내·예배). 교회별 브랜드(화이트라벨)로 표시.',
+        context: '교인앱 첫 화면. 이번 주 설교·공지·바로가기. 교회별 브랜드(화이트라벨)로 표시.',
         components: [
-          { role: '.pd-appbar', kind: 'title', label: '앱바(교회명/로고)' },
-          { role: '.pd-live', kind: 'banner', label: '주일 라이브 배너(라이브 시)', action: { on: 'click', do: 'go:SCR-APP-002' } },
-          { role: '.pd-sermon-card', kind: 'card', label: '이번 주 설교 카드', action: { on: 'click', do: 'go:SCR-APP-002' } },
-          { role: '.pd-notice', kind: 'list', label: '공지 목록' },
-          { role: '.pd-quick', kind: 'list', label: '바로가기(헌금안내·예배)', action: { on: 'click', do: 'go:SCR-APP-003' } },
-          { role: '.pd-tabbar', kind: 'tabbar', label: '하단 탭(홈·설교·헌금·마이)', action: { on: 'click', do: 'go:SCR-APP-004' } },
+          { role: '.pd-live', kind: 'banner', label: '주일 라이브 배너', action: { on: 'click', do: 'go:SCR-APP-002' } },
+          { role: '.pd-sermon-card', kind: 'card', label: '이번 주 설교', action: { on: 'click', do: 'go:SCR-APP-002' } },
+          { role: '.pd-notice', kind: 'list', label: '공지 목록', action: { on: 'click', do: 'go:SCR-APP-009' } },
+          { role: '.pd-quick', kind: 'list', label: '바로가기', action: { on: 'click', do: 'go:SCR-APP-003' } },
+          { role: '.pd-tabbar', kind: 'tabbar', label: '하단 탭', action: { on: 'click', do: 'go:SCR-APP-004' } },
         ],
         description: [
-          { text: '주일 라이브 배너 — 라이브 중이면 노출, 탭하면 설교(SCR-APP-002)', target: '.pd-live' },
-          { text: '이번 주 설교 카드 — 탭하면 설교 재생(SCR-APP-002)', target: '.pd-sermon-card' },
+          { text: '주일 라이브 배너 — 탭하면 설교(SCR-APP-002)', target: '.pd-live' },
+          { text: '이번 주 설교 — 탭하면 재생(SCR-APP-002)', target: '.pd-sermon-card' },
           { text: '바로가기 — 헌금안내(SCR-APP-003)·예배', target: '.pd-quick' },
           { text: '하단 탭 — 홈·설교·헌금·마이(SCR-APP-004)', target: '.pd-tabbar' },
         ],
         cases: [
-          { state: '초기', trigger: '진입', guard: '', result: '홈 로딩(테넌트 테마 주입)', message: '', target: '.pd-appbar' },
-          { state: '로딩', trigger: '진입', guard: '', result: '스켈레톤', message: '', api: { endpoint: 'GET /app/home', status: 200 } },
-          { state: '정상', trigger: '응답', guard: '설교 1건 이상', result: '설교·공지·바로가기 표시', message: '', target: '.pd-sermon-card' },
-          { state: '빈데이터', trigger: '응답', guard: '설교 0건', result: '준비중 안내', message: '아직 등록된 설교가 없어요', placement: 'inline', target: '.pd-sermon-card' },
-          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '공개 콘텐츠만 + 로그인 유도', message: '로그인하면 더 많은 기능을 쓸 수 있어요', placement: 'inline', target: '.pd-tabbar' },
+          { state: '초기', trigger: '진입', guard: '', result: '홈 로딩(테넌트 테마)', message: '' },
+          { state: '정상', trigger: '응답', guard: '설교 1건+', result: '설교·공지·바로가기', message: '', target: '.pd-sermon-card', api: { endpoint: 'GET /app/home', status: 200 } },
+          { state: '빈데이터', trigger: '응답', guard: '설교 0건', result: '준비중', message: '아직 등록된 설교가 없어요', placement: 'inline', target: '.pd-sermon-card' },
+          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '공개 콘텐츠 + 로그인 유도', message: '로그인하면 더 많은 기능을 쓸 수 있어요', placement: 'inline' },
         ],
-        interface: {
-          reads: [{ id: 'appHome', intent: '교인앱 홈 집계 조회', method: 'GET', path: '/app/home', response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-card', errors: [{ status: 500, when: '서버 오류', message: '정보를 불러오지 못했어요' }] }],
-          writes: [], events: [],
-        },
-        flow: { to: [{ screen: 'SCR-APP-002', via: '설교', trigger: '.pd-sermon-card' }, { screen: 'SCR-APP-003', via: '헌금안내', trigger: '.pd-quick' }, { screen: 'SCR-APP-004', via: '마이', trigger: '.pd-tabbar' }] },
+        interface: { reads: [{ id: 'appHome', intent: '홈 집계', method: 'GET', path: '/app/home', response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-card', errors: [{ status: 500, when: '서버 오류', message: '정보를 불러오지 못했어요' }] }], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-APP-002', via: '설교', trigger: '.pd-sermon-card' }, { screen: 'SCR-APP-003', via: '헌금안내', trigger: '.pd-quick' }, { screen: 'SCR-APP-009', via: '공지', trigger: '.pd-notice' }, { screen: 'SCR-APP-004', via: '마이', trigger: '.pd-tabbar' }] },
       },
       // ── 2. 설교 ──
       {
         id: 'SCR-APP-002', label: '설교', href: 'a-sermon.html',
         surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
-        context: '설교 목록·검색·재생. 유튜브 URL 연동 재생, 주일 라이브 노출.',
+        context: '설교 목록·검색·재생. 유튜브 연동, 주일 라이브.',
         components: [
           { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
-          { role: '.pd-search', kind: 'button', label: '설교 검색' },
-          { role: '.pd-player', kind: 'hero', label: '영상 플레이어(유튜브)' },
-          { role: '.pd-sermon-list', kind: 'list', label: '설교 목록(시리즈·날짜)' },
+          { role: '.pd-player', kind: 'hero', label: '영상 플레이어' },
+          { role: '.pd-sermon-list', kind: 'list', label: '설교 목록' },
         ],
         description: [
-          { text: '영상 플레이어 — 유튜브 URL 파싱해 재생', target: '.pd-player' },
-          { text: '설교 목록 — 시리즈·날짜 필터, 탭하면 재생', target: '.pd-sermon-list' },
-          { text: '뒤로 — 홈(SCR-APP-001)', target: '.pd-back' },
+          { text: '영상 플레이어 — 유튜브 재생', target: '.pd-player' },
+          { text: '설교 목록 — 시리즈·날짜', target: '.pd-sermon-list' },
         ],
         cases: [
-          { state: '정상', trigger: '선택', guard: 'videoUrl 있음', result: '영상 재생', message: '', target: '.pd-player', api: { endpoint: 'GET /app/sermons', status: 200 } },
-          { state: '빈데이터', trigger: '응답', guard: '설교 0건', result: '준비중', message: '설교 영상 준비중이에요', placement: 'full-page', target: '.pd-sermon-list' },
-          { state: '에러', trigger: '재생', guard: 'videoUrl 깨짐/비공개', result: '대체 안내', message: '영상을 재생할 수 없어요', placement: 'inline', target: '.pd-player' },
-          { state: '엣지', trigger: '스크롤', guard: '다음 페이지', result: '무한스크롤', message: '', target: '.pd-sermon-list' },
+          { state: '정상', trigger: '선택', guard: 'videoUrl 있음', result: '재생', message: '', target: '.pd-player', api: { endpoint: 'GET /app/sermons', status: 200 } },
+          { state: '빈데이터', trigger: '응답', guard: '0건', result: '준비중', message: '설교 영상 준비중이에요', placement: 'full-page' },
+          { state: '에러', trigger: '재생', guard: '비공개/깨짐', result: '대체 안내', message: '영상을 재생할 수 없어요', placement: 'inline', target: '.pd-player' },
         ],
-        interface: {
-          reads: [{ id: 'listSermons', intent: '설교 목록', method: 'GET', path: '/app/sermons', params: [{ in: 'query', name: 'series', type: 'string', required: false }, { in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-list' }],
-          writes: [], events: [],
-        },
+        interface: { reads: [{ id: 'listSermons', intent: '설교 목록', method: 'GET', path: '/app/sermons', params: [{ in: 'query', name: 'series', type: 'string', required: false }], response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-list' }], writes: [], events: [] },
         flow: { to: [] },
       },
       // ── 3. 헌금 안내 ──
       {
         id: 'SCR-APP-003', label: '헌금 안내', href: 'a-giving.html',
         surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-003'],
-        context: '헌금 종류·계좌 안내(파일럿=안내전용, 실 결제 없음). 계좌 미제공 시 "교회 확인 후 게재".',
+        context: '헌금 종류·계좌 안내(안내전용). 계좌 미제공 시 "교회 확인 후 게재".',
         components: [
           { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
           { role: '.pd-kinds', kind: 'list', label: '헌금 종류' },
           { role: '.pd-account', kind: 'card', label: '계좌 안내(복사)' },
-          { role: '.pd-notice-guide', kind: 'banner', label: '안내전용 고지' },
         ],
         description: [
-          { text: '헌금 종류 — 주정/십일조/감사 등', target: '.pd-kinds' },
-          { text: '계좌 안내 — 복사 버튼. 미제공 시 "교회 확인 후 게재"', target: '.pd-account' },
-          { text: '안내전용 고지 — 앱 내 실 결제 없음', target: '.pd-notice-guide' },
+          { text: '헌금 종류 — 주정/십일조/감사', target: '.pd-kinds' },
+          { text: '계좌 안내 — 복사. 미제공 시 "교회 확인 후 게재"', target: '.pd-account' },
         ],
         cases: [
-          { state: '정상', trigger: '진입', guard: '계좌 등록됨', result: '종류·계좌 표시', message: '', target: '.pd-account', api: { endpoint: 'GET /app/offering', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '계좌 미등록', result: '준비중 안내', message: '헌금 계좌는 교회 확인 후 게재됩니다', placement: 'inline', target: '.pd-account' },
-          { state: '정상', trigger: '계좌 복사', guard: '', result: '클립보드 복사', message: '계좌번호를 복사했어요', placement: 'toast', target: '.pd-account' },
+          { state: '정상', trigger: '진입', guard: '계좌 등록', result: '종류·계좌', message: '', target: '.pd-account', api: { endpoint: 'GET /app/offering', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '계좌 미등록', result: '준비중', message: '헌금 계좌는 교회 확인 후 게재됩니다', placement: 'inline', target: '.pd-account' },
+          { state: '정상', trigger: '복사', guard: '', result: '클립보드', message: '계좌번호를 복사했어요', placement: 'toast', target: '.pd-account' },
         ],
-        interface: {
-          reads: [{ id: 'getOffering', intent: '헌금 안내 조회', method: 'GET', path: '/app/offering', response: '{entities.Offering}', auth: 'Bearer(선택)', target: '.pd-account' }],
-          writes: [], events: [],
-        },
+        interface: { reads: [{ id: 'getOffering', intent: '헌금 안내', method: 'GET', path: '/app/offering', response: '{entities.Offering}', auth: 'Bearer(선택)', target: '.pd-account' }], writes: [], events: [] },
         flow: { to: [] },
       },
       // ── 4. 마이/로그인 ──
       {
         id: 'SCR-APP-004', label: '마이', href: 'a-my.html',
         surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
-        context: '로그인/내 정보. 비로그인=로그인 폼, 로그인=프로필·설정. 가입은 승인대기 흐름.',
+        context: '로그인/내 정보. 가입은 승인대기 흐름.',
         components: [
-          { role: '.pd-login', kind: 'form', label: '로그인 폼(아이디·비밀번호)' },
+          { role: '.pd-login', kind: 'form', label: '로그인 폼' },
           { role: '.pd-signup', kind: 'button', label: '회원가입(승인대기)' },
-          { role: '.pd-profile', kind: 'card', label: '내 프로필(로그인 시)' },
-          { role: '.pd-logout', kind: 'button', label: '로그아웃' },
+          { role: '.pd-profile', kind: 'card', label: '내 프로필' },
         ],
         description: [
-          { text: '로그인 폼 — 교회별 세션(테넌트 격리)', target: '.pd-login' },
-          { text: '회원가입 — 가입 시 승인대기 상태', target: '.pd-signup' },
-          { text: '내 프로필 — 로그인 시 이름·역할·부서', target: '.pd-profile' },
+          { text: '로그인 폼 — 교회별 세션', target: '.pd-login' },
+          { text: '회원가입 — 승인대기', target: '.pd-signup' },
+          { text: '프로필 — 이름·역할·부서', target: '.pd-profile' },
         ],
         cases: [
           { state: '초기', trigger: '진입', guard: '비로그인', result: '로그인 폼', message: '', target: '.pd-login' },
-          { state: '정상', trigger: '로그인', guard: '승인 성도', result: '프로필 표시', message: '', target: '.pd-profile', api: { endpoint: 'POST /auth/login', status: 200 } },
-          { state: '권한없음', trigger: '로그인', guard: '승인대기', result: '대기 안내', message: '가입 승인 대기 중이에요. 관리자 승인 후 이용 가능해요', placement: 'inline', target: '.pd-login' },
-          { state: '필수누락', trigger: '로그인', guard: '아이디/비번 미입력', result: '제출 막음', message: '아이디와 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-login', priority: 'P1' },
-          { state: '형식오류', trigger: '로그인', guard: '비번 규칙 위반', result: '제출 막음', message: '비밀번호 형식을 확인해 주세요', placement: 'inline', target: '.pd-login', priority: 'P2' },
-          { state: '중복충돌', trigger: '회원가입', guard: '이미 가입된 아이디', result: '가입 막음', message: '이미 가입된 아이디예요', placement: 'inline', target: '.pd-signup', priority: 'P2' },
-          { state: '유효', trigger: '로그인', guard: '정상 자격', result: '세션 생성', message: '', target: '.pd-profile', priority: 'P0' },
+          { state: '정상', trigger: '로그인', guard: '승인 성도', result: '프로필', message: '', target: '.pd-profile', api: { endpoint: 'POST /auth/login', status: 200 } },
+          { state: '권한없음', trigger: '로그인', guard: '승인대기', result: '대기 안내', message: '승인 대기 중이에요', placement: 'inline', target: '.pd-login' },
+          { state: '필수누락', trigger: '로그인', guard: '미입력', result: '막음', message: '아이디와 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-login', priority: 'P1' },
+          { state: '형식오류', trigger: '로그인', guard: '비번 규칙', result: '막음', message: '비밀번호 형식을 확인해 주세요', placement: 'inline', priority: 'P2' },
+          { state: '중복충돌', trigger: '회원가입', guard: '중복 아이디', result: '막음', message: '이미 가입된 아이디예요', placement: 'inline', target: '.pd-signup', priority: 'P2' },
+          { state: '유효', trigger: '로그인', guard: '정상', result: '세션 생성', message: '', priority: 'P0' },
         ],
-        interface: {
-          reads: [], events: [{ name: 'member.signup.requested', when: '회원가입 시(관리자 승인 큐)', payload: '{entities.Member}' }],
-          writes: [{ id: 'login', intent: '교회별 로그인', method: 'POST', path: '/auth/login', request: '{entities.Member}', response: '{entities.Member}', errors: [{ status: 401, when: '자격 불일치', message: '아이디 또는 비밀번호가 올라요' }, { status: 403, when: '승인대기', message: '승인 대기 중' }], auth: 'None', target: '.pd-login' }],
-        },
+        interface: { reads: [], writes: [{ id: 'login', intent: '로그인', method: 'POST', path: '/auth/login', request: '{entities.Member}', response: '{entities.Member}', errors: [{ status: 401, when: '자격 불일치', message: '아이디 또는 비밀번호를 확인해 주세요' }, { status: 403, when: '승인대기' }], auth: 'None', target: '.pd-login' }], events: [{ name: 'member.signup.requested', when: '회원가입 시', payload: '{entities.Member}' }] },
+        flow: { to: [] },
+      },
+      // ── 5. 커뮤니티(나눔터) ──
+      {
+        id: 'SCR-APP-005', label: '커뮤니티', href: 'a-community.html',
+        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-011'],
+        context: '교인 간 나눔터(기도제목·간증·소그룹 게시). 작성·댓글.',
+        components: [
+          { role: '.pd-feed', kind: 'list', label: '게시 피드' },
+          { role: '.pd-write', kind: 'button', label: '글쓰기' },
+        ],
+        description: [
+          { text: '게시 피드 — 기도제목·간증·소그룹', target: '.pd-feed' },
+          { text: '글쓰기 — 로그인 성도만', target: '.pd-write' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '피드 표시', message: '', target: '.pd-feed', api: { endpoint: 'GET /app/community', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '0건', result: '첫 글 유도', message: '첫 나눔을 남겨보세요', placement: 'inline', target: '.pd-feed' },
+          { state: '권한없음', trigger: '글쓰기', guard: '비로그인', result: '로그인 유도', message: '로그인 후 작성할 수 있어요', placement: 'toast', target: '.pd-write' },
+        ],
+        interface: { reads: [{ id: 'listPosts', intent: '커뮤니티 피드', method: 'GET', path: '/app/community', response: '{entities.Member}[]', auth: 'Bearer', target: '.pd-feed' }], writes: [{ id: 'writePost', intent: '글 작성', method: 'POST', path: '/app/community', auth: 'Bearer', target: '.pd-write' }], events: [] },
+        flow: { to: [] },
+      },
+      // ── 6. 아나바다(중고나눔) ──
+      {
+        id: 'SCR-APP-006', label: '아나바다', href: 'a-market.html',
+        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-012'],
+        context: '성도 간 중고 나눔(무료·나눔). 폐쇄몰·성도매장과 구분(성도 간 중고).',
+        components: [
+          { role: '.pd-item-grid', kind: 'list', label: '나눔 물품 그리드' },
+          { role: '.pd-register', kind: 'button', label: '물품 등록' },
+        ],
+        description: [
+          { text: '나눔 물품 — 사진·상태·나눔여부', target: '.pd-item-grid' },
+          { text: '물품 등록 — 성도만', target: '.pd-register' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '물품 그리드', message: '', target: '.pd-item-grid', api: { endpoint: 'GET /app/market', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '0건', result: '등록 유도', message: '아직 등록된 나눔이 없어요', placement: 'inline', target: '.pd-item-grid' },
+        ],
+        interface: { reads: [{ id: 'listItems', intent: '나눔 물품', method: 'GET', path: '/app/market', auth: 'Bearer', target: '.pd-item-grid' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 7. 교회학교/교육 ──
+      {
+        id: 'SCR-APP-007', label: '교회학교', href: 'a-edu.html',
+        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-013'],
+        context: '교회학교(부서별 공지·일정·자료). 유치/아동/중고등/청년.',
+        components: [
+          { role: '.pd-dept-tabs', kind: 'segment', label: '부서 탭' },
+          { role: '.pd-edu-list', kind: 'list', label: '부서 공지·일정' },
+        ],
+        description: [
+          { text: '부서 탭 — 유치/아동/중고등/청년', target: '.pd-dept-tabs' },
+          { text: '공지·일정 — 부서별', target: '.pd-edu-list' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '부서 콘텐츠', message: '', target: '.pd-edu-list', api: { endpoint: 'GET /app/education', status: 200 } },
+          { state: '빈데이터', trigger: '부서 전환', guard: '0건', result: '준비중', message: '등록된 내용이 없어요', placement: 'inline', target: '.pd-edu-list' },
+        ],
+        interface: { reads: [{ id: 'eduDept', intent: '부서 콘텐츠', method: 'GET', path: '/app/education', params: [{ in: 'query', name: 'dept', type: 'string', required: true }], auth: 'Bearer', target: '.pd-edu-list' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 8. 주보 ──
+      {
+        id: 'SCR-APP-008', label: '주보', href: 'a-bulletin.html',
+        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-014'],
+        context: '주간 주보 열람(예배 순서·광고·헌금·일정). 관리자 발행분.',
+        components: [
+          { role: '.pd-bulletin-view', kind: 'hero', label: '주보 본문' },
+          { role: '.pd-week-nav', kind: 'segment', label: '주차 이동' },
+        ],
+        description: [
+          { text: '주보 본문 — 예배 순서·광고', target: '.pd-bulletin-view' },
+          { text: '주차 이동 — 지난 주보', target: '.pd-week-nav' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '발행됨', result: '주보 표시', message: '', target: '.pd-bulletin-view', api: { endpoint: 'GET /app/bulletin', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '미발행', result: '준비중', message: '이번 주 주보가 아직 발행되지 않았어요', placement: 'full-page', target: '.pd-bulletin-view' },
+        ],
+        interface: { reads: [{ id: 'getBulletin', intent: '주보 조회', method: 'GET', path: '/app/bulletin', params: [{ in: 'query', name: 'week', type: 'string', required: false }], auth: 'Bearer(선택)', target: '.pd-bulletin-view' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 9. 공지 상세 ──
+      {
+        id: 'SCR-APP-009', label: '공지 상세', href: 'a-notice.html',
+        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-001'],
+        context: '공지 상세 본문. 첨부·이미지·링크.',
+        components: [
+          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
+          { role: '.pd-notice-body', kind: 'card', label: '공지 본문' },
+        ],
+        description: [
+          { text: '공지 본문 — 제목·일시·내용', target: '.pd-notice-body' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '공지 표시', message: '', target: '.pd-notice-body', api: { endpoint: 'GET /app/notices/{id}', status: 200 } },
+          { state: '에러', trigger: '진입', guard: '삭제됨', result: '목록으로', message: '삭제된 공지예요', placement: 'full-page' },
+        ],
+        interface: { reads: [{ id: 'getNotice', intent: '공지 상세', method: 'GET', path: '/app/notices/{id}', auth: 'Bearer(선택)', target: '.pd-notice-body' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 10. 성도 매장 ──
+      {
+        id: 'SCR-APP-010', label: '성도 매장', href: 'a-stores.html',
+        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-012'],
+        context: '성도 생업(가게) 홍보 디렉터리. 등록→관리자 승인→노출.',
+        components: [
+          { role: '.pd-store-list', kind: 'list', label: '성도 매장 목록' },
+        ],
+        description: [
+          { text: '성도 매장 — 업종·연락처·소개(승인분만)', target: '.pd-store-list' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '승인 1건+', result: '매장 목록', message: '', target: '.pd-store-list', api: { endpoint: 'GET /app/stores', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '0건', result: '등록 유도', message: '등록된 성도 매장이 없어요', placement: 'inline', target: '.pd-store-list' },
+        ],
+        interface: { reads: [{ id: 'listStores', intent: '성도 매장', method: 'GET', path: '/app/stores', auth: 'Bearer', target: '.pd-store-list' }], writes: [], events: [] },
         flow: { to: [] },
       },
     ],
@@ -127,58 +225,161 @@ window.PLANDECK_SCREENS = [
   {
     category: '공개 홈페이지 (모바일)',
     pages: [
-      // ── 5. 공개 환영형 홈 ──
+      // ── 공개 환영형 홈 ──
       {
         id: 'SCR-SITE-001', label: '공개 환영형 홈', href: 's-home.html',
         surface: 'site', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
-        context: '방문자용 공개 홈(환영형 템플릿). 히어로·이번 주 말씀·예배안내·오시는길 진입. 화이트라벨 테넌트별.',
+        context: '방문자용 공개 홈(환영형). 히어로·말씀·예배안내·방문 허브.',
         components: [
-          { role: '.pd-hero', kind: 'hero', label: '히어로(교회 이미지·비전 문구)' },
-          { role: '.pd-week-word', kind: 'card', label: '이번 주 말씀' },
+          { role: '.pd-hero', kind: 'hero', label: '히어로(교회 이미지·비전)' },
           { role: '.pd-cta-worship', kind: 'button', label: '예배 안내 보기', action: { on: 'click', do: 'go:SCR-SITE-002' } },
-          { role: '.pd-first-visit', kind: 'card', label: '처음 오셨나요(방문 허브)' },
-          { role: '.pd-gnb-site', kind: 'list', label: '상단 메뉴(교회소개·예배·소식)' },
+          { role: '.pd-first-visit', kind: 'card', label: '처음 오셨나요(방문 허브)', action: { on: 'click', do: 'go:SCR-SITE-007' } },
         ],
         description: [
-          { text: '히어로 — 교회 이미지·비전("온 땅에 천국 복음을 전하는 교회")', target: '.pd-hero' },
-          { text: '예배 안내 보기 — 예배안내(SCR-SITE-002)', target: '.pd-cta-worship' },
-          { text: '처음 오셨나요 — 방문 허브(오시는길·새가족)', target: '.pd-first-visit' },
+          { text: '히어로 — 교회 이미지·비전', target: '.pd-hero' },
+          { text: '예배 안내 보기 — SCR-SITE-002', target: '.pd-cta-worship' },
+          { text: '처음 오셨나요 — 새가족(SCR-SITE-007)', target: '.pd-first-visit' },
         ],
         cases: [
-          { state: '정상', trigger: '진입', guard: 'homeConcept=welcome', result: '환영형 홈 렌더(테넌트 콘텐츠)', message: '', target: '.pd-hero', api: { endpoint: 'GET /site/home', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '콘텐츠 미제공', result: '"교회 확인 후 게재" placeholder', message: '', placement: 'inline', target: '.pd-week-word' },
-          { state: '권한없음', trigger: '진입', guard: 'homeConcept 미설정 테넌트', result: '404', message: '', placement: 'full-page' },
+          { state: '정상', trigger: '진입', guard: 'homeConcept=welcome', result: '환영형 홈', message: '', target: '.pd-hero', api: { endpoint: 'GET /site/home', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '콘텐츠 미제공', result: '교회 확인 후 게재', message: '', placement: 'inline' },
+          { state: '권한없음', trigger: '진입', guard: 'homeConcept 미설정', result: '404', message: '', placement: 'full-page' },
         ],
-        interface: {
-          reads: [{ id: 'siteHome', intent: '공개 홈 조회', method: 'GET', path: '/site/home', params: [{ in: 'query', name: 'tenant', type: 'string', required: true, example: 'eunsung' }], response: '{entities.Church}', auth: 'None', target: '.pd-hero' }],
-          writes: [], events: [],
-        },
-        flow: { to: [{ screen: 'SCR-SITE-002', via: '예배 안내', trigger: '.pd-cta-worship' }] },
+        interface: { reads: [{ id: 'siteHome', intent: '공개 홈', method: 'GET', path: '/site/home', params: [{ in: 'query', name: 'tenant', type: 'string', required: true, example: 'eunsung' }], response: '{entities.Church}', auth: 'None', target: '.pd-hero' }], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-SITE-002', via: '예배 안내', trigger: '.pd-cta-worship' }, { screen: 'SCR-SITE-007', via: '처음 오셨나요', trigger: '.pd-first-visit' }] },
       },
-      // ── 6. 예배 안내 ──
+      // ── 예배 안내 ──
       {
         id: 'SCR-SITE-002', label: '예배 안내', href: 's-worship.html',
         surface: 'site', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
-        context: '예배 시간·부서·오시는 길. 방문자가 방문 전 확인.',
+        context: '예배 시간·부서·오시는 길.',
         components: [
           { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SITE-001' } },
           { role: '.pd-worship-table', kind: 'table', label: '예배 시간표' },
-          { role: '.pd-depts', kind: 'list', label: '부서 안내' },
-          { role: '.pd-map', kind: 'hero', label: '오시는 길(지도)' },
+          { role: '.pd-map', kind: 'hero', label: '오시는 길', action: { on: 'click', do: 'go:SCR-SITE-005' } },
         ],
         description: [
-          { text: '예배 시간표 — 주일/청년/수요/금요 등', target: '.pd-worship-table' },
-          { text: '오시는 길 — 주소·지도(복사)', target: '.pd-map' },
-          { text: '뒤로 — 공개 홈(SCR-SITE-001)', target: '.pd-back' },
+          { text: '예배 시간표 — 주일/청년/수요/금요', target: '.pd-worship-table' },
+          { text: '오시는 길 — 상세(SCR-SITE-005)', target: '.pd-map' },
         ],
         cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '시간표·지도 표시', message: '', target: '.pd-worship-table', api: { endpoint: 'GET /site/worship', status: 200 } },
-          { state: '정상', trigger: '주소 복사', guard: '', result: '클립보드 복사', message: '주소를 복사했어요', placement: 'toast', target: '.pd-map' },
+          { state: '정상', trigger: '진입', guard: '', result: '시간표·지도', message: '', target: '.pd-worship-table', api: { endpoint: 'GET /site/worship', status: 200 } },
         ],
-        interface: {
-          reads: [{ id: 'getWorship', intent: '예배 안내 조회', method: 'GET', path: '/site/worship', params: [{ in: 'query', name: 'tenant', type: 'string', required: true }], response: '{entities.Church}', auth: 'None', target: '.pd-worship-table' }],
-          writes: [], events: [],
-        },
+        interface: { reads: [{ id: 'getWorship', intent: '예배 안내', method: 'GET', path: '/site/worship', params: [{ in: 'query', name: 'tenant', type: 'string', required: true }], response: '{entities.Church}', auth: 'None', target: '.pd-worship-table' }], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-SITE-005', via: '오시는 길', trigger: '.pd-map' }] },
+      },
+      // ── 교회 소개(비전·연혁) ──
+      {
+        id: 'SCR-SITE-003', label: '교회 소개', href: 's-about.html',
+        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-015'],
+        context: '교회 비전·연혁·인사말. 미확보 콘텐츠는 "교회 확인 후 게재".',
+        components: [
+          { role: '.pd-vision', kind: 'card', label: '비전·인사말' },
+          { role: '.pd-history', kind: 'list', label: '연혁' },
+        ],
+        description: [
+          { text: '비전·인사말 — 교회 소개문', target: '.pd-vision' },
+          { text: '연혁 — 주요 연대', target: '.pd-history' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '등록됨', result: '소개 표시', message: '', target: '.pd-vision', api: { endpoint: 'GET /site/about', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '미제공', result: '준비중', message: '내용은 교회 확인 후 게재됩니다', placement: 'inline', target: '.pd-vision' },
+        ],
+        interface: { reads: [{ id: 'getAbout', intent: '교회 소개', method: 'GET', path: '/site/about', auth: 'None', target: '.pd-vision' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 섬기는 사람들(교역자) ──
+      {
+        id: 'SCR-SITE-004', label: '섬기는 사람들', href: 's-staff.html',
+        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-015'],
+        context: '교역자·중직자 소개(사진·직분·담당).',
+        components: [
+          { role: '.pd-staff-list', kind: 'list', label: '교역자 카드 목록' },
+        ],
+        description: [
+          { text: '교역자 — 담임·부교역자·직분(사진 미확보=준비중)', target: '.pd-staff-list' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '교역자 목록', message: '', target: '.pd-staff-list', api: { endpoint: 'GET /site/staff', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '사진 미확보', result: '아이콘 대체', message: '', placement: 'inline', target: '.pd-staff-list' },
+        ],
+        interface: { reads: [{ id: 'getStaff', intent: '교역자', method: 'GET', path: '/site/staff', auth: 'None', target: '.pd-staff-list' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 오시는 길 ──
+      {
+        id: 'SCR-SITE-005', label: '오시는 길', href: 's-location.html',
+        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-006'],
+        context: '주소·지도·대중교통·주차. 주소 복사.',
+        components: [
+          { role: '.pd-map-full', kind: 'hero', label: '지도' },
+          { role: '.pd-address', kind: 'card', label: '주소·교통·주차' },
+        ],
+        description: [
+          { text: '지도 — 구글/카카오 임베드', target: '.pd-map-full' },
+          { text: '주소·교통 — 복사', target: '.pd-address' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '지도·주소', message: '', target: '.pd-map-full', api: { endpoint: 'GET /site/location', status: 200 } },
+          { state: '정상', trigger: '주소 복사', guard: '', result: '클립보드', message: '주소를 복사했어요', placement: 'toast', target: '.pd-address' },
+        ],
+        interface: { reads: [{ id: 'getLocation', intent: '오시는 길', method: 'GET', path: '/site/location', auth: 'None', target: '.pd-address' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 설교·찬양(공개) ──
+      {
+        id: 'SCR-SITE-006', label: '설교·찬양', href: 's-sermons.html',
+        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-005'],
+        context: '공개 설교 목록(비로그인 열람). 시리즈·검색.',
+        components: [
+          { role: '.pd-public-sermons', kind: 'list', label: '공개 설교 목록' },
+        ],
+        description: [
+          { text: '공개 설교 — 비로그인도 열람', target: '.pd-public-sermons' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '설교 목록', message: '', target: '.pd-public-sermons', api: { endpoint: 'GET /site/sermons', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '0건', result: '준비중', message: '공개된 설교가 없어요', placement: 'inline', target: '.pd-public-sermons' },
+        ],
+        interface: { reads: [{ id: 'siteSermons', intent: '공개 설교', method: 'GET', path: '/site/sermons', auth: 'None', target: '.pd-public-sermons' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 새가족 안내 ──
+      {
+        id: 'SCR-SITE-007', label: '새가족 안내', href: 's-newcomer.html',
+        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-016'],
+        context: '처음 오신 분 안내(절차·등록·새가족 환영회). 개인정보 동의 기반 등록.',
+        components: [
+          { role: '.pd-steps', kind: 'list', label: '방문 절차' },
+          { role: '.pd-register-form', kind: 'form', label: '새가족 등록(선택)' },
+        ],
+        description: [
+          { text: '방문 절차 — 예배·새가족실·등록', target: '.pd-steps' },
+          { text: '새가족 등록 — 동의 기반(PIPA)', target: '.pd-register-form' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '절차·등록', message: '', target: '.pd-steps' },
+          { state: '필수누락', trigger: '등록', guard: '동의 미체크', result: '막음', message: '개인정보 수집 동의가 필요해요', placement: 'inline', target: '.pd-register-form', priority: 'P1' },
+        ],
+        interface: { reads: [], writes: [{ id: 'newcomer', intent: '새가족 등록', method: 'POST', path: '/site/newcomer', request: '{entities.Member}', errors: [{ status: 422, when: '동의 누락', message: '개인정보 동의 필요' }], auth: 'None', target: '.pd-register-form' }], events: [] },
+        flow: { to: [] },
+      },
+      // ── 교회 소식/주보(공개) ──
+      {
+        id: 'SCR-SITE-008', label: '교회 소식', href: 's-news.html',
+        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-015'],
+        context: '교회 소식·공개 주보·행사 안내.',
+        components: [
+          { role: '.pd-news-list', kind: 'list', label: '소식 목록' },
+        ],
+        description: [
+          { text: '소식 — 행사·주보·공지(공개분)', target: '.pd-news-list' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '소식 목록', message: '', target: '.pd-news-list', api: { endpoint: 'GET /site/news', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '0건', result: '준비중', message: '등록된 소식이 없어요', placement: 'inline', target: '.pd-news-list' },
+        ],
+        interface: { reads: [{ id: 'siteNews', intent: '교회 소식', method: 'GET', path: '/site/news', auth: 'None', target: '.pd-news-list' }], writes: [], events: [] },
         flow: { to: [] },
       },
     ],
@@ -186,59 +387,189 @@ window.PLANDECK_SCREENS = [
   {
     category: '관리자 콘솔 (PC웹)',
     pages: [
-      // ── 7. 관리자 대시보드 ──
+      // ── 관리자 대시보드 ──
       {
         id: 'SCR-ADM-001', label: '관리자 대시보드', href: 'c-dashboard.html',
         surface: 'admin', entry: true, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-007'],
-        context: '목회자/관리자가 성도·출석·헌금 현황을 한눈에. 좌측 메뉴로 각 관리로 이동.',
+        context: '성도·출석·헌금 현황. 좌측 메뉴로 각 관리로.',
         components: [
           { role: '.pd-nav-members', kind: 'button', label: '사이드바: 성도관리', action: { on: 'click', do: 'go:SCR-ADM-002' } },
-          { role: '.pd-kpi', kind: 'card', label: 'KPI(성도·이번주 출석·공지)' },
-          { role: '.pd-recent', kind: 'table', label: '최근 활동(가입 승인대기·설교 등록)' },
+          { role: '.pd-kpi', kind: 'card', label: 'KPI' },
+          { role: '.pd-recent', kind: 'table', label: '최근 활동' },
         ],
         description: [
-          { text: 'KPI — 전체 성도·이번 주 출석·대기 승인', target: '.pd-kpi' },
-          { text: '사이드바 "성도관리" → 교적(SCR-ADM-002)', target: '.pd-nav-members' },
-          { text: '최근 활동 — 가입 승인대기·설교 등록 등', target: '.pd-recent' },
+          { text: 'KPI — 성도·출석·대기 승인', target: '.pd-kpi' },
+          { text: '사이드바 "성도관리" → SCR-ADM-002', target: '.pd-nav-members' },
+          { text: '최근 활동 — 가입·설교 등록', target: '.pd-recent' },
         ],
         cases: [
-          { state: '정상', trigger: '진입', guard: '관리자', result: '대시보드 표시', message: '', target: '.pd-kpi', api: { endpoint: 'GET /admin/overview', status: 200 } },
+          { state: '정상', trigger: '진입', guard: '관리자', result: '대시보드', message: '', target: '.pd-kpi', api: { endpoint: 'GET /admin/overview', status: 200 } },
           { state: '권한없음', trigger: '진입', guard: '관리자 아님', result: '접근 거부', message: '관리자 권한이 필요해요', placement: 'full-page', api: { endpoint: 'GET /admin/overview', status: 403 } },
-          { state: '로딩', trigger: '진입', guard: '', result: '스켈레톤', message: '' },
         ],
-        interface: {
-          reads: [{ id: 'adminOverview', intent: '운영 현황 조회', method: 'GET', path: '/admin/overview', response: '{entities.Member}[]', auth: 'Bearer(관리자)', target: '.pd-kpi' }],
-          writes: [], events: [],
-        },
+        interface: { reads: [{ id: 'adminOverview', intent: '운영 현황', method: 'GET', path: '/admin/overview', response: '{entities.Member}[]', auth: 'Bearer(관리자)', target: '.pd-kpi' }], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-ADM-002', via: '성도관리', trigger: '.pd-nav-members' }] },
       },
-      // ── 8. 성도관리(교적) ──
+      // ── 성도관리(교적) ──
       {
         id: 'SCR-ADM-002', label: '성도관리(교적)', href: 'c-members.html',
         surface: 'admin', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
-        context: '성도 카드 원장(직분·성례·이력)·가입 승인·검색. 민감정보 마스킹(PIPA).',
+        context: '성도 카드 원장·가입 승인·검색. 민감정보 마스킹(PIPA).',
         components: [
           { role: '.pd-member-search', kind: 'button', label: '성도 검색/필터' },
-          { role: '.pd-member-table', kind: 'table', label: '성도 목록(이름·직분·부서·상태)' },
+          { role: '.pd-member-table', kind: 'table', label: '성도 목록' },
           { role: '.pd-btn-approve', kind: 'button', label: '가입 승인', action: { on: 'click', do: 'write:approveMember' } },
         ],
         description: [
-          { text: '성도 목록 — 이름(마스킹)·직분·부서·가입상태', target: '.pd-member-table' },
-          { text: '가입 승인 → approveMember(승인대기 성도)', target: '.pd-btn-approve' },
+          { text: '성도 목록 — 이름(마스킹)·직분·부서·상태', target: '.pd-member-table' },
+          { text: '가입 승인 → approveMember', target: '.pd-btn-approve' },
           { text: '검색/필터 — 이름·부서·직분·상태', target: '.pd-member-search' },
         ],
         cases: [
-          { state: '정상', trigger: '진입', guard: '성도 1명 이상', result: '목록 표시', message: '', target: '.pd-member-table', api: { endpoint: 'GET /admin/members', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '성도 0명', result: '빈 상태 + 초대 유도', message: '아직 등록된 성도가 없어요', placement: 'inline', target: '.pd-member-table' },
-          { state: '정상', trigger: '승인', guard: '승인대기 성도', result: '상태 active로·목록 갱신', message: '승인되었어요', placement: 'toast', target: '.pd-btn-approve', api: { endpoint: 'POST /admin/members/{id}/approve', status: 200 } },
-          { state: '권한없음', trigger: '민감정보 열람', guard: '권한 부족', result: '마스킹 유지·차단', message: '권한이 없어요', placement: 'inline', target: '.pd-member-table' },
+          { state: '정상', trigger: '진입', guard: '1명+', result: '목록', message: '', target: '.pd-member-table', api: { endpoint: 'GET /admin/members', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '0명', result: '초대 유도', message: '아직 등록된 성도가 없어요', placement: 'inline', target: '.pd-member-table' },
+          { state: '정상', trigger: '승인', guard: '승인대기', result: 'active·갱신', message: '승인되었어요', placement: 'toast', target: '.pd-btn-approve', api: { endpoint: 'POST /admin/members/{id}/approve', status: 200 } },
+          { state: '권한없음', trigger: '민감정보 열람', guard: '권한 부족', result: '마스킹·차단', message: '권한이 없어요', placement: 'inline', target: '.pd-member-table' },
         ],
-        interface: {
-          reads: [{ id: 'listMembers', intent: '성도 목록', method: 'GET', path: '/admin/members', params: [{ in: 'query', name: 'status', type: 'string', required: false, example: 'pending' }], response: '{entities.Member}[]', auth: 'Bearer(관리자)', target: '.pd-member-table' }],
-          writes: [{ id: 'approveMember', intent: '가입 승인', method: 'POST', path: '/admin/members/{id}/approve', response: '{entities.Member}', errors: [{ status: 409, when: '이미 처리됨', message: '이미 처리된 가입이에요' }], auth: 'Bearer(관리자)', target: '.pd-btn-approve' }],
-          events: [{ name: 'member.approved', when: '승인 시(성도 알림)', payload: '{entities.Member}' }],
-        },
+        interface: { reads: [{ id: 'listMembers', intent: '성도 목록', method: 'GET', path: '/admin/members', params: [{ in: 'query', name: 'status', type: 'string', required: false, example: 'pending' }], response: '{entities.Member}[]', auth: 'Bearer(관리자)', target: '.pd-member-table' }], writes: [{ id: 'approveMember', intent: '가입 승인', method: 'POST', path: '/admin/members/{id}/approve', response: '{entities.Member}', errors: [{ status: 409, when: '이미 처리', message: '이미 처리된 가입이에요' }], auth: 'Bearer(관리자)', target: '.pd-btn-approve' }], events: [{ name: 'member.approved', when: '승인 시', payload: '{entities.Member}' }] },
         flow: { to: [{ screen: 'SCR-ADM-001', via: '대시보드', kind: 'auto' }] },
+      },
+      // ── 출석 관리 ──
+      {
+        id: 'SCR-ADM-003', label: '출석 관리', href: 'c-attendance.html',
+        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-009'],
+        context: '예배별 출석 체크·통계·장기결석 자동감지. QR/수기/온라인 인정.',
+        components: [
+          { role: '.pd-session-select', kind: 'segment', label: '예배 세션 선택' },
+          { role: '.pd-attend-table', kind: 'table', label: '출석 체크 표' },
+          { role: '.pd-longabsent', kind: 'card', label: '장기결석 알림' },
+        ],
+        description: [
+          { text: '세션 선택 — 주일 1부/2부/수요 등', target: '.pd-session-select' },
+          { text: '출석 체크 — 성도별 체크(QR/수기)', target: '.pd-attend-table' },
+          { text: '장기결석 — 4주+ 미출석 자동감지', target: '.pd-longabsent' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '세션·체크표', message: '', target: '.pd-attend-table', api: { endpoint: 'GET /admin/attendance', status: 200 } },
+          { state: '정상', trigger: '체크', guard: '', result: '출석 저장', message: '출석이 저장됐어요', placement: 'toast', target: '.pd-attend-table', api: { endpoint: 'POST /admin/attendance', status: 200 } },
+          { state: '엣지', trigger: '자동감지', guard: '4주+ 미출석', result: '장기결석 목록', message: '', target: '.pd-longabsent' },
+        ],
+        interface: { reads: [{ id: 'getAttendance', intent: '출석 세션', method: 'GET', path: '/admin/attendance', response: '{entities.AttendanceSession}[]', auth: 'Bearer(관리자)', target: '.pd-attend-table' }], writes: [{ id: 'checkAttendance', intent: '출석 체크', method: 'POST', path: '/admin/attendance', request: '{entities.AttendanceSession}', auth: 'Bearer(관리자)', target: '.pd-attend-table' }], events: [] },
+        flow: { to: [] },
+      },
+      // ── 설교 관리 ──
+      {
+        id: 'SCR-ADM-004', label: '설교 관리', href: 'c-sermon.html',
+        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-002'],
+        context: '설교 등록(유튜브 URL)·주일 라이브 토글·게시 관리.',
+        components: [
+          { role: '.pd-sermon-form', kind: 'form', label: '설교 등록 폼' },
+          { role: '.pd-sermon-admin-table', kind: 'table', label: '설교 목록(게시 상태)' },
+          { role: '.pd-live-toggle', kind: 'toggle', label: '주일 라이브 토글' },
+        ],
+        description: [
+          { text: '설교 등록 — 제목·설교자·유튜브 URL·날짜', target: '.pd-sermon-form' },
+          { text: '주일 라이브 — 홈 노출 토글', target: '.pd-live-toggle' },
+          { text: '설교 목록 — 게시/숨김', target: '.pd-sermon-admin-table' },
+        ],
+        cases: [
+          { state: '정상', trigger: '등록', guard: 'URL 유효', result: '게시·앱 반영', message: '설교가 등록됐어요', placement: 'toast', target: '.pd-sermon-form', api: { endpoint: 'POST /admin/sermons', status: 201 } },
+          { state: '형식오류', trigger: '등록', guard: '유튜브 URL 아님', result: '막음', message: '올바른 유튜브 주소를 입력해 주세요', placement: 'inline', target: '.pd-sermon-form', priority: 'P1' },
+        ],
+        interface: { reads: [{ id: 'listSermonsAdmin', intent: '설교 목록(관리)', method: 'GET', path: '/admin/sermons', auth: 'Bearer(관리자)', target: '.pd-sermon-admin-table' }], writes: [{ id: 'createSermon', intent: '설교 등록', method: 'POST', path: '/admin/sermons', successStatus: 201, request: '{entities.Sermon}', response: '{entities.Sermon}', errors: [{ status: 422, when: 'URL 형식', message: '유튜브 주소를 확인해 주세요' }], auth: 'Bearer(관리자)', target: '.pd-sermon-form' }], events: [{ name: 'sermon.published', when: '게시 시', payload: '{entities.Sermon}' }] },
+        flow: { to: [] },
+      },
+      // ── 공지·배너 관리 ──
+      {
+        id: 'SCR-ADM-005', label: '공지·배너 관리', href: 'c-notice.html',
+        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-001'],
+        context: '공지·홈 배너 CRUD. 노출 기간·우선순위.',
+        components: [
+          { role: '.pd-notice-form', kind: 'form', label: '공지 작성' },
+          { role: '.pd-notice-admin-table', kind: 'table', label: '공지·배너 목록' },
+        ],
+        description: [
+          { text: '공지 작성 — 제목·내용·노출기간', target: '.pd-notice-form' },
+          { text: '목록 — 게시/숨김·배너 노출', target: '.pd-notice-admin-table' },
+        ],
+        cases: [
+          { state: '정상', trigger: '등록', guard: '', result: '게시·앱 반영', message: '공지가 등록됐어요', placement: 'toast', target: '.pd-notice-form', api: { endpoint: 'POST /admin/notices', status: 201 } },
+          { state: '필수누락', trigger: '등록', guard: '제목 없음', result: '막음', message: '제목을 입력해 주세요', placement: 'inline', target: '.pd-notice-form', priority: 'P1' },
+        ],
+        interface: { reads: [{ id: 'listNotices', intent: '공지 목록', method: 'GET', path: '/admin/notices', auth: 'Bearer(관리자)', target: '.pd-notice-admin-table' }], writes: [{ id: 'createNotice', intent: '공지 등록', method: 'POST', path: '/admin/notices', successStatus: 201, auth: 'Bearer(관리자)', target: '.pd-notice-form' }], events: [] },
+        flow: { to: [] },
+      },
+      // ── 재정(헌금) 관리 ──
+      {
+        id: 'SCR-ADM-006', label: '재정 관리', href: 'c-finance.html',
+        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-010'],
+        context: '헌금 집계·전자기부금영수증 발급·발급명세서. 횡령 못하는 회계(오픈뱅킹 대사·감사추적) 로드맵.',
+        components: [
+          { role: '.pd-finance-kpi', kind: 'card', label: '헌금 집계 KPI' },
+          { role: '.pd-receipt', kind: 'button', label: '기부금영수증 발급', action: { on: 'click', do: 'write:issueReceipt' } },
+          { role: '.pd-finance-table', kind: 'table', label: '헌금 내역' },
+        ],
+        description: [
+          { text: '헌금 집계 — 월별·종류별', target: '.pd-finance-kpi' },
+          { text: '기부금영수증 — 자동 발급·명세서 제출', target: '.pd-receipt' },
+          { text: '헌금 내역 — 감사추적(append-only)', target: '.pd-finance-table' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '관리자', result: '집계·내역', message: '', target: '.pd-finance-kpi', api: { endpoint: 'GET /admin/finance', status: 200 } },
+          { state: '정상', trigger: '발급', guard: '대상 성도', result: '영수증 발급', message: '기부금영수증을 발급했어요', placement: 'toast', target: '.pd-receipt', api: { endpoint: 'POST /admin/receipts', status: 201 } },
+          { state: '권한없음', trigger: '진입', guard: '재정 권한 없음', result: '차단', message: '재정 열람 권한이 필요해요', placement: 'full-page', api: { endpoint: 'GET /admin/finance', status: 403 } },
+        ],
+        interface: { reads: [{ id: 'getFinance', intent: '헌금 집계', method: 'GET', path: '/admin/finance', auth: 'Bearer(재정권한)', target: '.pd-finance-kpi' }], writes: [{ id: 'issueReceipt', intent: '기부금영수증 발급', method: 'POST', path: '/admin/receipts', successStatus: 201, auth: 'Bearer(재정권한)', target: '.pd-receipt' }], events: [{ name: 'receipt.issued', when: '발급 시', payload: '{entities.Member}' }] },
+        flow: { to: [] },
+      },
+      // ── 홈페이지·화이트라벨 설정 ──
+      {
+        id: 'SCR-ADM-007', label: '홈페이지 설정', href: 'c-homepage.html',
+        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-017'],
+        context: '공개홈 템플릿(환영형/말씀형 등) 선택·브랜드(색·로고)·메뉴 설정. 화이트라벨 핵심.',
+        components: [
+          { role: '.pd-concept-picker', kind: 'list', label: '공개홈 템플릿 선택' },
+          { role: '.pd-brand-form', kind: 'form', label: '브랜드(색·로고)' },
+          { role: '.pd-preview', kind: 'hero', label: '미리보기' },
+        ],
+        description: [
+          { text: '템플릿 선택 — 환영형/말씀형/공동체형/콘텐츠형', target: '.pd-concept-picker' },
+          { text: '브랜드 — 주색·로고·교회명', target: '.pd-brand-form' },
+          { text: '미리보기 — 선택 즉시 반영', target: '.pd-preview' },
+        ],
+        cases: [
+          { state: '정상', trigger: '선택', guard: '', result: '템플릿 적용·미리보기', message: '적용되었어요', placement: 'toast', target: '.pd-concept-picker', api: { endpoint: 'PUT /admin/homepage', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '브랜드 미설정', result: 'placeholder', message: '로고·색을 설정하면 반영돼요', placement: 'inline', target: '.pd-brand-form' },
+        ],
+        interface: { reads: [{ id: 'getHomepage', intent: '홈 설정', method: 'GET', path: '/admin/homepage', response: '{entities.Church}', auth: 'Bearer(관리자)', target: '.pd-concept-picker' }], writes: [{ id: 'setHomepage', intent: '홈 설정 저장', method: 'PUT', path: '/admin/homepage', request: '{entities.Church}', auth: 'Bearer(관리자)', target: '.pd-brand-form' }], events: [] },
+        flow: { to: [] },
+      },
+    ],
+  },
+  {
+    category: '슈퍼관리자 (PC웹)',
+    pages: [
+      // ── 플랫폼 대시보드(테넌트 관리) ──
+      {
+        id: 'SCR-SUP-001', label: '테넌트(교회) 관리', href: 'x-tenants.html',
+        surface: 'super', entry: true, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-018'],
+        context: '플랫폼 운영자: 교회(테넌트) 생성·구독·이단심사 게이트·커스텀 도메인. 데이터 주권·격리.',
+        components: [
+          { role: '.pd-tenant-table', kind: 'table', label: '교회(테넌트) 목록' },
+          { role: '.pd-new-tenant', kind: 'button', label: '교회 추가(발행)' },
+          { role: '.pd-review-gate', kind: 'card', label: '이단심사 게이트' },
+        ],
+        description: [
+          { text: '테넌트 목록 — 교회·구독·상태·도메인', target: '.pd-tenant-table' },
+          { text: '교회 추가 — 30분 내 브랜드 앱 발행', target: '.pd-new-tenant' },
+          { text: '이단심사 게이트 — 승인 전 노출 차단', target: '.pd-review-gate' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '테넌트 목록', message: '', target: '.pd-tenant-table', api: { endpoint: 'GET /super/tenants', status: 200 } },
+          { state: '정상', trigger: '교회 추가', guard: '심사 통과', result: '테넌트 발행', message: '교회가 발행됐어요', placement: 'toast', target: '.pd-new-tenant', api: { endpoint: 'POST /super/tenants', status: 201 } },
+          { state: '권한없음', trigger: '진입', guard: '슈퍼관리자 아님', result: '차단', message: '플랫폼 운영자만 접근할 수 있어요', placement: 'full-page', api: { endpoint: 'GET /super/tenants', status: 403 } },
+        ],
+        interface: { reads: [{ id: 'listTenants', intent: '테넌트 목록', method: 'GET', path: '/super/tenants', response: '{entities.Church}[]', auth: 'Bearer(슈퍼)', target: '.pd-tenant-table' }], writes: [{ id: 'createTenant', intent: '교회 발행', method: 'POST', path: '/super/tenants', successStatus: 201, request: '{entities.Church}', response: '{entities.Church}', auth: 'Bearer(슈퍼)', target: '.pd-new-tenant' }], events: [{ name: 'tenant.created', when: '발행 시', payload: '{entities.Church}' }] },
+        flow: { to: [] },
       },
     ],
   },
