@@ -670,6 +670,27 @@
     if (!arr || !arr.length) return '<span class="pd-dim">—</span>';
     return '<ul>' + arr.map(function (x) { return '<li>' + (map ? map(x) : esc(x)) + '</li>'; }).join('') + '</ul>';
   }
+
+  // PRD 요구사항 ↔ 화면 추적(Traceability) — PRD 기반 진행 + 부족분(미충족/미연결) 자동 검출
+  function prdTraceability() {
+    var d = window.PLANDECK_PRD || {};
+    var reqs = d.requirements || [];
+    var pages = flatPages();
+    var byReq = {}; reqs.forEach(function (r) { byReq[r.reqId] = []; });
+    var orphans = [];
+    pages.forEach(function (p) {
+      var ids = p.reqIds || [];
+      if (!ids.length) { orphans.push(p); return; }
+      ids.forEach(function (rid) { if (!byReq[rid]) byReq[rid] = []; byReq[rid].push(p); });
+    });
+    var reqSet = {}; reqs.forEach(function (r) { reqSet[r.reqId] = 1; });
+    var ghost = {};
+    pages.forEach(function (p) { (p.reqIds || []).forEach(function (rid) { if (!reqSet[rid]) (ghost[rid] = ghost[rid] || []).push(p); }); });
+    var covered = reqs.filter(function (r) { return (byReq[r.reqId] || []).length; });
+    var uncovered = reqs.filter(function (r) { return !(byReq[r.reqId] || []).length; });
+    return { reqs: reqs, byReq: byReq, covered: covered, uncovered: uncovered, orphans: orphans, ghost: ghost,
+      pct: reqs.length ? Math.round(covered.length / reqs.length * 100) : 0, version: d.version || PROJECT.version || '0.1.0' };
+  }
   function renderPRD() {
     var el = document.getElementById('pd-prd-root');
     var d = window.PLANDECK_PRD || {};
@@ -686,7 +707,27 @@
       sec('⑤ 성공지표', ul(d.successMetrics, function (m) { return m.metric ? (esc(m.metric) + ' — <b>' + esc(m.target || '') + '</b>') : esc(m); })) +
       sec('⑥ 제약·가정·의존성', '<b>제약</b>' + ul(d.constraints) + '<b>가정</b>' + ul(d.assumptions) + '<b>의존성</b>' + ul(d.dependencies)) +
       sec('⑦ 릴리스', ul(d.releases, function (r) { return r.name ? ('<b>' + esc(r.name) + '</b> — ' + esc((r.scope || []).join(', ')) + (r.when ? ' (' + esc(r.when) + ')' : '')) : esc(r); })) +
-      sec('요구사항(화면 추적)', ul(d.requirements, function (r) { return '<code>' + esc(r.reqId) + '</code> ' + esc(r.text); })) +
+      (function () {
+        var t = prdTraceability();
+        if (!t.reqs.length) return sec('⑧ 요구사항 추적(PRD ↔ 화면)', '<div class="pd-banner">PRD에 <code>requirements[]</code>가 아직 없습니다. <code>/pd-prd</code>로 요구사항을 정의하면 화면과 자동으로 추적·커버리지 검사됩니다.</div>');
+        var rows = t.reqs.map(function (r) {
+          var scr = t.byReq[r.reqId] || [];
+          var sh = scr.length ? scr.map(function (p) { return '<a href="' + esc(p.href) + '">' + esc(p.label) + '</a>'; }).join(', ')
+            : '<span class="pd-trace-gap">⚠ 화면 없음 — 보강 필요</span>';
+          return '<tr' + (scr.length ? '' : ' class="is-gap"') + '><td><code>' + esc(r.reqId) + '</code></td><td>' + esc(r.text) + '</td>' +
+            '<td>' + ((r.surfaces || []).join(', ') || '<span class="pd-dim">—</span>') + '</td><td>' + sh + '</td></tr>';
+        }).join('');
+        var gaps = '';
+        if (t.uncovered.length) gaps += '<div class="pd-trace-note is-warn">⚠ 화면이 없는 요구사항 ' + t.uncovered.length + '건 — <code>/pd-scaffold</code> 또는 <code>/pd-screen</code>으로 화면을 만들어 보강하세요.</div>';
+        if (t.orphans.length) gaps += '<div class="pd-trace-note">🔗 요구사항에 연결되지 않은 화면 ' + t.orphans.length + '건 (' + t.orphans.map(function (p) { return esc(p.label); }).join(', ') + ') — PRD에 해당 요구사항을 보강하거나 화면에 <code>reqIds</code>를 추가하세요.</div>';
+        var gh = Object.keys(t.ghost);
+        if (gh.length) gaps += '<div class="pd-trace-note is-warn">👻 PRD에 없는 요구사항을 참조하는 화면: ' + gh.map(esc).join(', ') + ' — PRD에 추가하세요.</div>';
+        return sec('⑧ 요구사항 추적(PRD ↔ 화면)',
+          '<div class="pd-trace-head">PRD <b>v' + esc(t.version) + '</b> 기준 · 요구사항 커버리지 <b>' + t.covered.length + '/' + t.reqs.length + '</b> (' + t.pct + '%)</div>' +
+          '<div class="pd-bar" style="margin:8px 0 14px"><div class="pd-bar-fill" style="width:' + t.pct + '%"></div></div>' +
+          '<div class="pd-table-wrap"><table class="pd-table"><thead><tr><th>요구사항</th><th>내용</th><th>서피스</th><th>연결된 화면</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+          (gaps ? '<div class="pd-trace-gaps">' + gaps + '</div>' : '<div class="pd-trace-note is-ok">✓ 모든 요구사항이 화면으로 연결되어 있습니다.</div>'));
+      })() +
       (d.openQuestions && d.openQuestions.length ? sec('⚠️ 미결 질문', ul(d.openQuestions)) : '');
     el.innerHTML = pageShell('prd', body, '<a class="pd-side-action" href="docs/PRD.md">📄 PRD.md 원본</a>');
   }
@@ -738,6 +779,7 @@
     });
     var n = pages.length;
     var pct = n ? Math.round((done.desc + done.cases + done.itf) / (n * 3) * 100) : 0;
+    var trace = prdTraceability();
 
     var next;
     if (!hasProject) next = { cmd: '/pd-init', why: '프로젝트 이름·서피스를 설정하세요.' };
@@ -758,9 +800,18 @@
       '<div class="pd-dash-stat"><b>' + done.desc + '</b>📝</div>' +
       '<div class="pd-dash-stat"><b>' + done.cases + '</b>🧩</div>' +
       '<div class="pd-dash-stat"><b>' + done.itf + '</b>🔌</div>' +
-      '<div class="pd-dash-stat"><b>' + done.ready + '</b>개발준비</div></div>' +
+      '<div class="pd-dash-stat"><b>' + done.ready + '</b>개발준비</div>' +
+      (trace.reqs.length ? '<div class="pd-dash-stat"><b>' + trace.covered.length + '/' + trace.reqs.length + '</b>요구사항 연결</div>' : '') + '</div>' +
       '<div class="pd-bar"><div class="pd-bar-fill" style="width:' + pct + '%"></div></div>' +
       '<div class="pd-dash-pct">완결성 ' + pct + '%</div></div>') : '';
+
+    // PRD 기반 부족분(미충족 요구사항·미연결 화면) 보강 알림 — 기획자 우선
+    var gapCount = trace.uncovered.length + trace.orphans.length + Object.keys(trace.ghost).length;
+    var gapCard = gapCount ? ('<div class="pd-prd-sec pd-gap-card"><h2>🧩 PRD 기반 보강할 점 <span class="pd-dim">(' + gapCount + ')</span></h2>' +
+      (trace.uncovered.length ? '<div class="pd-trace-note is-warn">⚠ 화면이 없는 요구사항 ' + trace.uncovered.length + '건 — <code>/pd-scaffold</code>로 화면 생성</div>' : '') +
+      (trace.orphans.length ? '<div class="pd-trace-note">🔗 요구사항 미연결 화면 ' + trace.orphans.length + '건 (' + trace.orphans.map(function (p) { return esc(p.label); }).join(', ') + ') — PRD에 요구사항 보강</div>' : '') +
+      (Object.keys(trace.ghost).length ? '<div class="pd-trace-note is-warn">👻 PRD에 없는 요구사항 참조: ' + Object.keys(trace.ghost).map(esc).join(', ') + '</div>' : '') +
+      '<div class="pd-dim" style="margin-top:8px;font-size:12.5px">자세히: <a href="prd.html">PRD 요구사항 추적 →</a></div></div>') : '';
 
     var nextCard = '<div class="pd-prd-sec pd-next"><h2>👉 다음 할 일</h2>' +
       '<div class="pd-next-cmd"><code>' + esc(next.cmd) + '</code></div>' +
@@ -809,7 +860,7 @@
     var body =
       '<h1>' + esc(PROJECT.name || 'PlanDeck 프로젝트') + (PROJECT.version ? '<span class="pd-ver-badge">v' + esc(PROJECT.version) + '</span>' : '') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '아직 설정 전 — <code>/pd-init</code> 으로 시작하세요.') + '</div>' +
-      surfaceTabs + roleGuide + progressCard + nextCard +
+      surfaceTabs + roleGuide + progressCard + nextCard + gapCard +
       (d.goals && d.goals.length ? '<div class="pd-prd-sec"><h2>목표</h2>' + ul(d.goals) + '</div>' : '') +
       (pages.length ? ('<div class="pd-inv-head"><h2>화면 목록 <span class="pd-dim">(' + pages.length + ')</span></h2>' + docFilterBar('화면명·ID·서피스로 찾기') + '</div>' + inv)
         : '<div class="pd-empty"><div class="pd-empty-icon">🗂️</div><div class="pd-empty-title">아직 화면이 없습니다</div><div class="pd-empty-sub"><code>/pd-prd</code> → <code>/pd-scaffold</code> 로<br>PRD에서 화면을 생성하세요.</div></div>') +

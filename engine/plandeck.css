@@ -301,6 +301,18 @@
 .pd-role-links a { font-size: 12px; font-weight: 700; color: var(--pd-primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 7px; padding: 4px 9px; text-decoration: none; }
 .pd-role-links a:hover { background: #dbeafe; }
 
+/* PRD 요구사항 추적(Traceability) + 보강 알림 */
+.pd-trace-head { font-size: 13.5px; color: var(--pd-sub); }
+.pd-trace-head b { color: var(--pd-ink); }
+.pd-table tr.is-gap { background: #fff7ed; }
+.pd-trace-gap { color: #b45309; font-weight: 700; }
+.pd-trace-gaps { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.pd-trace-note { font-size: 12.5px; line-height: 1.55; color: var(--pd-sub); background: #f8fafc; border: 1px solid var(--pd-line); border-left: 3px solid #cbd5e1; border-radius: 8px; padding: 9px 12px; }
+.pd-trace-note.is-warn { background: #fffbeb; border-color: #fcd34d; border-left-color: #f59e0b; color: #92400e; }
+.pd-trace-note.is-ok { background: #f0fdf4; border-color: #bbf7d0; border-left-color: #22c55e; color: #166534; }
+.pd-gap-card { border-color: #fcd34d !important; background: #fffdf5 !important; }
+.pd-gap-card h2 { color: #b45309 !important; }
+
 /* ═══ 앱 셸 반응형 ═══ */
 @media (max-width: 1024px) { .pd-steps { grid-template-columns: 1fr; } }
 @media (max-width: 920px) {
