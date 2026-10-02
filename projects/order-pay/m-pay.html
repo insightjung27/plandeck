@@ -10,15 +10,31 @@
 <body>
   <div class="device-stage"><div class="device-mockup"><div class="device-frame"><div class="device-screen">
     <div class="pd-screen">
-      <div class="pd-sk-header"><button class="pd-back pd-sk-chip" aria-label="뒤로가기" style="width:36px;height:36px;border:none">‹</button><div class="pd-sk-title" style="flex:1;max-width:120px">결제</div></div>
-      <div class="pd-sk-line w-50" style="height:18px">결제수단</div>
-      <div class="pd-method pd-sk-list" style="gap:10px">
-        <div class="pd-sk-row" style="display:flex;align-items:center;padding:0 14px">카드</div>
-        <div class="pd-sk-row" style="display:flex;align-items:center;padding:0 14px">토스페이</div>
+      <header class="pd-appbar">
+        <button class="pd-back pd-ab-btn" aria-label="뒤로가기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="pd-ab-title">결제</div>
+        <span class="pd-ab-spacer"></span>
+      </header>
+      <div class="pd-app-body">
+        <div class="pd-list">
+          <div class="pd-row" style="cursor:default">
+            <div class="pd-thumb" style="width:48px;height:48px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c3 2 4 5 4 8a4 4 0 11-8 0c0-3 1-6 4-8z" stroke-linejoin="round"/></svg></div>
+            <div class="pd-row-main"><div class="pd-row-title" style="font-size:15px">수제 꽃차 선물세트</div><div class="pd-row-sub">수량 1개</div></div>
+            <span class="pd-row-value">12,900원</span>
+          </div>
+        </div>
+        <div class="pd-field">
+          <span class="pd-field-label">결제수단</span>
+          <div class="pd-method" style="display:flex;flex-direction:column;gap:8px">
+            <label class="pd-check on"><span class="box" style="border-radius:50%"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>신용·체크카드</span></label>
+            <label class="pd-check"><span class="box" style="border-radius:50%"></span><span>토스페이</span></label>
+          </div>
+        </div>
       </div>
-      <div style="flex:1"></div>
-      <div class="pd-sk-box" style="min-height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px"><span>결제 금액</span><b>12,900원</b></div>
-      <button class="pd-btn-confirm pd-sk-btn">결제하기</button>
+      <div class="pd-cta with-summary">
+        <div class="pd-pricerow"><span class="lbl">결제 금액</span><span class="amt pd-amount">12,900원</span></div>
+        <button class="pd-btn-confirm pd-btn primary block">12,900원 결제하기</button>
+      </div>
     </div>
   </div></div><div class="device-stand"></div><div class="device-base"></div></div></div>
   <script>window.PLANDECK_CURRENT='m-pay.html';window.PDK_CURRENT=window.PLANDECK_CURRENT;</script>

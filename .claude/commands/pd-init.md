@@ -21,6 +21,7 @@ PlanDeck는 한 저장소에서 **여러 프로젝트**를 운영한다. 이 커
 - `projects/<slug>/config/` 를 만들고, 루트 `config/` 의 **빈 스키마 템플릿**(devices.js·entities.js·prd.js·screens.js)을 복사한다(Bash `cp` 또는 Write).
 - `projects/<slug>/config/project.js` 는 수집값으로 작성(`window.PLANDECK_PROJECT` + 끝에 `window.PDK_PROJECT = window.PLANDECK_PROJECT;`). `version`·`updatedAt`·`changelog:[{version, date, note:'초기 생성'}]` 포함.
 - `templates/project/` 의 index.html·prd.html·spec.html·handoff.html·_screen.blank.html 을 `projects/<slug>/` 로 복사하고 `{{PROJECT_TITLE}}` 를 이름으로 치환. (_screen.blank.html 은 화면 생성 때 쓰이므로 그대로 둬도 됨)
+- `templates/project/docs/PRD.md` 를 `projects/<slug>/docs/PRD.md` 로 복사하고 `{{PROJECT_TITLE}}`·날짜를 치환(**PRD 정본** — 이후 `/pd-prd`로 채운다).
 
 ### 3) 워크스페이스 등록
 - 루트 `config/workspace.js` 의 `projects[]` 에 추가:

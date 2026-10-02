@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════════════════════
+   PlanDeck UI — 엔터프라이즈 모바일 컴포넌트 라이브러리 + 아이폰 프레임
+   근거: 토스 TDS(J 승인 계약) + Apple HIG + Material 3 + 엔터프라이즈 품질바
+   토큰: 토스블루 #3182F6 단일강조 · Pretendard · 공격적 라운드 · 플랫 · 1px 헤어라인
+   화면설계 프로토타입용 "진짜 앱처럼 보이는" 컴포넌트. 역할클래스(.pd-<역할>)와 공존.
+   ═══════════════════════════════════════════════════════════════════ */
+:root {
+  --t-blue: #3182F6; --t-blue-600: #1b64da; --t-blue-50: #EAF2FE;
+  --t-g900: #1A2536; --t-g700: #5A6472; --t-g500: #8B95A1; --t-g400: #B0B8C1;
+  --t-g200: #E5E8EB; --t-g100: #F2F4F6; --t-g50: #F9FAFB; --t-white: #fff;
+  --t-red: #F04452; --t-green: #1BA345; --t-orange: #FF9500;
+  --t-shadow-1: 0 1px 2px rgba(21,24,40,.04);
+  --t-shadow-float: 0 8px 24px rgba(21,24,40,.10), 0 2px 6px rgba(21,24,40,.05);
+  --t-font: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --pd-safe-top: 44px; --pd-safe-bottom: 24px;
+}
+
+/* ─── 아이폰 프레임 (모바일 서피스일 때 .device-stage.pd-iphone) ─── */
+.device-stage.pd-iphone .device-mockup::before { display: none; }
+.device-stage.pd-iphone .device-frame {
+  width: auto; height: auto;
+  background: #0b0b0d;                 /* 티타늄 블랙 베젤 */
+  padding: 14px;                        /* 베젤 두께 */
+  border-radius: 58px;
+  border: none;
+  box-shadow:
+    0 0 0 2px #2a2a2e,                  /* 사이드 버튼 톤 */
+    0 24px 60px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+.device-stage.pd-iphone .device-frame::before,
+.device-stage.pd-iphone .device-frame::after { display: none; }
+.device-stage.pd-iphone .device-screen {
+  border-radius: 46px;
+  box-shadow: none;
+  background: var(--t-white);
+  overflow: hidden;
+}
+/* Dynamic Island */
+.pd-dynamic-island {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 118px; height: 34px; background: #000; border-radius: 20px; z-index: 40;
+  pointer-events: none;
+}
+
+/* ─── 상태바 (시계·신호·와이파이·배터리) — engine 자동 주입 ─── */
+.pd-statusbar {
+  position: absolute; top: 0; left: 0; right: 0; height: var(--pd-safe-top);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px 0 32px; z-index: 35; pointer-events: none;
+  font-family: var(--t-font); color: var(--t-g900);
+}
+.pd-statusbar .pd-sb-time { font-size: 15px; font-weight: 700; letter-spacing: .2px; font-variant-numeric: tabular-nums; }
+.pd-statusbar .pd-sb-icons { display: flex; align-items: center; gap: 7px; }
+.pd-statusbar svg { display: block; }
+/* 홈 인디케이터 */
+.pd-homebar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: var(--pd-safe-bottom);
+  display: flex; align-items: center; justify-content: center; z-index: 35; pointer-events: none;
+}
+.pd-homebar::after { content: ''; width: 134px; height: 5px; border-radius: 999px; background: var(--t-g900); opacity: .9; }
+
+/* ─── 앱 셸(.pd-screen) — 풀블리드 스크롤 컨테이너 ─── */
+.pd-iphone .device-screen > .pd-screen,
+.pd-screen.pd-app {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  padding: 0; gap: 0; margin: 0;
+  background: var(--t-g50);
+  font-family: var(--t-font); color: var(--t-g900);
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+.pd-app > * { flex-shrink: 0; }
+.pd-app .pd-grow { flex: 1 1 auto; min-height: 8px; }
+.pd-app-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+.pd-app-body.tight { gap: 10px; }
+
+/* ─── 앱바(네비게이션 헤더) ─── */
+.pd-appbar {
+  position: sticky; top: 0; z-index: 20;
+  height: 52px; padding: calc(var(--pd-safe-top) + 4px) 12px 4px;
+  display: flex; align-items: center; gap: 4px;
+  background: var(--t-white); box-sizing: content-box;
+}
+.pd-appbar + * { margin-top: 0; }
+.pd-appbar .pd-ab-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: var(--t-g900); }
+.pd-appbar .pd-ab-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; color: var(--t-g900); border-radius: 12px; }
+.pd-appbar .pd-ab-btn:active { background: var(--t-g100); }
+.pd-appbar .pd-ab-spacer { width: 40px; }
+/* 대형 타이틀 (iOS large title) */
+.pd-largetitle { padding: 8px 20px 4px; font-size: 26px; font-weight: 800; letter-spacing: -.4px; color: var(--t-g900); background: var(--t-white); }
+.pd-largetitle .sub { display: block; font-size: 14px; font-weight: 500; color: var(--t-g700); margin-top: 4px; letter-spacing: 0; }
+/* 상태바 영역 확보용 상단 패딩(앱바 없는 화면) */
+.pd-app .pd-safe-top { height: var(--pd-safe-top); flex-shrink: 0; background: var(--t-white); }
+
+/* ─── 서치바 ─── */
+.pd-searchbar { margin: 4px 20px 0; height: 46px; border-radius: 14px; background: var(--t-g100); display: flex; align-items: center; gap: 8px; padding: 0 14px; color: var(--t-g500); font-size: 15px; border: none; width: calc(100% - 40px); font-family: inherit; }
+.pd-searchbar svg { flex-shrink: 0; color: var(--t-g400); }
+
+/* ─── 세그먼트 컨트롤 ─── */
+.pd-segment { margin: 0 20px; display: flex; background: var(--t-g100); border-radius: 12px; padding: 3px; gap: 2px; }
+.pd-segment > * { flex: 1; text-align: center; padding: 8px 0; font-size: 14px; font-weight: 600; color: var(--t-g700); border-radius: 9px; border: none; background: none; cursor: pointer; }
+.pd-segment > .is-active { background: var(--t-white); color: var(--t-g900); box-shadow: var(--t-shadow-1); }
+
+/* ─── 칩(필터) 가로 스크롤 ─── */
+.pd-chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 20px; }
+.pd-chips::-webkit-scrollbar { display: none; }
+.pd-chip { flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 999px; background: var(--t-g100); color: var(--t-g700); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; border: none; cursor: pointer; }
+.pd-chip.is-active { background: var(--t-g900); color: #fff; }
+.pd-chip.is-brand { background: var(--t-blue-50); color: var(--t-blue); }
+
+/* ─── 섹션 ─── */
+.pd-section-title { font-size: 18px; font-weight: 800; color: var(--t-g900); letter-spacing: -.3px; margin: 6px 0 2px; }
+.pd-section-sub { font-size: 13px; color: var(--t-g500); }
+
+/* ─── 카드 ─── */
+.pd-card { background: var(--t-white); border-radius: 20px; padding: 18px; box-shadow: var(--t-shadow-1); border: 1px solid var(--t-g200); }
+.pd-card.flat { box-shadow: none; }
+
+/* ─── 리스트 / 로우 ─── */
+.pd-list { background: var(--t-white); border-radius: 20px; overflow: hidden; border: 1px solid var(--t-g200); }
+.pd-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--t-white); border: none; width: 100%; text-align: left; cursor: pointer; font-family: inherit; }
+.pd-row + .pd-row { border-top: 1px solid var(--t-g100); }
+.pd-row:active { background: var(--t-g50); }
+.pd-row-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--t-blue-50); color: var(--t-blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pd-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--t-g100); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--t-g400); }
+.pd-row-main { flex: 1; min-width: 0; }
+.pd-row-title { font-size: 16px; font-weight: 600; color: var(--t-g900); }
+.pd-row-sub { font-size: 13px; color: var(--t-g500); margin-top: 2px; }
+.pd-row-trail { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.pd-row-value { font-size: 15px; font-weight: 700; color: var(--t-g900); font-variant-numeric: tabular-nums; }
+.pd-chev { color: var(--t-g400); flex-shrink: 0; }
+
+/* ─── 썸네일/이미지 ─── */
+.pd-thumb { border-radius: 14px; background: linear-gradient(135deg, #e9eef5, #dde6f1); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #aab7c7; }
+.pd-hero-img { width: 100%; aspect-ratio: 16/10; border-radius: 18px; background: linear-gradient(135deg, #e9eef5, #dde6f1); display: flex; align-items: center; justify-content: center; color: #aab7c7; }
+
+/* ─── 배지 / 평점 ─── */
+.pd-badge { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px; border-radius: 7px; font-size: 12px; font-weight: 700; background: var(--t-g100); color: var(--t-g700); }
+.pd-badge.ok { background: #E6F7EC; color: var(--t-green); }
+.pd-badge.warn { background: #FFF3E0; color: #B26A00; }
+.pd-badge.danger { background: #FDE8EA; color: var(--t-red); }
+.pd-badge.brand { background: var(--t-blue-50); color: var(--t-blue); }
+.pd-rating { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 700; color: var(--t-g900); }
+.pd-rating svg { color: #FFB800; }
+.pd-rating .cnt { color: var(--t-g500); font-weight: 500; }
+
+/* ─── 입력 필드 ─── */
+.pd-field { display: flex; flex-direction: column; gap: 7px; }
+.pd-field-label { font-size: 13px; font-weight: 600; color: var(--t-g700); }
+.pd-input { height: 52px; border: 1px solid var(--t-g200); border-radius: 14px; background: var(--t-white); padding: 0 16px; font-size: 16px; font-family: inherit; color: var(--t-g900); display: flex; align-items: center; }
+.pd-input.ph { color: var(--t-g400); }
+.pd-input:focus-within { border-color: var(--t-blue); }
+.pd-textarea { min-height: 88px; border: 1px solid var(--t-g200); border-radius: 14px; background: var(--t-white); padding: 14px 16px; font-size: 15px; color: var(--t-g400); font-family: inherit; }
+.pd-select { height: 52px; border: 1px solid var(--t-g200); border-radius: 14px; background: var(--t-white); padding: 0 16px; font-size: 16px; color: var(--t-g900); display: flex; align-items: center; justify-content: space-between; }
+
+/* ─── 체크 / 토글 ─── */
+.pd-check { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--t-white); border: 1px solid var(--t-g200); border-radius: 14px; font-size: 15px; color: var(--t-g900); cursor: pointer; }
+.pd-check .box { width: 24px; height: 24px; border-radius: 8px; border: 1.5px solid var(--t-g400); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; }
+.pd-check.on .box { background: var(--t-blue); border-color: var(--t-blue); }
+.pd-check .box svg { opacity: 0; } .pd-check.on .box svg { opacity: 1; }
+.pd-toggle { width: 50px; height: 30px; border-radius: 999px; background: var(--t-g200); position: relative; flex-shrink: 0; }
+.pd-toggle.on { background: var(--t-blue); }
+.pd-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: var(--t-shadow-1); transition: left .2s; }
+.pd-toggle.on::after { left: 23px; }
+
+/* ─── 버튼 ─── */
+.pd-btn { height: 52px; border-radius: 14px; border: none; font-size: 17px; font-weight: 700; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 20px; transition: filter .12s, transform .1s; }
+.pd-btn:active { transform: scale(.99); filter: brightness(.97); }
+.pd-btn.block { width: 100%; }
+.pd-btn.primary { background: var(--t-blue); color: #fff; }
+.pd-btn.secondary { background: var(--t-g100); color: var(--t-g900); }
+.pd-btn.ghost { background: transparent; color: var(--t-blue); }
+.pd-btn.pill { border-radius: 999px; }
+.pd-btn[disabled], .pd-btn.disabled { background: var(--t-g200); color: var(--t-g500); }
+
+/* ─── 하단 CTA 바 ─── */
+.pd-cta { position: sticky; bottom: 0; z-index: 20; padding: 10px 20px calc(var(--pd-safe-bottom) + 10px); background: var(--t-white); border-top: 1px solid var(--t-g100); display: flex; flex-direction: column; gap: 8px; }
+.pd-cta.with-summary { gap: 10px; }
+.pd-pricerow { display: flex; align-items: center; justify-content: space-between; }
+.pd-pricerow .lbl { font-size: 14px; color: var(--t-g700); }
+.pd-pricerow .amt { font-size: 20px; font-weight: 800; color: var(--t-g900); font-variant-numeric: tabular-nums; }
+
+/* ─── 하단 탭바 ─── */
+.pd-tabbar { position: sticky; bottom: 0; z-index: 20; display: flex; background: var(--t-white); border-top: 1px solid var(--t-g200); padding-bottom: var(--pd-safe-bottom); }
+.pd-tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 0 5px; background: none; border: none; cursor: pointer; color: var(--t-g400); font-size: 11px; font-weight: 600; }
+.pd-tab.is-active { color: var(--t-blue); }
+
+/* ─── 빈 상태 / 배너 ─── */
+.pd-empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 48px 24px; color: var(--t-g500); }
+.pd-empty-state .ico { width: 64px; height: 64px; border-radius: 20px; background: var(--t-g100); display: flex; align-items: center; justify-content: center; color: var(--t-g400); }
+.pd-empty-state .t { font-size: 16px; font-weight: 700; color: var(--t-g700); }
+.pd-banner { background: var(--t-blue-50); color: var(--t-blue); border-radius: 14px; padding: 12px 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+/* ─── 금액/숫자 ─── */
+.pd-amount { font-variant-numeric: tabular-nums; font-weight: 800; }
+
+/* 와이어프레임 스켈레톤(초기용) — 톤만 TDS에 맞춤(기존 호환 유지) */
+.pd-sk-box, .pd-sk-title, .pd-sk-line, .pd-sk-row, .pd-sk-hero, .pd-sk-input, .pd-sk-chip { background: var(--t-g100); }
+
+/* hover 강조(검토/Description)와 공존: 컴포넌트에도 outline이 깔끔히 */
+.device-screen > .is-dimming .is-highlighted { outline-offset: 3px; border-radius: 12px; }

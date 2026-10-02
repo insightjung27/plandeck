@@ -15,8 +15,8 @@ allowed-tools: Read, Write, Edit, AskUserQuestion, Glob
 ## 절차
 
 ### 1) PRD 로드 & 전제 확인
-- `config/prd.js`, `config/project.js`, `config/screens.js`를 읽는다.
-- PRD의 `workflows[]`가 비어 있으면 "먼저 /pd-prd 로 워크플로를 정의하라" 안내 후 중단.
+- **정본 `docs/PRD.md`를 먼저 읽는다**(없으면 `config/prd.js`). `config/project.js`, `config/screens.js`도 읽는다.
+- PRD에 워크플로/화면 전개가 **초안을 잡기에 부족하면**, 바로 생성하지 말고 **`/pd-prd`(갱신 모드)로 부족분을 역질문→PRD.md 갱신**하도록 안내(역방향 보강 루프). 충분해지면 진행.
 
 ### 2) 맵 생성 (아직 파일 안 만듦 — 계획만)
 각 workflow의 `steps`를 화면 인벤토리 + 간선으로 전개한다:

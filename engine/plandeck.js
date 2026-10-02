@@ -133,6 +133,35 @@
     root.style.setProperty('--pdk-device-scale', scale.toFixed(3));
   }
 
+  // ═══ 1-b. 아이폰 프레임 chrome (상태바·다이내믹아일랜드·홈인디케이터) 자동 주입 ═══
+  function activeDeviceDef() {
+    var page = findCurrentPage();
+    var key = surfaceDeviceKey(page) || (PROJECT.device) || 'mobile';
+    var d = DEVICES[key];
+    if (d && d.toggle) d = DEVICES[window.__pdkVariant || d.default || d.toggle[0]];
+    return d;
+  }
+  function injectMobileChrome() {
+    var d = activeDeviceDef();
+    if (!d || d.type === 'kiosk' || !(d.width && d.width <= 430)) return;  // 폰만(키오스크·데스크탑 제외)
+    var stage = document.querySelector('.device-stage');
+    var screen = document.querySelector('.device-screen');
+    if (!stage || !screen) return;
+    stage.classList.add('pd-iphone');
+    var root = screen.querySelector('.pd-screen');
+    if (root) root.classList.add('pd-app');   // 앱 셸 레이아웃(safe-top·grow 등) 활성화
+    if (screen.querySelector('.pd-statusbar')) return;  // 중복 방지
+    var SIG = '<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>';
+    var WIFI = '<svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><path d="M8.5 2.2c2.6 0 5 1 6.8 2.7l1.3-1.4C14.4 1.3 11.6 0 8.5 0S2.6 1.3.4 3.5l1.3 1.4C3.5 3.2 5.9 2.2 8.5 2.2z"/><path d="M8.5 5.3c1.5 0 2.9.6 3.9 1.6l1.3-1.4C12.3 4.2 10.5 3.4 8.5 3.4s-3.8.8-5.2 2.1l1.3 1.4c1-1 2.4-1.6 3.9-1.6z"/><path d="M8.5 8.3c.7 0 1.3.3 1.8.8l-1.8 1.9-1.8-1.9c.5-.5 1.1-.8 1.8-.8z"/></svg>';
+    var BATT = '<svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="17" height="9" rx="2" fill="currentColor"/><path d="M24.5 4.5v4c.8-.3 1.3-1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" fill-opacity="0.5"/></svg>';
+    var sb = document.createElement('div');
+    sb.className = 'pd-statusbar';
+    sb.innerHTML = '<span class="pd-sb-time">9:41</span><span class="pd-sb-icons">' + SIG + WIFI + BATT + '</span>';
+    var di = document.createElement('div'); di.className = 'pd-dynamic-island';
+    var hb = document.createElement('div'); hb.className = 'pd-homebar';
+    screen.appendChild(sb); screen.appendChild(di); screen.appendChild(hb);
+  }
+
   // ═══ 2. 상태 칩 + 변경 감지 (좌측 목록 각 행에 배지 추가) ═══
   var STATUS_META = {
     'draft':         { label: '초안',    cls: 'is-draft' },
@@ -373,7 +402,8 @@
     var sec = function (t, html) { return '<div class="pd-prd-sec"><h2>' + t + '</h2>' + html + '</div>'; };
     el.className = 'pd-prd-doc';
     el.innerHTML =
-      '<div class="pd-prd-nav"><a href="index.html">← 개요</a><a href="handoff.html">개발 핸드오프 →</a></div>' +
+      '<div class="pd-prd-nav"><a href="index.html">← 개요</a><a href="docs/PRD.md">📄 PRD.md 원본</a><a href="handoff.html">개발 핸드오프 →</a></div>' +
+      '<div class="pd-banner" style="margin-bottom:16px">이 화면은 <b>docs/PRD.md</b>(정본)를 렌더한 것입니다. 수정은 PRD.md를 고치거나 <code>/pd-prd</code>로 — 버전을 올리며 갱신돼요.</div>' +
       '<h1>' + esc(PROJECT.name || '제품요구정의서(PRD)') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '') + '</div>' +
       sec('① 배경', '<p>' + esc(d.background) + '</p>') +
@@ -635,6 +665,7 @@
     if (document.getElementById('pd-overview-root')) { try { renderOverview(); } catch (e) {} return; }
     if (document.getElementById('pd-spec-root')) { try { renderSpec(); } catch (e) {} return; }
     try { applySurfaceDevice(); } catch (e) {}
+    try { injectMobileChrome(); } catch (e) {}
     try { injectStatusChips(); } catch (e) {}
     try { injectCasesPanel(); } catch (e) {}
     try { injectInterfacePanel(); } catch (e) {}

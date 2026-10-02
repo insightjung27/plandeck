@@ -10,11 +10,30 @@
 <body>
   <div class="device-stage"><div class="device-mockup"><div class="device-frame"><div class="device-screen">
     <div class="pd-screen">
-      <div class="pd-sk-header"><button class="pd-back pd-sk-chip" aria-label="뒤로가기" style="width:36px;height:36px;border:none">‹</button><div class="pd-sk-title" style="flex:1;max-width:140px">예약 확인</div></div>
-      <div class="pd-summary pd-sk-box" style="min-height:160px;padding:16px"><div class="pd-sk-line w-70"></div><div class="pd-sk-line w-50" style="margin-top:10px"></div><div class="pd-sk-line w-90" style="margin-top:10px"></div></div>
-      <label class="pd-consent-final pd-sk-box" style="min-height:44px;display:flex;align-items:center;gap:10px;padding:0 14px"><span class="pd-sk-chip" style="width:22px;height:22px"></span>위 내용으로 신청에 동의</label>
-      <div style="flex:1"></div>
-      <button class="pd-btn-submit pd-sk-btn">신청하기</button>
+      <header class="pd-appbar">
+        <button class="pd-back pd-ab-btn" aria-label="뒤로가기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="pd-ab-title">예약 확인</div>
+        <span class="pd-ab-spacer"></span>
+      </header>
+      <div class="pd-app-body">
+        <div class="pd-summary pd-list">
+          <div class="pd-row" style="cursor:default">
+            <div class="pd-row-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M5 17l4-4 3 3 3-4 4 5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="pd-row-main"><div class="pd-row-title">햇살아이 발달센터</div><div class="pd-row-sub">서울 강서구</div></div>
+          </div>
+          <div class="pd-row" style="cursor:default"><div class="pd-row-main"><div class="pd-row-sub">아동</div><div class="pd-row-title" style="font-size:15px">단이 (만 4세 6개월)</div></div></div>
+          <div class="pd-row" style="cursor:default"><div class="pd-row-main"><div class="pd-row-sub">서비스</div><div class="pd-row-title" style="font-size:15px">언어치료 · 40분</div></div></div>
+          <div class="pd-row" style="cursor:default"><div class="pd-row-main"><div class="pd-row-sub">희망 일정</div><div class="pd-row-title" style="font-size:15px;line-height:1.5">10/10(금) 오전 10:00<br>10/11(토) 오후 2:00</div></div></div>
+        </div>
+        <div class="pd-banner" style="background:#FFF3E0;color:#B26A00"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01" stroke-linecap="round"/></svg>제공자 승인 후 예약이 확정돼요. 승인 결과는 알림으로 보내드려요.</div>
+        <label class="pd-consent-final pd-check on">
+          <span class="box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>위 내용으로 예약을 신청하는 데 동의해요</span>
+        </label>
+      </div>
+      <div class="pd-cta">
+        <button class="pd-btn-submit pd-btn primary block">신청하기</button>
+      </div>
     </div>
   </div></div><div class="device-stand"></div><div class="device-base"></div></div></div>
   <script>window.PLANDECK_CURRENT='m-confirm.html';window.PDK_CURRENT=window.PLANDECK_CURRENT;</script>
