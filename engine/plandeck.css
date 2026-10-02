@@ -212,9 +212,16 @@
 
 /* 디바이스 목업 세로 시작점 통일 — 모바일/PC/태블릿이 폭·높이와 무관하게
    동일한 상단 위치에서 시작(중앙정렬 시 짧은 화면이 아래로 내려가던 문제 해결).
-   scale 기준점도 상단으로 두어 축소해도 상단선이 고정된다. */
-.device-stage { align-items: flex-start; padding-top: 48px; }
+   scale 기준점도 상단으로 두어 축소해도 상단선이 고정된다.
+   padding-top은 상단 바(.pd-topbar: 검토 모드·화면정보)와 겹치지 않도록 그 아래로. */
+.device-stage { align-items: flex-start; padding-top: 72px; }
 .device-mockup { transform-origin: top center; }
+
+/* 우측 DESCRIPTION 패널 내용 폰트 축소(더 조밀하게) */
+.page-detail .page-detail-list { gap: 6px; }
+.page-detail .page-detail-item { padding: 6px 8px; }
+.page-detail .page-detail-item-num { width: 17px; height: 17px; font-size: 10.5px; }
+.page-detail .page-detail-item-text { font-size: 12px; line-height: 1.45; }
 .pd-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .pd-chip { font-size: 12px; font-weight: 600; color: #475569; background: var(--pd-soft); border-radius: 8px; padding: 4px 10px; }
 
@@ -259,8 +266,10 @@
 .pd-mode-toggle:hover { background: #eff6ff; }
 /* 검토 모드: 화면명만 남기고 기술정보(ID·Figma) 숨김 */
 .pd-review-mode .pd-sm-id, .pd-review-mode .pd-sm-figma { display: none; }
-/* 검토 모드: 상단 서비스 배너와 겹치지 않게 상단 바를 아래로 */
-.pd-review-mode .pd-topbar { top: 58px; }
+/* 검토 모드: 상단 서비스 배너 아래로 상단 바·목업을 차례로 내려 겹침 방지
+   (배너 → 상단 바 → 목업 순서로 스택) */
+.pd-review-mode .pd-topbar { top: 64px; }
+.pd-review-mode .device-stage { padding-top: 112px; }
 .pd-review-mode .pd-cases,
 .pd-review-mode .pd-interface,
 .pd-review-mode .pd-lint-banner,
