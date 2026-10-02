@@ -142,6 +142,71 @@
       document.body.appendChild(pill);
     }
   }
+  // 목업 상단 바(검토 모드 버튼 + 현재 화면 정보를 한 줄로) — 공용 컨테이너
+  function ensureTopbar() {
+    var tb = document.querySelector('.pd-topbar');
+    if (!tb) { tb = document.createElement('div'); tb.className = 'pd-topbar'; document.body.appendChild(tb); }
+    return tb;
+  }
+  // 현재 화면 정보(타이틀·ID·Figma)를 좌측 패널에서 떼어 목업 상단(검토 모드 옆)에 표시
+  function injectScreenMeta() {
+    var page = findCurrentPage();
+    if (!page) return;
+    var tb = ensureTopbar();
+    if (tb.querySelector('.pd-screen-meta')) return;  // 중복 방지
+    var fig = page.figmaLink
+      ? '<a class="pd-sm-figma" href="' + esc(page.figmaLink) + '" target="_blank" rel="noopener noreferrer">↗ Figma</a>'
+      : '<span class="pd-sm-figma is-disabled" title="등록된 Figma 링크 없음">↗ Figma</span>';
+    var meta = document.createElement('div');
+    meta.className = 'pd-screen-meta';
+    meta.innerHTML =
+      '<span class="pd-sm-title">' + esc(page.label || '—') + '</span>' +
+      (page.id ? '<span class="pd-sm-id' + (page.id === 'TBD' ? ' is-tbd' : '') + '">' + esc(page.id) + '</span>' : '') +
+      fig;
+    tb.appendChild(meta);
+  }
+  // 좌측 화면 목록 검색(페이지명·코드) — 화면이 많아질 때 빠르게 찾기
+  function injectNavSearch() {
+    var nav = document.querySelector('.page-nav');
+    var scroll = document.querySelector('.page-nav-scroll');
+    if (!nav || !scroll || nav.querySelector('.pd-nav-search')) return;
+    // 각 행에 검색 텍스트(화면명+ID) 부여
+    var byHref = {}; flatPages().forEach(function (p) { byHref[p.href] = p; });
+    var rows = [].slice.call(scroll.querySelectorAll('.nav-row'));
+    rows.forEach(function (r) {
+      var p = byHref[r.getAttribute('data-href')] || {};
+      r.setAttribute('data-search', ((p.label || '') + ' ' + (p.id || '')).toLowerCase());
+    });
+    var SEARCH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>';
+    var wrap = document.createElement('div');
+    wrap.className = 'pd-nav-search';
+    wrap.innerHTML = '<div class="pd-nav-search-box">' + SEARCH +
+      '<input type="search" placeholder="화면명·코드 검색" aria-label="화면 검색" autocomplete="off">' +
+      '<button class="pd-nav-search-clear" type="button" aria-label="지우기" hidden>✕</button></div>' +
+      '<div class="pd-nav-search-count" hidden></div>';
+    nav.insertBefore(wrap, scroll);   // 목록 위(스크롤과 분리) 고정
+    var input = wrap.querySelector('input');
+    var clearBtn = wrap.querySelector('.pd-nav-search-clear');
+    var count = wrap.querySelector('.pd-nav-search-count');
+    function apply() {
+      var q = input.value.trim().toLowerCase();
+      clearBtn.hidden = !q;
+      var shown = 0;
+      rows.forEach(function (r) {
+        var hit = !q || (r.getAttribute('data-search').indexOf(q) >= 0);
+        r.style.display = hit ? '' : 'none';
+        if (hit) shown++;
+      });
+      scroll.querySelectorAll('.nav-group').forEach(function (g) {
+        var any = [].slice.call(g.querySelectorAll('.nav-row')).some(function (r) { return r.style.display !== 'none'; });
+        g.style.display = any ? '' : 'none';
+      });
+      if (q) { count.hidden = false; count.textContent = shown ? (shown + '개 일치') : '일치하는 화면 없음'; count.classList.toggle('is-empty', !shown); }
+      else { count.hidden = true; }
+    }
+    input.addEventListener('input', apply);
+    clearBtn.addEventListener('click', function () { input.value = ''; apply(); input.focus(); });
+  }
 
   // ═══ 1. 멀티서피스: 현재 화면의 서피스 디바이스로 재적용 ═══
   function surfaceDeviceKey(page) {
@@ -669,7 +734,8 @@
       sync();
     });
     sync();
-    document.body.appendChild(btn);
+    var tb = ensureTopbar();
+    tb.insertBefore(btn, tb.firstChild);   // 검토 모드가 왼쪽, 화면 정보가 오른쪽
   }
 
   // ═══ 12. CTA 클릭 전이 (components.action.do:'go:ID' → 화면 내 요소 클릭 시 이동) ═══
@@ -777,7 +843,9 @@
     try { injectWideChrome(); } catch (e) {}
     if (bare) return;   // 썸네일(bare): 디바이스만 렌더, 패널 생략
     try { injectScreenTopnav(); } catch (e) {}
+    try { injectScreenMeta(); } catch (e) {}
     try { injectStatusChips(); } catch (e) {}
+    try { injectNavSearch(); } catch (e) {}
     try { injectCasesPanel(); } catch (e) {}
     try { injectInterfacePanel(); } catch (e) {}
     try { injectDockButtons(); } catch (e) {}

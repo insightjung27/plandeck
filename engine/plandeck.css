@@ -184,6 +184,31 @@
 .pd-screen-topnav .pd-nav-link { font-size: 11.5px; font-weight: 700; color: var(--pd-primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 4px 9px; text-decoration: none; white-space: nowrap; }
 .pd-screen-topnav .pd-nav-link:hover { background: #dbeafe; }
 .pd-floating-nav { left: 50%; right: auto; transform: translateX(-50%); }
+/* 좌측 패널의 '현재 화면 정보(타이틀·ID·Figma)'는 목업 상단(.pd-topbar)으로 이동 → 여기선 숨김.
+   좌측 상단 = 전체 메뉴(글로벌 네비) + 전체 화면 목록 전용(정보 위계 정리). */
+.page-nav-head { display: none; }
+
+/* 화면 목록 밀도 축소(목록이 많아질 때 대비 — 더 작은 폰트·조밀) */
+.page-nav .page-nav-scroll { padding: 10px 10px; gap: 10px; }
+.page-nav .nav-group { gap: 2px; }
+.page-nav .nav-cat { font-size: 11px; font-weight: 700; letter-spacing: .02em; padding: 4px 2px; text-transform: none; }
+.page-nav .nav-row { gap: 8px; padding: 7px 10px; border-radius: 8px; }
+.page-nav .nav-row-title { font-size: 12.5px; font-weight: 500; }
+.page-nav .nav-bdg { width: 15px; height: 15px; }
+.page-nav .page-nav-cols { font-size: 10px; }
+
+/* 화면 목록 검색(페이지명·코드) — 스크롤과 분리되어 목록 위에 고정 */
+.pd-nav-search { flex-shrink: 0; padding: 10px 10px 8px; border-bottom: 1px solid #f0f1f3; background: #fff; }
+.pd-nav-search-box { display: flex; align-items: center; gap: 6px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px 8px; }
+.pd-nav-search-box:focus-within { border-color: var(--pd-primary); background: #fff; }
+.pd-nav-search-box > svg { color: #9ca3af; flex-shrink: 0; }
+.pd-nav-search input { flex: 1; min-width: 0; border: none; background: transparent; outline: none; font-size: 12.5px; font-family: "Pretendard", sans-serif; color: #374151; }
+.pd-nav-search input::placeholder { color: #9ca3af; }
+.pd-nav-search input::-webkit-search-cancel-button { display: none; }
+.pd-nav-search-clear { border: none; background: transparent; cursor: pointer; color: #9ca3af; font-size: 12px; line-height: 1; padding: 2px; flex-shrink: 0; }
+.pd-nav-search-clear:hover { color: #6b7280; }
+.pd-nav-search-count { font-size: 11px; color: #6b7280; margin-top: 7px; padding: 0 2px; }
+.pd-nav-search-count.is-empty { color: #b91c1c; }
 
 /* 디바이스 목업 세로 시작점 통일 — 모바일/PC/태블릿이 폭·높이와 무관하게
    동일한 상단 위치에서 시작(중앙정렬 시 짧은 화면이 아래로 내려가던 문제 해결).
@@ -206,14 +231,36 @@
   .pd-prd-sec { break-inside: avoid; box-shadow: none; }
 }
 
+/* ═══ 목업 상단 바 — 검토 모드 버튼 + 현재 화면 정보(좌측 패널에서 이동) ═══ */
+.pd-topbar {
+  position: fixed; left: 296px; top: 16px; z-index: 106;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 320px);
+}
+/* 현재 화면 정보 카드(타이틀 · ID · Figma) */
+.pd-screen-meta {
+  display: flex; align-items: center; gap: 10px; min-width: 0;
+  background: #fff; border: 1px solid var(--pd-line); border-radius: 10px; padding: 7px 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06); font-family: "Pretendard", sans-serif;
+}
+.pd-sm-title { font-size: 14px; font-weight: 800; color: var(--pd-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 42vw; }
+.pd-sm-id { flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--pd-sub); background: var(--pd-soft); border-radius: 6px; padding: 2px 7px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+.pd-sm-id.is-tbd { font-style: italic; }
+.pd-sm-figma { flex-shrink: 0; font-size: 12px; font-weight: 700; color: var(--pd-primary); text-decoration: none; white-space: nowrap; }
+.pd-sm-figma:hover { text-decoration: underline; }
+.pd-sm-figma.is-disabled { color: #9aa0a8; cursor: not-allowed; }
+
 /* ═══ 검토 모드(의사결정자): 기술 패널 숨김 ═══ */
 .pd-mode-toggle {
-  position: fixed; left: 296px; top: 16px; z-index: 106;
+  position: static; flex-shrink: 0;
   font-size: 13px; font-weight: 700; color: var(--pd-primary);
   background: #fff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 14px;
   cursor: pointer; font-family: "Pretendard", sans-serif; box-shadow: 0 2px 8px rgba(0,0,0,.06);
 }
 .pd-mode-toggle:hover { background: #eff6ff; }
+/* 검토 모드: 화면명만 남기고 기술정보(ID·Figma) 숨김 */
+.pd-review-mode .pd-sm-id, .pd-review-mode .pd-sm-figma { display: none; }
+/* 검토 모드: 상단 서비스 배너와 겹치지 않게 상단 바를 아래로 */
+.pd-review-mode .pd-topbar { top: 58px; }
 .pd-review-mode .pd-cases,
 .pd-review-mode .pd-interface,
 .pd-review-mode .pd-lint-banner,
@@ -244,7 +291,9 @@
   .page-detail, .page-flow { left: 8px !important; right: 8px !important; width: auto !important; top: auto !important; bottom: 72px !important; max-height: 50vh; }
   .page-flow { height: 50vh; }
   .pd-panel { left: 8px !important; right: 8px !important; width: auto !important; max-width: none !important; top: 72px !important; max-height: 70vh; }
-  .pd-mode-toggle { left: auto; right: 70px; top: 10px; z-index: 130; }
+  .pd-topbar { left: auto; right: 70px; top: 10px; z-index: 130; max-width: calc(100vw - 90px); }
+  .pd-screen-meta { display: none; }   /* 모바일 상단 공간 부족 — 화면정보는 목록/Description으로 */
+  .pd-nav-search { display: none; }    /* 모바일은 목록 자체가 숨겨짐(이동=플로우/CTA) */
   .pd-lint-banner { left: 8px; right: 8px; max-width: none; bottom: 72px; }
   .pd-review-banner { left: 0; top: auto; bottom: 0; }
   .pd-prd-doc { padding: 24px 16px 80px; }
