@@ -233,9 +233,23 @@
 .pd-wpanel .pd-table { border: none; border-radius: 0; }
 .pd-wpanel .pd-table th { background: var(--w-fill); }
 
-/* 태블릿: GNB + 콘텐츠(사이드바 숨김) */
-.device-stage.pd-tablet .pd-sidebar { display: none; }
-.device-stage.pd-tablet .pd-content { padding: 20px 22px; }
+/* ═══ 태블릿 — 가로(landscape)/세로(portrait) 방향별 정상 레이아웃 ═══
+   (태블릿은 모바일이 아니다 — 각 방향에 맞춰 텍스트·버튼이 정상 표시되도록 구성) */
+.device-stage.pd-tablet .device-frame { padding: 12px; border-radius: 26px; }
+.device-stage.pd-tablet .device-screen { border-radius: 14px; }
+.device-stage.pd-tablet .pd-gnb { padding: 0 22px; }
+.device-stage.pd-tablet .pd-content { padding: 22px 26px; gap: 16px; }
+.device-stage.pd-tablet .pd-pagehead .pd-wf-title { font-size: 22px; }
+
+/* 가로(landscape): 사이드바 유지(살짝 좁게) + KPI 4열(폭 충분) */
+.device-stage.pd-tablet.pd-landscape .pd-sidebar { width: 200px; display: flex; }
+.device-stage.pd-tablet.pd-landscape .pd-cardgrid { grid-template-columns: repeat(4, 1fr); }
+
+/* 세로(portrait): 사이드바 숨김(GNB 중심) + KPI 2열 + 콘텐츠 넉넉히 */
+.device-stage.pd-tablet.pd-portrait .pd-sidebar { display: none; }
+.device-stage.pd-tablet.pd-portrait .pd-cardgrid { grid-template-columns: repeat(2, 1fr); }
+.device-stage.pd-tablet.pd-portrait .pd-content { padding: 26px 30px; gap: 18px; }
+.device-stage.pd-tablet.pd-portrait .pd-gnb .menu { gap: 16px; }
 
 /* ═══ bare 모드(플로우 썸네일용 — 모든 PlanDeck 크롬 숨김) ═══ */
 .pd-bare .page-nav, .pd-bare .page-detail, .pd-bare .page-flow, .pd-bare .page-flow-modal,

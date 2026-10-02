@@ -14,6 +14,23 @@
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function flat() { var o = []; SCREENS.forEach(function (c) { (c.pages || []).forEach(function (p) { o.push(p); }); }); return o; }
+
+  // 통일 글로벌 네비(plandeck.js 와 동일 세트 — handoff 페이지는 plandeck.js 미로드라 자체 내장)
+  function docNav(active) {
+    var links = [
+      { key: 'workspace', href: '../../index.html', label: '⌂ 워크스페이스' },
+      { key: 'overview',  href: 'index.html',        label: '개요' },
+      { key: 'prd',       href: 'prd.html',           label: 'PRD' },
+      { key: 'flows',     href: 'flows.html',         label: '🧭 플로우' },
+      { key: 'spec',      href: 'spec.html',          label: '상세 기획서' },
+      { key: 'handoff',   href: 'handoff.html',       label: '핸드오프' },
+    ].map(function (l) {
+      return l.key === active
+        ? '<span class="pd-nav-link is-current">' + esc(l.label) + '</span>'
+        : '<a class="pd-nav-link" href="' + l.href + '">' + esc(l.label) + '</a>';
+    }).join('');
+    return '<nav class="pd-prd-nav">' + links + '</nav>';
+  }
   function refName(ref) { var m = String(ref || '').match(/^\{entities\.([A-Za-z0-9_]+)\}$/); return m ? m[1] : null; }
 
   // ── (2) OpenAPI 3.1 ──
@@ -257,7 +274,7 @@
     var readyN = cov.filter(function (r) { return r.ready; }).length;
 
     el.innerHTML =
-      '<div class="pd-prd-nav"><a href="index.html">← 개요</a><a href="prd.html">PRD 전문 →</a></div>' +
+      docNav('handoff') +
       '<h1>개발 핸드오프</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.name || '') + ' · 전 화면 계약을 개발자/에이전트가 소비할 형태로 집계합니다.</div>' +
       '<div class="pd-prd-sec"><h2>완결성 대시보드 <span class="pd-dim">(개발준비 ' + readyN + '/' + cov.length + ')</span></h2>' + covTable + '</div>' +

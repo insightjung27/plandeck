@@ -169,9 +169,27 @@
 .pd-prd-sec h2 { font-size: 16px; font-weight: 800; color: var(--pd-primary); margin-bottom: 10px; }
 .pd-prd-sec ul { margin: 0 0 0 18px; }
 .pd-prd-sec li { margin-bottom: 4px; }
-.pd-prd-nav { position: fixed; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 50; }
-.pd-prd-nav a { font-size: 13px; font-weight: 700; color: var(--pd-primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 14px; text-decoration: none; }
-.pd-prd-nav a:hover { background: #dbeafe; }
+/* 통일 글로벌 네비(문서형 페이지 상단 고정) */
+.pd-prd-nav { position: fixed; top: 16px; right: 16px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; z-index: 50; max-width: calc(100vw - 32px); }
+.pd-prd-nav a, .pd-prd-nav .pd-nav-link { font-size: 13px; font-weight: 700; color: var(--pd-primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 14px; text-decoration: none; white-space: nowrap; }
+.pd-prd-nav a:hover, .pd-prd-nav a.pd-nav-link:hover { background: #dbeafe; }
+.pd-prd-nav .is-current { background: var(--pd-primary); color: #fff; border-color: var(--pd-primary); cursor: default; }
+.pd-prd-nav .pd-nav-extra { color: #475569; background: #f1f5f9; border-color: #cbd5e1; }
+.pd-prd-nav .pd-nav-extra:hover { background: #e2e8f0; }
+
+/* 디바이스 화면: 좌측 패널(.page-nav) 최상단 — 기획 문서로 점프하는 글로벌 네비 */
+.pd-screen-topnav { flex-shrink: 0; padding: 11px 14px; border-bottom: 1px solid #e5e7eb; background: #f8fafc; }
+.pd-topnav-caption { display: block; font-size: 10px; font-weight: 800; letter-spacing: .05em; color: #9aa0a8; margin-bottom: 8px; }
+.pd-topnav-links { display: flex; flex-wrap: wrap; gap: 6px; }
+.pd-screen-topnav .pd-nav-link { font-size: 11.5px; font-weight: 700; color: var(--pd-primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 4px 9px; text-decoration: none; white-space: nowrap; }
+.pd-screen-topnav .pd-nav-link:hover { background: #dbeafe; }
+.pd-floating-nav { left: 50%; right: auto; transform: translateX(-50%); }
+
+/* 디바이스 목업 세로 시작점 통일 — 모바일/PC/태블릿이 폭·높이와 무관하게
+   동일한 상단 위치에서 시작(중앙정렬 시 짧은 화면이 아래로 내려가던 문제 해결).
+   scale 기준점도 상단으로 두어 축소해도 상단선이 고정된다. */
+.device-stage { align-items: flex-start; padding-top: 48px; }
+.device-mockup { transform-origin: top center; }
 .pd-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .pd-chip { font-size: 12px; font-weight: 600; color: #475569; background: var(--pd-soft); border-radius: 8px; padding: 4px 10px; }
 

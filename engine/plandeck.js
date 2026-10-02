@@ -105,8 +105,48 @@
     return r.name ? (r.entity.name ? (r.entity.name + ' (' + r.name + ')') : r.name) : r.raw;
   }
 
+  // ═══ 0. 통일 글로벌 네비게이션 (전 페이지 공통 이동) ═══
+  // 문서형 페이지(개요·PRD·플로우·상세기획서·핸드오프)와 디바이스 화면에서
+  // 동일한 링크 세트로 어디서든 필요한 페이지로 점프. active 키는 현재 위치 강조용.
+  var DOC_LINKS = [
+    { key: 'workspace', href: '../../index.html', label: '⌂ 워크스페이스' },
+    { key: 'overview',  href: 'index.html',        label: '개요' },
+    { key: 'prd',       href: 'prd.html',           label: 'PRD' },
+    { key: 'flows',     href: 'flows.html',         label: '🧭 플로우' },
+    { key: 'spec',      href: 'spec.html',          label: '상세 기획서' },
+    { key: 'handoff',   href: 'handoff.html',       label: '핸드오프' },
+  ];
+  function navLinksHtml(active) {
+    return DOC_LINKS.map(function (l) {
+      if (l.key === active) return '<span class="pd-nav-link is-current">' + esc(l.label) + '</span>';
+      return '<a class="pd-nav-link" href="' + l.href + '">' + esc(l.label) + '</a>';
+    }).join('');
+  }
+  // 문서형 페이지 상단 고정 네비(.pd-prd-nav). extra = 페이지별 특화 액션(예: 인쇄·PRD.md 원본).
+  function docNav(active, extra) {
+    return '<nav class="pd-prd-nav">' + navLinksHtml(active) + (extra || '') + '</nav>';
+  }
+  // 디바이스 화면: 좌측 패널 최상단에 같은 네비를 주입(문서 페이지로 점프) — 레이아웃 충돌 없음
+  function injectScreenTopnav() {
+    if (document.querySelector('.pd-screen-topnav, .pd-floating-nav')) return;  // 중복 방지
+    var nav = document.querySelector('.page-nav');
+    if (nav) {
+      var bar = document.createElement('div');
+      bar.className = 'pd-screen-topnav';
+      bar.innerHTML = '<span class="pd-topnav-caption">기획 문서로 이동</span><div class="pd-topnav-links">' + navLinksHtml('screen') + '</div>';
+      nav.insertBefore(bar, nav.firstChild);
+    } else {  // page-nav가 없으면(엣지) 상단 중앙 플로팅으로 폴백
+      var pill = document.createElement('nav');
+      pill.className = 'pd-prd-nav pd-floating-nav';
+      pill.innerHTML = navLinksHtml('screen');
+      document.body.appendChild(pill);
+    }
+  }
+
   // ═══ 1. 멀티서피스: 현재 화면의 서피스 디바이스로 재적용 ═══
   function surfaceDeviceKey(page) {
+    // 화면별 디바이스/방향 override(예: 태블릿 세로 device:'tabletPortrait') 최우선
+    if (page && page.device && DEVICES[page.device]) return page.device;
     if (!page || !page.surface || !PROJECT.surfaces) return null;
     for (var i = 0; i < PROJECT.surfaces.length; i++) {
       if (PROJECT.surfaces[i].key === page.surface) return PROJECT.surfaces[i].device;
@@ -169,12 +209,15 @@
     var stage = document.querySelector('.device-stage');
     var screen = document.querySelector('.device-screen');
     if (!stage || !screen) return;
-    var isTablet = d.width < 1100;
+    // 태블릿 판별은 폭이 아니라 디바이스 form(태블릿은 가로/세로 모두 폭이 넓을 수 있음)
+    var isTablet = d.form === 'tablet';
+    var isPortrait = d.height > d.width;
     stage.classList.add('pd-wide');
     if (isTablet) stage.classList.add('pd-tablet');
+    stage.classList.add(isPortrait ? 'pd-portrait' : 'pd-landscape');
     var root = screen.querySelector('.pd-screen');
     if (root) root.classList.add('pd-web');
-    if (!isTablet && root && !screen.querySelector('.pd-browserbar')) {   // PC웹 브라우저 크롬
+    if (!isTablet && root && !screen.querySelector('.pd-browserbar')) {   // PC웹 브라우저 크롬(태블릿 제외)
       var bb = document.createElement('div');
       bb.className = 'pd-browserbar';
       bb.innerHTML = '<div class="dots"><i></i><i></i><i></i></div><div class="url">' + esc((PROJECT.name || 'plandeck') + ' · 관리자 콘솔') + '</div>';
@@ -423,7 +466,7 @@
     var sec = function (t, html) { return '<div class="pd-prd-sec"><h2>' + t + '</h2>' + html + '</div>'; };
     el.className = 'pd-prd-doc';
     el.innerHTML =
-      '<div class="pd-prd-nav"><a href="index.html">← 개요</a><a href="docs/PRD.md">📄 PRD.md 원본</a><a href="handoff.html">개발 핸드오프 →</a></div>' +
+      docNav('prd', '<a class="pd-nav-link pd-nav-extra" href="docs/PRD.md">📄 PRD.md 원본</a>') +
       '<div class="pd-banner" style="margin-bottom:16px">이 화면은 <b>docs/PRD.md</b>(정본)를 렌더한 것입니다. 수정은 PRD.md를 고치거나 <code>/pd-prd</code>로 — 버전을 올리며 갱신돼요.</div>' +
       '<h1>' + esc(PROJECT.name || '제품요구정의서(PRD)') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '') + '</div>' +
@@ -543,7 +586,7 @@
       }).join('') + '</ul></details>') : '';
 
     el.innerHTML =
-      '<div class="pd-prd-nav"><a href="prd.html">PRD →</a><a href="spec.html">상세 기획서 →</a><a href="handoff.html">핸드오프 →</a><a href="../../index.html">⌂ 워크스페이스</a></div>' +
+      docNav('overview') +
       '<h1>' + esc(PROJECT.name || 'PlanDeck 프로젝트') + (PROJECT.version ? '<span class="pd-ver-badge">v' + esc(PROJECT.version) + '</span>' : '') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '아직 설정 전 — <code>/pd-init</code> 으로 시작하세요.') + '</div>' +
       surfaceTabs + quick + progressCard + nextCard +
@@ -558,8 +601,7 @@
     el.className = 'pd-prd-doc pd-spec-doc';
     var pages = flatPages();
     var head =
-      '<div class="pd-prd-nav"><a href="index.html">← 개요</a><a href="prd.html">PRD →</a>' +
-      '<a href="#" onclick="window.print();return false;">🖨 인쇄</a></div>' +
+      docNav('spec', '<a class="pd-nav-link pd-nav-extra" href="#" onclick="window.print();return false;">🖨 인쇄</a>') +
       '<h1>' + esc(PROJECT.name || '상세 기획서') + '</h1>' +
       '<div class="pd-prd-sub">화면별 상세 기획 — 목적·구성요소·동작·예외·개발 인터페이스</div>';
     var body = pages.map(function (p) {
@@ -691,7 +733,7 @@
     el.className = 'pd-flows-doc';
     var flows = window.PLANDECK_FLOWS || window.PDK_FLOWS || [];
     var byId = {}; flatPages().forEach(function (p) { byId[p.id] = p; });
-    var head = '<div class="pd-prd-nav"><a href="index.html">← 개요</a><a href="spec.html">상세 기획서 →</a><a href="handoff.html">핸드오프 →</a></div>' +
+    var head = docNav('flows') +
       '<h1 style="font-size:28px;font-weight:800;margin-bottom:6px">주요 플로우</h1>' +
       '<div class="pd-prd-sub">제품의 핵심 여정을 플로우별로 모아 봅니다. 썸네일을 누르면 해당 화면이 열려요. (화면이 많아져도 플로우 단위로 정리됩니다)</div>';
     if (!flows.length) {
@@ -734,6 +776,7 @@
     try { injectMobileChrome(); } catch (e) {}
     try { injectWideChrome(); } catch (e) {}
     if (bare) return;   // 썸네일(bare): 디바이스만 렌더, 패널 생략
+    try { injectScreenTopnav(); } catch (e) {}
     try { injectStatusChips(); } catch (e) {}
     try { injectCasesPanel(); } catch (e) {}
     try { injectInterfacePanel(); } catch (e) {}

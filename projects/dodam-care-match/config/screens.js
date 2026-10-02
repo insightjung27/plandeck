@@ -294,23 +294,45 @@ window.PLANDECK_SCREENS = [
         },
         flow: { to: [{ screen: 'SCR-ADMIN-001', via: '대시보드', kind: 'auto' }] },
       },
-      // ── 태블릿 대시보드 ──
+      // ── 태블릿 대시보드 (가로/landscape) ──
       {
-        id: 'SCR-TAB-001', label: '태블릿 대시보드', href: 't-dashboard.html',
+        id: 'SCR-TAB-001', label: '태블릿 대시보드(가로)', href: 't-dashboard.html',
         surface: 'tablet', entry: false, status: 'wireframed', designed: false, figmaLink: '',
-        context: '운영자가 태블릿으로 보는 적응형 대시보드(사이드바 접힘·KPI 2열).',
+        context: '운영자가 태블릿 가로 모드로 보는 대시보드. 사이드바 유지 + KPI 4열(가로 폭 충분).',
         components: [
-          { role: '.pd-kpi', kind: 'card', label: 'KPI 카드(2열)' },
+          { role: '.pd-nav-review', kind: 'button', label: '사이드바: 제공자 심사', action: { on: 'click', do: 'go:SCR-ADMIN-002' } },
+          { role: '.pd-kpi', kind: 'card', label: 'KPI 카드(가로: 4열)' },
           { role: '.pd-recent', kind: 'table', label: '최근 신청 테이블' },
         ],
         description: [
-          { text: 'KPI 카드 — 태블릿은 2열로 적응', target: '.pd-kpi' },
+          { text: '가로 모드 — 사이드바 + KPI 4열로 PC에 가깝게', target: '.pd-kpi' },
+          { text: '사이드바 "제공자 심사" → 심사 화면(SCR-ADMIN-002)', target: '.pd-nav-review' },
           { text: '최근 신청 테이블', target: '.pd-recent' },
         ],
         cases: [
           { state: '정상', trigger: '진입', guard: '', result: '대시보드 표시', message: '', target: '.pd-kpi' },
+          { state: '엣지', trigger: '방향 전환', guard: '세로로 회전', result: '세로 레이아웃(SCR-TAB-002)로', message: '', target: '.pd-kpi' },
         ],
         interface: { reads: [{ id: 'adminOverviewTab', intent: '운영 현황 조회(태블릿)', method: 'GET', path: '/admin/overview', response: '{entities.Provider}[]', auth: 'Bearer(운영자)', target: '.pd-kpi' }], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-ADMIN-002', via: '제공자 심사', trigger: '.pd-nav-review' }] },
+      },
+      // ── 태블릿 대시보드 (세로/portrait) — 같은 대시보드의 세로 방향 ──
+      {
+        id: 'SCR-TAB-002', label: '태블릿 대시보드(세로)', href: 't-portrait.html',
+        surface: 'tablet', device: 'tabletPortrait', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        context: '운영자가 태블릿 세로 모드로 보는 대시보드. 사이드바 숨김(GNB 중심) + KPI 2열로 세로에 맞춰 재배치.',
+        components: [
+          { role: '.pd-kpi', kind: 'card', label: 'KPI 카드(세로: 2열)' },
+          { role: '.pd-recent', kind: 'table', label: '최근 신청 테이블' },
+        ],
+        description: [
+          { text: '세로 모드 — 사이드바 숨김, KPI 2열로 폭에 맞춰 적응', target: '.pd-kpi' },
+          { text: '최근 신청 테이블(세로 폭 전체 사용)', target: '.pd-recent' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '세로 대시보드 표시', message: '', target: '.pd-kpi' },
+        ],
+        interface: { reads: [{ id: 'adminOverviewTabP', intent: '운영 현황 조회(태블릿 세로)', method: 'GET', path: '/admin/overview', response: '{entities.Provider}[]', auth: 'Bearer(운영자)', target: '.pd-kpi' }], writes: [], events: [] },
         flow: { to: [] },
       },
     ],
