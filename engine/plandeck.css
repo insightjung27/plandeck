@@ -240,6 +240,10 @@
   border-top-left-radius: 7px; opacity: .55; touch-action: none;
 }
 .page-flow .pd-flow-resize:hover { opacity: 1; border-color: var(--pd-primary); }
+
+/* 좌측 화면 목록 토글(우하단 dock 아이콘으로 열고/닫기) */
+.page-nav.is-hidden { display: none; }
+.pd-nav-toggle-btn.is-off { opacity: .5; }
 .pd-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .pd-chip { font-size: 12px; font-weight: 600; color: #475569; background: var(--pd-soft); border-radius: 8px; padding: 4px 10px; }
 

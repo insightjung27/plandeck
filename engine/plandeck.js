@@ -285,6 +285,20 @@
     (function waitSvg() { if (svg()) { applyZoom(); } else if (tries++ < 50) { setTimeout(waitSvg, 150); } })();
   }
 
+  // 좌측 화면 목록(.page-nav) 열고/닫기 — 우하단 dock에 토글 아이콘 추가(DESCRIPTION·FLOW와 동일 방식)
+  function injectPageNavToggle() {
+    var nav = document.querySelector('.page-nav');
+    var dock = document.querySelector('.pdk-dock');
+    if (!nav || !dock || dock.querySelector('.pd-nav-toggle-btn')) return;
+    var ICON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16" stroke-linecap="round"/><path d="M5.5 7.5h1.6M5.5 10.5h1.6M5.5 13.5h1.6" stroke-linecap="round"/></svg>';
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'pdk-dock-btn pd-dock-btn pd-nav-toggle-btn';
+    btn.setAttribute('data-label', '화면 목록'); btn.setAttribute('aria-label', '화면 목록 열기/닫기');
+    btn.innerHTML = ICON;
+    btn.addEventListener('click', function () { nav.classList.toggle('is-hidden'); btn.classList.toggle('is-off', nav.classList.contains('is-hidden')); });
+    dock.appendChild(btn);
+  }
+
   // ═══ 1. 멀티서피스: 현재 화면의 서피스 디바이스로 재적용 ═══
   function surfaceDeviceKey(page) {
     // 화면별 디바이스/방향 override(예: 태블릿 세로 device:'tabletPortrait') 최우선
@@ -927,6 +941,7 @@
     try { injectCasesPanel(); } catch (e) {}
     try { injectInterfacePanel(); } catch (e) {}
     try { injectDockButtons(); } catch (e) {}
+    try { injectPageNavToggle(); } catch (e) {}
     try { injectLintBanner(); } catch (e) {}
     try { bindActions(); } catch (e) {}
     try { setupReviewMode(); } catch (e) {}
