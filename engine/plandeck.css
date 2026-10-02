@@ -210,6 +210,65 @@
 .pd-nav-search-count { font-size: 11px; color: #6b7280; margin-top: 7px; padding: 0 2px; }
 .pd-nav-search-count.is-empty { color: #b91c1c; }
 
+/* ═══════════════════════════════════════════════════════════════════
+   작업 콘솔 앱 셸 — 문서형 페이지(개요/PRD/플로우/상세기획서/핸드오프)
+   좌측 고정 사이드바(네비·프로젝트정보·액션) + 넓은 본문(가로 폭 최대 활용)
+   ═══════════════════════════════════════════════════════════════════ */
+.pd-appshell { display: flex; align-items: stretch; min-height: 100vh; }
+.pd-sidenav {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 236px; z-index: 40;
+  background: #f8fafc; border-right: 1px solid var(--pd-line);
+  display: flex; flex-direction: column; padding: 20px 14px 16px; gap: 3px;
+  overflow-y: auto; font-family: "Pretendard", -apple-system, sans-serif;
+}
+.pd-side-brand { font-size: 18px; font-weight: 800; color: var(--pd-primary); text-decoration: none; padding: 0 8px 2px; letter-spacing: -0.3px; }
+.pd-side-proj { font-size: 13px; font-weight: 700; color: var(--pd-ink); padding: 6px 8px 14px; margin-bottom: 8px; border-bottom: 1px solid var(--pd-line); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; line-height: 1.35; }
+.pd-side-ver { font-size: 10.5px; font-weight: 700; color: var(--pd-sub); background: var(--pd-soft); border-radius: 5px; padding: 1px 6px; }
+.pd-side-nav { display: flex; flex-direction: column; gap: 2px; }
+.pd-side-link { font-size: 13.5px; font-weight: 600; color: var(--pd-sub); text-decoration: none; padding: 9px 12px; border-radius: 8px; white-space: nowrap; }
+.pd-side-link:hover { background: #eef2f7; color: var(--pd-ink); }
+.pd-side-link.is-current { background: var(--pd-primary); color: #fff; }
+.pd-side-actions { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--pd-line); display: flex; flex-direction: column; gap: 6px; }
+.pd-side-action { font-size: 12.5px; font-weight: 700; color: var(--pd-primary); text-decoration: none; padding: 7px 11px; border: 1px solid #bfdbfe; border-radius: 8px; background: #eff6ff; }
+.pd-side-action:hover { background: #dbeafe; }
+.pd-side-ws { margin-top: auto; padding: 12px 10px 2px; font-size: 12.5px; font-weight: 700; color: var(--pd-sub); text-decoration: none; }
+.pd-side-ws:hover { color: var(--pd-primary); }
+.pd-main { margin-left: 236px; flex: 1 1 auto; min-width: 0; padding: 36px 48px 90px; }
+.pd-appshell .pd-prd-doc, .pd-appshell .pd-flows-doc { max-width: 1360px; margin: 0; padding: 0; }
+
+/* ═══ 워크스페이스(와이드) + 새 프로젝트 만들기 가이드 ═══ */
+.pd-ws { max-width: 1320px; margin: 0 auto; padding: 44px 40px 90px; font-family: "Pretendard", -apple-system, sans-serif; color: var(--pd-ink); line-height: 1.6; }
+.pd-ws-head h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; color: #111827; margin-bottom: 6px; }
+.pd-ws .pd-prd-sub { font-size: 15px; color: var(--pd-sub); margin-bottom: 6px; }
+.pd-newproj { margin: 22px 0 34px; border: 1px solid #bfdbfe; background: linear-gradient(180deg, #f5f9ff, #ffffff); border-radius: 16px; padding: 22px 24px; }
+.pd-newproj-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.pd-newproj-title { font-size: 18px; font-weight: 800; color: var(--pd-ink); }
+.pd-newproj-badge { font-size: 12px; font-weight: 700; color: var(--pd-primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 20px; padding: 3px 10px; }
+.pd-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; }
+.pd-step-item { display: flex; gap: 12px; align-items: flex-start; }
+.pd-step-n { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--pd-primary); color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.pd-step-t { font-size: 14px; font-weight: 700; color: var(--pd-ink); margin-bottom: 3px; line-height: 1.45; }
+.pd-step-d { font-size: 12.5px; color: var(--pd-sub); line-height: 1.6; }
+.pd-newproj-foot { margin-top: 18px; padding-top: 14px; border-top: 1px dashed #cdddf5; font-size: 12.5px; color: var(--pd-sub); line-height: 1.75; }
+.pd-newproj code, .pd-step-d code, .pd-step-t code, .pd-newproj-foot code { background: #eef2ff; color: var(--pd-primary); border-radius: 4px; padding: 1px 6px; font-size: 12px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.pd-ws-projects h2 { font-size: 16px; font-weight: 800; color: var(--pd-primary); margin: 10px 0 14px; }
+.pd-chip-cta { background: var(--pd-primary) !important; color: #fff !important; font-weight: 700; padding: 8px 16px !important; border-radius: 10px !important; font-size: 13px !important; }
+.pd-chip-cta:hover { background: #2a6fe0 !important; }
+
+/* ═══ 앱 셸 반응형 ═══ */
+@media (max-width: 1024px) { .pd-steps { grid-template-columns: 1fr; } }
+@media (max-width: 920px) {
+  .pd-appshell { flex-direction: column; }
+  .pd-sidenav { position: static; width: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; border-right: none; border-bottom: 1px solid var(--pd-line); padding: 12px 16px; overflow: visible; }
+  .pd-side-brand { padding: 0 6px 0 0; }
+  .pd-side-proj { border-bottom: none; margin: 0; padding: 0 10px 0 0; }
+  .pd-side-nav { flex-direction: row; flex-wrap: wrap; }
+  .pd-side-actions { flex-direction: row; border-top: none; margin: 0; padding: 0; }
+  .pd-side-ws { margin: 0; padding: 0 6px; }
+  .pd-main { margin-left: 0; padding: 22px 16px 70px; }
+  .pd-ws { padding: 24px 16px 70px; }
+}
+
 /* 디바이스 목업 세로 시작점 통일 — 모바일/PC/태블릿이 폭·높이와 무관하게
    동일한 상단 위치에서 시작(중앙정렬 시 짧은 화면이 아래로 내려가던 문제 해결).
    scale 기준점도 상단으로 두어 축소해도 상단선이 고정된다.

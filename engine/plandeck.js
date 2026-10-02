@@ -126,6 +126,25 @@
   function docNav(active, extra) {
     return '<nav class="pd-prd-nav">' + navLinksHtml(active) + (extra || '') + '</nav>';
   }
+  // 작업 콘솔 앱 셸 — 좌측 세로 사이드바(네비+프로젝트정보+액션) + 넓은 본문.
+  // 문서형 페이지(개요/PRD/플로우/상세기획서/핸드오프)가 공유해 가로 폭을 최대 활용한다.
+  function sideNavLinks(active) {
+    return DOC_LINKS.filter(function (l) { return l.key !== 'workspace'; }).map(function (l) {
+      return '<a class="pd-side-link' + (l.key === active ? ' is-current' : '') + '" href="' + l.href + '">' + esc(l.label) + '</a>';
+    }).join('');
+  }
+  function pageShell(active, bodyHtml, actionsHtml, docClass) {
+    var dc = docClass || (active === 'flows' ? 'pd-flows-doc' : 'pd-prd-doc');
+    return '<aside class="pd-sidenav">' +
+      '<a class="pd-side-brand" href="../../index.html" title="워크스페이스로">PlanDeck</a>' +
+      '<div class="pd-side-proj">' + esc(PROJECT.name || '프로젝트') +
+        (PROJECT.version ? '<span class="pd-side-ver">v' + esc(PROJECT.version) + '</span>' : '') + '</div>' +
+      '<nav class="pd-side-nav">' + sideNavLinks(active) + '</nav>' +
+      (actionsHtml ? '<div class="pd-side-actions">' + actionsHtml + '</div>' : '') +
+      '<a class="pd-side-ws" href="../../index.html">⌂ 워크스페이스</a>' +
+      '</aside>' +
+      '<main class="pd-main"><div class="pd-doc ' + dc + '">' + bodyHtml + '</div></main>';
+  }
   // 디바이스 화면: 좌측 패널 최상단에 같은 네비를 주입(문서 페이지로 점프) — 레이아웃 충돌 없음
   function injectScreenTopnav() {
     if (document.querySelector('.pd-screen-topnav, .pd-floating-nav')) return;  // 중복 방지
@@ -620,9 +639,8 @@
     var el = document.getElementById('pd-prd-root');
     var d = window.PLANDECK_PRD || {};
     var sec = function (t, html) { return '<div class="pd-prd-sec"><h2>' + t + '</h2>' + html + '</div>'; };
-    el.className = 'pd-prd-doc';
-    el.innerHTML =
-      docNav('prd', '<a class="pd-nav-link pd-nav-extra" href="docs/PRD.md">📄 PRD.md 원본</a>') +
+    el.className = 'pd-appshell';
+    var body =
       '<div class="pd-banner" style="margin-bottom:16px">이 화면은 <b>docs/PRD.md</b>(정본)를 렌더한 것입니다. 수정은 PRD.md를 고치거나 <code>/pd-prd</code>로 — 버전을 올리며 갱신돼요.</div>' +
       '<h1>' + esc(PROJECT.name || '제품요구정의서(PRD)') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '') + '</div>' +
@@ -635,12 +653,13 @@
       sec('⑦ 릴리스', ul(d.releases, function (r) { return r.name ? ('<b>' + esc(r.name) + '</b> — ' + esc((r.scope || []).join(', ')) + (r.when ? ' (' + esc(r.when) + ')' : '')) : esc(r); })) +
       sec('요구사항(화면 추적)', ul(d.requirements, function (r) { return '<code>' + esc(r.reqId) + '</code> ' + esc(r.text); })) +
       (d.openQuestions && d.openQuestions.length ? sec('⚠️ 미결 질문', ul(d.openQuestions)) : '');
+    el.innerHTML = pageShell('prd', body, '<a class="pd-side-action" href="docs/PRD.md">📄 PRD.md 원본</a>');
   }
 
   // ═══ 8. 개요/인벤토리 렌더 (#pd-overview-root) ═══
   function renderOverview() {
     var el = document.getElementById('pd-overview-root');
-    el.className = 'pd-prd-doc';
+    el.className = 'pd-appshell';
     var d = window.PLANDECK_PRD || {};
     var surfaces = PROJECT.surfaces || [];
     var pages = flatPages();
@@ -711,13 +730,11 @@
       '<div class="pd-next-why">' + esc(next.why) + '</div>' +
       '<div class="pd-dim" style="margin-top:8px;font-size:12.5px">막히면 <code>/pd</code> 만 치세요 — 지금 뭘 할지 안내합니다.</div></div>';
 
-    var quick = '<div class="pd-chip-row" style="margin:14px 0">' +
-      '<a class="pd-chip pd-link" href="prd.html">📋 PRD</a>' +
-      '<a class="pd-chip pd-link" href="flows.html">🧭 주요 플로우</a>' +
-      '<a class="pd-chip pd-link" href="spec.html">📄 상세 기획서</a>' +
-      '<a class="pd-chip pd-link" href="handoff.html">🔌 개발·QA 핸드오프</a>' +
-      (n ? '<a class="pd-chip pd-link" href="' + esc((pages.filter(function(p){return p.entry;})[0] || pages[0]).href) + '?mode=review">👁 검토 모드(프로토타입)</a>' : '') +
-      '</div>';
+    // 좌측 사이드바에 이미 PRD/플로우/상세기획서/핸드오프 네비가 있으므로,
+    // 여기선 사이드바에 없는 고유 액션(프로토타입 검토 모드)만 눈에 띄게 둔다(중복 제거).
+    var quick = n ? ('<div class="pd-chip-row" style="margin:14px 0">' +
+      '<a class="pd-chip pd-link pd-chip-cta" href="' + esc((pages.filter(function(p){return p.entry;})[0] || pages[0]).href) + '?mode=review">👁 검토 모드로 프로토타입 보기</a>' +
+      '</div>') : '';
 
     var cheat = '<details class="pd-prd-sec pd-cheat"><summary>📖 커맨드 치트시트</summary>' +
       '<div class="pd-table-wrap"><table class="pd-table"><tbody>' +
@@ -741,23 +758,22 @@
         return '<li><code>v' + esc(c.version) + '</code> <span class="pd-dim">' + esc(c.date || '') + '</span> — ' + esc(c.note || '') + '</li>';
       }).join('') + '</ul></details>') : '';
 
-    el.innerHTML =
-      docNav('overview') +
+    var body =
       '<h1>' + esc(PROJECT.name || 'PlanDeck 프로젝트') + (PROJECT.version ? '<span class="pd-ver-badge">v' + esc(PROJECT.version) + '</span>' : '') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '아직 설정 전 — <code>/pd-init</code> 으로 시작하세요.') + '</div>' +
       surfaceTabs + quick + progressCard + nextCard +
       (d.goals && d.goals.length ? '<div class="pd-prd-sec"><h2>목표</h2>' + ul(d.goals) + '</div>' : '') +
       (pages.length ? inv : '<div class="pd-empty"><div class="pd-empty-icon">🗂️</div><div class="pd-empty-title">아직 화면이 없습니다</div><div class="pd-empty-sub"><code>/pd-prd</code> → <code>/pd-scaffold</code> 로<br>PRD에서 화면을 생성하세요.</div></div>') +
       verCard + cheat;
+    el.innerHTML = pageShell('overview', body);
   }
 
   // ═══ 9. 상세 기획서 렌더 (#pd-spec-root) — 의사결정자/팀 열람·인쇄용 ═══
   function renderSpec() {
     var el = document.getElementById('pd-spec-root');
-    el.className = 'pd-prd-doc pd-spec-doc';
+    el.className = 'pd-appshell';
     var pages = flatPages();
     var head =
-      docNav('spec', '<a class="pd-nav-link pd-nav-extra" href="#" onclick="window.print();return false;">🖨 인쇄</a>') +
       '<h1>' + esc(PROJECT.name || '상세 기획서') + '</h1>' +
       '<div class="pd-prd-sub">화면별 상세 기획 — 목적·구성요소·동작·예외·개발 인터페이스</div>';
     var body = pages.map(function (p) {
@@ -791,7 +807,8 @@
         (p.href ? '<p><a href="' + esc(p.href) + '">↗ 이 화면 프로토타입 열기</a></p>' : '') +
         '</div>';
     }).join('');
-    el.innerHTML = head + (pages.length ? body : '<div class="pd-empty"><div class="pd-empty-icon">📄</div><div class="pd-empty-title">아직 화면이 없습니다</div></div>');
+    var content = head + (pages.length ? body : '<div class="pd-empty"><div class="pd-empty-icon">📄</div><div class="pd-empty-title">아직 화면이 없습니다</div></div>');
+    el.innerHTML = pageShell('spec', content, '<a class="pd-side-action" href="#" onclick="window.print();return false;">🖨 인쇄</a>', 'pd-prd-doc pd-spec-doc');
   }
 
   // ═══ 10. 검토 모드 (의사결정자) — sessionStorage 로 이동해도 유지 ═══
@@ -868,15 +885,35 @@
         (p.updatedAt ? '<span class="pd-chip">' + esc(p.updatedAt) + '</span>' : '') + '</div>' +
         '</a>';
     }).join('');
+    // 새 프로젝트 만들기 — 구체적 단계 가이드(코딩 불필요)
+    var steps = [
+      ['이 폴더에서 <b>Claude Code</b>를 연다', '터미널에서 이 레포 폴더로 이동 후 <code>claude</code> 실행 (또는 VS Code 확장에서 열기). 새로 시작이면 GitHub에서 <b>“Use this template”</b>로 내 레포를 먼저 만든다.'],
+      ['<code>/pd-init</code> 입력 → 질문에 답만', '프로젝트 <b>이름</b>·<b>서피스</b>(모바일/PC웹/태블릿/키오스크)·버전을 물어본다. 답하면 <code>projects/&lt;이름&gt;/</code> 폴더가 자동 생성되고 이 목록에 등록된다. <i>직접 폴더·파일을 만들 필요 없음.</i>'],
+      ['<code>/pd-prd</code> → 상위 기획(PRD) 작성', '핵심만 적으면 된다. 부족하면 되물어 채워준다(역질문). 정본은 <code>docs/PRD.md</code>로 버전 관리된다.'],
+      ['<code>/pd-scaffold</code> → 기본 화면 자동 생성', 'PRD에서 기본 프로세스 화면들을 뽑아준다. 이후 <code>/pd-wireframe</code> → <code>/pd-cases</code> → <code>/pd-interface</code>로 화면을 상세화.'],
+    ];
+    var stepHtml = steps.map(function (s, i) {
+      return '<li class="pd-step-item"><div class="pd-step-n">' + (i + 1) + '</div>' +
+        '<div class="pd-step-body"><div class="pd-step-t">' + s[0] + '</div><div class="pd-step-d">' + s[1] + '</div></div></li>';
+    }).join('');
+    var guide = '<section class="pd-newproj">' +
+      '<div class="pd-newproj-head"><span class="pd-newproj-title">🚀 새 프로젝트 만들기</span>' +
+      '<span class="pd-newproj-badge">약 3분 · 코딩 불필요</span></div>' +
+      '<ol class="pd-steps">' + stepHtml + '</ol>' +
+      '<div class="pd-newproj-foot">막히면 아무 때나 <code>/pd</code> — 지금 뭘 할지 안내합니다. · 브라우저로 보기: <b>start.command</b>(맥)/<b>start.bat</b>(윈도) 더블클릭 → 자동 오픈.' +
+      ' · 문서: <a href="docs/GUIDE.md">GUIDE</a> · <a href="docs/TEAM.md">TEAM</a> · <a href="docs/OPERATIONS.md">OPERATIONS</a></div>' +
+      '</section>';
+
+    el.className = 'pd-ws';
     el.innerHTML =
-      '<h1>' + esc(ws.org || 'PlanDeck') + ' 워크스페이스</h1>' +
-      '<div class="pd-prd-sub">여러 기획 프로젝트를 한곳에서. 프로젝트를 열어 기획서를 확인하세요.</div>' +
+      '<div class="pd-ws-head"><h1>' + esc(ws.org || 'PlanDeck') + ' 워크스페이스</h1>' +
+      '<div class="pd-prd-sub">여러 기획 프로젝트를 한곳에서. 아래에서 프로젝트를 열거나, 새로 만드세요.</div></div>' +
       dupWarn +
+      guide +
+      '<div class="pd-ws-projects"><h2>내 프로젝트' + (projs.length ? ' <span class="pd-dim">(' + projs.length + ')</span>' : '') + '</h2>' +
       (projs.length ? '<div class="pd-proj-grid">' + cards + '</div>'
-        : '<div class="pd-empty"><div class="pd-empty-icon">🗂️</div><div class="pd-empty-title">아직 프로젝트가 없습니다</div><div class="pd-empty-sub">Claude Code 에서 <code>/pd-init</code> 으로<br>새 프로젝트를 만드세요.</div></div>') +
-      '<div class="pd-prd-sec" style="margin-top:28px"><h2>새 프로젝트 시작</h2>' +
-      '<p>Claude Code 에서 <code>/pd-init</code> → <code>/pd-prd</code> → <code>/pd-scaffold</code>. 막히면 <code>/pd</code>.</p>' +
-      '<p class="pd-dim">문서: <a href="docs/GUIDE.md">GUIDE</a> · <a href="docs/TEAM.md">TEAM</a> · <a href="docs/OPERATIONS.md">OPERATIONS</a></p></div>';
+        : '<div class="pd-empty"><div class="pd-empty-icon">🗂️</div><div class="pd-empty-title">아직 프로젝트가 없습니다</div><div class="pd-empty-sub">위 <b>새 프로젝트 만들기</b>의 <code>/pd-init</code> 로 시작하세요.</div></div>') +
+      '</div>';
   }
 
   // ═══ 13. 플로우 뷰(#pd-flows-root) — 플로우별 필름스트립(실제 화면 썸네일) ═══
@@ -887,14 +924,14 @@
   }
   function renderFlows() {
     var el = document.getElementById('pd-flows-root');
-    el.className = 'pd-flows-doc';
+    el.className = 'pd-appshell';
     var flows = window.PLANDECK_FLOWS || window.PDK_FLOWS || [];
     var byId = {}; flatPages().forEach(function (p) { byId[p.id] = p; });
-    var head = docNav('flows') +
+    var head =
       '<h1 style="font-size:28px;font-weight:800;margin-bottom:6px">주요 플로우</h1>' +
       '<div class="pd-prd-sub">제품의 핵심 여정을 플로우별로 모아 봅니다. 썸네일을 누르면 해당 화면이 열려요. (화면이 많아져도 플로우 단위로 정리됩니다)</div>';
     if (!flows.length) {
-      el.innerHTML = head + '<div class="pd-empty"><div class="pd-empty-icon">🧭</div><div class="pd-empty-title">등록된 플로우가 없습니다</div><div class="pd-empty-sub"><code>/pd-flow</code> 로 주요 플로우를 정의하세요.</div></div>';
+      el.innerHTML = pageShell('flows', head + '<div class="pd-empty"><div class="pd-empty-icon">🧭</div><div class="pd-empty-title">등록된 플로우가 없습니다</div><div class="pd-empty-sub"><code>/pd-flow</code> 로 주요 플로우를 정의하세요.</div></div>');
       return;
     }
     var blocks = flows.map(function (f) {
@@ -916,7 +953,7 @@
         (f.desc ? '<div class="pd-flow-desc">' + esc(f.desc) + '</div>' : '') +
         '<div class="pd-strip">' + strip + '</div></div>';
     }).join('');
-    el.innerHTML = head + blocks;
+    el.innerHTML = pageShell('flows', head + blocks);
   }
 
   // ═══ init ═══

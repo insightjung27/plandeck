@@ -15,21 +15,28 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function flat() { var o = []; SCREENS.forEach(function (c) { (c.pages || []).forEach(function (p) { o.push(p); }); }); return o; }
 
-  // 통일 글로벌 네비(plandeck.js 와 동일 세트 — handoff 페이지는 plandeck.js 미로드라 자체 내장)
-  function docNav(active) {
-    var links = [
-      { key: 'workspace', href: '../../index.html', label: '⌂ 워크스페이스' },
-      { key: 'overview',  href: 'index.html',        label: '개요' },
-      { key: 'prd',       href: 'prd.html',           label: 'PRD' },
-      { key: 'flows',     href: 'flows.html',         label: '🧭 플로우' },
-      { key: 'spec',      href: 'spec.html',          label: '상세 기획서' },
-      { key: 'handoff',   href: 'handoff.html',       label: '핸드오프' },
+  // 작업 콘솔 앱 셸(plandeck.js 와 동일 — handoff 페이지는 plandeck.js 미로드라 자체 내장)
+  function sideNavLinks(active) {
+    return [
+      { key: 'overview', href: 'index.html',   label: '개요' },
+      { key: 'prd',      href: 'prd.html',      label: 'PRD' },
+      { key: 'flows',    href: 'flows.html',    label: '🧭 플로우' },
+      { key: 'spec',     href: 'spec.html',     label: '상세 기획서' },
+      { key: 'handoff',  href: 'handoff.html',  label: '핸드오프' },
     ].map(function (l) {
-      return l.key === active
-        ? '<span class="pd-nav-link is-current">' + esc(l.label) + '</span>'
-        : '<a class="pd-nav-link" href="' + l.href + '">' + esc(l.label) + '</a>';
+      return '<a class="pd-side-link' + (l.key === active ? ' is-current' : '') + '" href="' + l.href + '">' + esc(l.label) + '</a>';
     }).join('');
-    return '<nav class="pd-prd-nav">' + links + '</nav>';
+  }
+  function pageShell(active, bodyHtml, actionsHtml) {
+    return '<aside class="pd-sidenav">' +
+      '<a class="pd-side-brand" href="../../index.html" title="워크스페이스로">PlanDeck</a>' +
+      '<div class="pd-side-proj">' + esc(PROJECT.name || '프로젝트') +
+        (PROJECT.version ? '<span class="pd-side-ver">v' + esc(PROJECT.version) + '</span>' : '') + '</div>' +
+      '<nav class="pd-side-nav">' + sideNavLinks(active) + '</nav>' +
+      (actionsHtml ? '<div class="pd-side-actions">' + actionsHtml + '</div>' : '') +
+      '<a class="pd-side-ws" href="../../index.html">⌂ 워크스페이스</a>' +
+      '</aside>' +
+      '<main class="pd-main"><div class="pd-doc pd-prd-doc">' + bodyHtml + '</div></main>';
   }
   function refName(ref) { var m = String(ref || '').match(/^\{entities\.([A-Za-z0-9_]+)\}$/); return m ? m[1] : null; }
 
@@ -258,7 +265,7 @@
   function render() {
     var el = document.getElementById('pd-handoff-root');
     if (!el) return;
-    el.className = 'pd-prd-doc';
+    el.className = 'pd-appshell';
     var oas = buildOpenAPI(), md = buildMarkdown(), bundle = buildBundle();
     var gherkin = buildGherkin(), qamd = buildQAChecklist();
     var cov = coverageRows();
@@ -273,8 +280,7 @@
       (OAS_WARNINGS.length ? '<div style="margin-top:10px;font-size:12.5px;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:8px 12px">⚠ OpenAPI 경고: ' + OAS_WARNINGS.map(esc).join(' · ') + '</div>' : '');
     var readyN = cov.filter(function (r) { return r.ready; }).length;
 
-    el.innerHTML =
-      docNav('handoff') +
+    var body =
       '<h1>개발 핸드오프</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.name || '') + ' · 전 화면 계약을 개발자/에이전트가 소비할 형태로 집계합니다.</div>' +
       '<div class="pd-prd-sec"><h2>완결성 대시보드 <span class="pd-dim">(개발준비 ' + readyN + '/' + cov.length + ')</span></h2>' + covTable + '</div>' +
@@ -289,6 +295,7 @@
       '<div class="pd-prd-sec"><h2>미리보기 — 마크다운 스펙</h2><pre style="white-space:pre-wrap;font-size:12.5px;line-height:1.6;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:14px;overflow:auto;max-height:420px;">' + esc(md) + '</pre></div>' +
       '<div class="pd-prd-sec"><h2>미리보기 — OpenAPI 3.1</h2><pre style="white-space:pre;font-size:12px;line-height:1.5;background:#0f172a;color:#e2e8f0;border-radius:10px;padding:14px;overflow:auto;max-height:420px;">' + esc(JSON.stringify(oas, null, 2)) + '</pre></div>' +
       '<div class="pd-prd-sec"><h2>미리보기 — QA 테스트플랜 (Gherkin)</h2><pre style="white-space:pre-wrap;font-size:12.5px;line-height:1.6;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:14px;overflow:auto;max-height:420px;">' + esc(gherkin) + '</pre></div>';
+    el.innerHTML = pageShell('handoff', body);
 
     var base = (PROJECT.name || 'plandeck').replace(/\s+/g, '_');
     document.getElementById('dl-oas').onclick = function () { dl(base + '.openapi.json', JSON.stringify(oas, null, 2), 'application/json'); };
