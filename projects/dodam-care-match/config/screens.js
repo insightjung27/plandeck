@@ -7,8 +7,8 @@ window.PLANDECK_SCREENS = [
       {
         id: 'SCR-HOME-001', label: '홈', href: 'm-home.html',
         surface: 'mobile', entry: true, status: 'ready-for-dev', designed: false, figmaLink: '',
-        // Figma 연동 Phase1 데모 — 실제 MCP/REST 연결 전 플레이스홀더 디자인(SVG). /pd-figma-sync 가 이 필드를 채움.
-        fidelity: 'design',
+        // Figma 연동은 '옵션' — 기본은 와이어프레임, 상단 [디자인] 토글로 켤 때만 아래 디자인이 보인다.
+        // (Phase1 데모: 실제 MCP/REST 연결 전 플레이스홀더 SVG. /pd-figma-sync 가 이 figma 필드를 채움)
         figma: {
           image: 'assets/figma/SCR-HOME-001.svg', imageW: 360, imageH: 782,
           hotspots: [

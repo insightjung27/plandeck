@@ -214,11 +214,10 @@
   function getFidelityPref() { try { return sessionStorage.getItem('pd-fidelity') || ''; } catch (e) { return ''; } }
   function setFidelityPref(v) { try { if (v) sessionStorage.setItem('pd-fidelity', v); else sessionStorage.removeItem('pd-fidelity'); } catch (e) {} }
   function effectiveFidelity(page) {
+    // 기본은 '항상' 와이어프레임(피그마 연동 없이). 디자인/프로토타입은 사용자가 토글로 켤 때만(옵션).
     var stages = figmaStages(page), pref = getFidelityPref();
     try { var u = new URLSearchParams(location.search).get('fidelity'); if (u) pref = u; } catch (e) {}
-    if (pref && stages.indexOf(pref) >= 0) return pref;
-    if (document.body.classList.contains('pd-review-mode')) return stages[stages.length - 1]; // 검토모드=가용 최고 충실도
-    if (page.fidelity && stages.indexOf(page.fidelity) >= 0) return page.fidelity;             // 화면 선언 기본(승격)
+    if (pref && stages.indexOf(pref) >= 0) return pref;   // 세션 토글 선택 / ?fidelity= 만 반영
     return 'wireframe';
   }
   function applyFidelity() {

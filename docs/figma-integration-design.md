@@ -35,7 +35,8 @@ Figma 디자인                            화면(device frame) 안에
 {
   id: 'SCR-HOME-001', label: '홈', href: 'm-home.html',
   designed: true,                         // 디자인 반영됨(기존 플래그 유지)
-  fidelity: 'design',                     // 'wireframe' | 'design' | 'prototype'  ← 승격 단계
+  // fidelity 필드(선택): 준비된 최고 단계 메타. 표시 '기본'은 항상 wireframe이며 자동 승격 안 함.
+  // 디자인/프로토타입은 토글(sessionStorage)·?fidelity= 로만 켠다. figma 존재=토글 옵션 활성화일 뿐.
   figma: {
     fileKey: 'AbC123…',                   // Figma 파일 키
     nodeId: '525:4832',                   // 프레임 노드 ID
@@ -60,9 +61,12 @@ Figma 디자인                            화면(device frame) 안에
 
 ## 2. 승격(Fidelity) 사다리 — "프로토타입으로 승격"
 
+> **기본 원칙(확정): 기본은 '항상' 와이어프레임. Figma 연동은 옵션이다.**
+> 디자인/프로토타입은 **사용자가 상단 토글로 켤 때만**(또는 `?fidelity=` URL) 보인다. 화면에 figma 데이터가 있어도 **자동 승격하지 않는다**(검토 모드 포함). 즉 figma 필드는 "토글로 켤 수 있는 옵션"을 활성화할 뿐, 기본 표시를 바꾸지 않는다. Figma 없이도 툴은 100% 동작한다.
+
 ```
 wireframe ──(Figma 매핑+이미지)──▶ design ──(프로토타입 임베드)──▶ prototype
-흑백 화면설계서        디자인 스냅샷(정적, 항상 동작)        실제 상호작용(Figma가 처리)
+흑백 화면설계서(기본)   디자인 스냅샷(토글 opt-in)     실제 상호작용(토글 opt-in)
 ```
 
 - **design**: 디바이스 프레임(아이폰/PC 크롬) 안에 Figma 프레임 PNG를 넣고, **PlanDeck 플로우 CTA를 투명 핫스팟으로 오버레이** → 정적 이미지여도 화면 간 이동(눌러보기) 가능. 공개/정적/무인증에서 100% 동작.
