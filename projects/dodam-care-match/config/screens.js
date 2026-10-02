@@ -1,0 +1,247 @@
+/* 도담 돌봄·치료 매칭 — 보호자 앱 핵심 플로우 (파일럿 초안, 모바일 6화면) */
+window.PLANDECK_SCREENS = [
+  {
+    category: '돌봄·치료 매칭',
+    pages: [
+      // ── 1. 홈 (진입점, 개발준비) ──
+      {
+        id: 'SCR-HOME-001', label: '홈', href: 'm-home.html',
+        surface: 'mobile', entry: true, status: 'ready-for-dev', designed: false, figmaLink: '',
+        _hash: 'h1whcgw',   // /pd-lint 동결(실제 해시) — 이후 편집되면 '변경됨' 자동 표시
+        reqIds: ['REQ-001'],
+        context: '앱 진입 첫 화면. 검색바 + 서비스 카테고리 + 검증된 추천 제공자. 여기서 탐색을 시작한다.',
+        components: [
+          { role: '.pd-search', kind: 'button', label: '검색바(지역·서비스)', action: { on: 'click', do: 'go:SCR-SEARCH-001' } },
+          { role: '.pd-cat', kind: 'list', label: '서비스 카테고리(언어/놀이/감각…)', action: { on: 'click', do: 'go:SCR-SEARCH-001' } },
+          { role: '.pd-reco', kind: 'list', label: '추천 제공자 카드', action: { on: 'click', do: 'go:SCR-PROVIDER-001' } },
+        ],
+        description: [
+          { text: '검색바 — 탭하면 검색결과(SCR-SEARCH-001)로 이동', target: '.pd-search' },
+          { text: '서비스 카테고리 — 선택 시 해당 조건으로 검색', target: '.pd-cat' },
+          { text: '검증된 추천 제공자 — 선택 시 상세(SCR-PROVIDER-001)', target: '.pd-reco' },
+        ],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '홈 로딩 시작', message: '', placement: '', target: '.pd-reco' },
+          { state: '로딩', trigger: '추천 요청', guard: '', result: '스켈레톤 카드', message: '', placement: '', api: { endpoint: 'GET /home/recommendations', status: 200 } },
+          { state: '정상', trigger: '응답', guard: '추천 1건 이상', result: '카테고리+추천 표시', message: '', placement: '', target: '.pd-reco' },
+          { state: '빈데이터', trigger: '응답', guard: '추천 0건', result: '검색 유도 안내', message: '아직 추천이 없어요. 검색으로 찾아보세요', placement: 'inline', target: '.pd-reco' },
+          { state: '에러', trigger: '응답', guard: '서버 오류', result: '재시도', message: '정보를 불러오지 못했어요. 다시 시도해 주세요', placement: 'inline', api: { endpoint: 'GET /home/recommendations', status: 500 } },
+          { state: '권한없음', trigger: '진입', guard: '로그인 만료', result: '로그인으로', message: '다시 로그인해 주세요', placement: 'full-page', api: { endpoint: 'GET /home/recommendations', status: 401 } },
+          { state: 'N/A', trigger: '', guard: '엣지: 홈은 단순 조회라 해당 없음', result: '', message: '', placement: '' },
+        ],
+        interface: {
+          reads: [
+            {
+              id: 'getRecommendations', intent: '홈 추천 제공자 조회', method: 'GET', path: '/home/recommendations',
+              params: [{ in: 'query', name: 'region', type: 'string', required: false, note: '보호자 기본 지역' }],
+              response: '{entities.Provider}[]',
+              errors: [{ status: 401, when: '로그인 만료' }, { status: 500, when: '서버 오류', message: '정보를 불러오지 못했어요' }],
+              auth: 'Bearer', target: '.pd-reco',
+            },
+          ],
+          writes: [], events: [],
+        },
+        flow: { to: [{ screen: 'SCR-SEARCH-001', via: '검색/카테고리', trigger: '.pd-search' }, { screen: 'SCR-PROVIDER-001', via: '추천 선택', trigger: '.pd-reco' }] },
+      },
+      // ── 2. 검색결과 (확정) ──
+      {
+        id: 'SCR-SEARCH-001', label: '검색결과', href: 'm-search.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '',
+        reqIds: ['REQ-002'],
+        context: '지역·장애유형·서비스종류 필터로 검증된 제공자를 찾는 목록 화면.',
+        components: [
+          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-HOME-001' } },
+          { role: '.pd-filter', kind: 'button', label: '필터(지역/장애유형/서비스)' },
+          { role: '.pd-list', kind: 'list', label: '제공자 카드 목록', action: { on: 'click', do: 'go:SCR-PROVIDER-001' } },
+        ],
+        description: [
+          { text: '필터 — 지역·장애유형·서비스종류로 좁히기', target: '.pd-filter' },
+          { text: '제공자 카드(검증배지·평점) — 선택 시 상세(SCR-PROVIDER-001)', target: '.pd-list' },
+          { text: '뒤로 — 홈(SCR-HOME-001)', target: '.pd-back' },
+        ],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '필터 기본값으로 조회', message: '', placement: '' },
+          { state: '로딩', trigger: '검색', guard: '', result: '스켈레톤 목록', message: '', placement: '', api: { endpoint: 'GET /providers', status: 200 } },
+          { state: '정상', trigger: '응답', guard: '결과 1건 이상', result: '카드 목록', message: '', placement: '', target: '.pd-list' },
+          { state: '빈데이터', trigger: '응답', guard: '조건 결과 0건', result: '빈 상태 + 필터 완화 제안', message: '조건에 맞는 제공자가 없어요. 필터를 넓혀보세요', placement: 'full-page', target: '.pd-list' },
+          { state: '에러', trigger: '응답', guard: '서버 오류', result: '재시도', message: '검색에 실패했어요. 다시 시도해 주세요', placement: 'inline', api: { endpoint: 'GET /providers', status: 500 } },
+          { state: '권한없음', trigger: '진입', guard: '로그인 만료', result: '로그인으로', message: '다시 로그인해 주세요', placement: 'full-page', api: { endpoint: 'GET /providers', status: 401 } },
+          { state: '엣지', trigger: '스크롤', guard: '다음 페이지', result: '무한스크롤 추가 로드', message: '', placement: '', target: '.pd-list' },
+        ],
+        interface: {
+          reads: [
+            {
+              id: 'searchProviders', intent: '제공자 검색', method: 'GET', path: '/providers',
+              params: [
+                { in: 'query', name: 'region', type: 'string', required: false },
+                { in: 'query', name: 'needsTag', type: 'string', required: false, note: '장애유형 태그' },
+                { in: 'query', name: 'serviceType', type: 'string', required: false },
+                { in: 'query', name: 'cursor', type: 'string', required: false },
+              ],
+              response: '{entities.Provider}[]',
+              errors: [{ status: 401, when: '로그인 만료' }, { status: 500, when: '서버 오류', message: '검색에 실패했어요' }],
+              auth: 'Bearer', target: '.pd-list',
+            },
+          ],
+          writes: [], events: [],
+        },
+        flow: { to: [{ screen: 'SCR-PROVIDER-001', via: '제공자 선택', trigger: '.pd-list' }] },
+      },
+      // ── 3. 제공자 상세 (확정) ──
+      {
+        id: 'SCR-PROVIDER-001', label: '제공자 상세', href: 'm-provider.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '',
+        reqIds: ['REQ-003'],
+        context: '제공자 프로필·검증배지·제공 서비스·후기. 하단 CTA로 예약 신청 진입.',
+        components: [
+          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SEARCH-001' } },
+          { role: '.pd-hero', kind: 'hero', label: '제공자 프로필(사진·이름)' },
+          { role: '.pd-verify', kind: 'card', label: '검증 배지' },
+          { role: '.pd-reviews', kind: 'list', label: '후기 목록' },
+          { role: '.pd-btn-book', kind: 'button', label: '예약하기', action: { on: 'click', do: 'go:SCR-BOOK-001' } },
+        ],
+        description: [
+          { text: '제공자 프로필(이름·지역·서비스)', target: '.pd-hero' },
+          { text: '검증 배지 — 심사 통과 제공자', target: '.pd-verify' },
+          { text: '후기 — 평점·보호자 후기', target: '.pd-reviews' },
+          { text: '예약하기 → 예약 신청(SCR-BOOK-001)', target: '.pd-btn-book' },
+        ],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '상세 로딩', message: '', placement: '' },
+          { state: '로딩', trigger: '진입', guard: '', result: '스켈레톤', message: '', placement: '' },
+          { state: '정상', trigger: '응답', guard: '검증 제공자', result: '상세 표시, 예약 활성', message: '', placement: '', target: '.pd-btn-book', api: { endpoint: 'GET /providers/{id}', status: 200 } },
+          { state: '빈데이터', trigger: '응답', guard: '후기 0건', result: '후기 빈 상태', message: '아직 후기가 없어요', placement: 'inline', target: '.pd-reviews' },
+          { state: '에러', trigger: '응답', guard: '제공자 없음', result: '목록으로', message: '제공자를 찾을 수 없어요', placement: 'full-page', api: { endpoint: 'GET /providers/{id}', status: 404 } },
+          { state: '권한없음', trigger: '진입', guard: '로그인 만료', result: '로그인으로', message: '다시 로그인해 주세요', placement: 'full-page', api: { endpoint: 'GET /providers/{id}', status: 401 } },
+          { state: '엣지', trigger: '진입', guard: '제공자 검증 해지/휴업', result: '예약 비활성 + 안내', message: '현재 예약을 받지 않는 제공자예요', placement: 'inline', target: '.pd-btn-book' },
+        ],
+        interface: {
+          reads: [
+            {
+              id: 'getProvider', intent: '제공자 상세 조회', method: 'GET', path: '/providers/{id}', response: '{entities.Provider}',
+              errors: [{ status: 404, when: '제공자 없음', message: '제공자를 찾을 수 없어요' }, { status: 401, when: '로그인 만료' }],
+              auth: 'Bearer', target: '.pd-hero',
+            },
+          ],
+          writes: [], events: [],
+        },
+        flow: { to: [{ screen: 'SCR-BOOK-001', via: '예약하기', trigger: '.pd-btn-book' }] },
+      },
+      // ── 4. 예약 신청 (입력 폼 → 입력검증 게이트 시연, 와이어프레임) ──
+      {
+        id: 'SCR-BOOK-001', label: '예약 신청', href: 'm-book.html',
+        surface: 'mobile', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        reqIds: ['REQ-004'],
+        context: '아동 선택·서비스·희망 일정·요청사항·동의를 입력하는 예약 신청 폼.',
+        components: [
+          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-PROVIDER-001' } },
+          { role: '.pd-child', kind: 'input', label: '아동 선택(프로필)' },
+          { role: '.pd-service', kind: 'input', label: '서비스 선택' },
+          { role: '.pd-slots', kind: 'input', label: '희망 일정(1~3개)' },
+          { role: '.pd-note', kind: 'input', label: '요청사항(선택)' },
+          { role: '.pd-consent', kind: 'input', label: '민감정보 제공 동의' },
+          { role: '.pd-btn-next', kind: 'button', label: '다음', action: { on: 'click', do: 'go:SCR-CONFIRM-001' } },
+        ],
+        description: [
+          { text: '아동 선택 — 등록된 아동 프로필', target: '.pd-child' },
+          { text: '희망 일정 — 1~3개 선택', target: '.pd-slots' },
+          { text: '민감정보 제공 동의(필수)', target: '.pd-consent' },
+          { text: '다음 → 예약 확인(SCR-CONFIRM-001)', target: '.pd-btn-next' },
+        ],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '폼 표시(아동 1개면 자동 선택)', message: '', placement: '', target: '.pd-child' },
+          { state: '로딩', trigger: '아동 목록 조회', guard: '', result: '스켈레톤', message: '', placement: '' },
+          { state: '정상', trigger: '입력 완료', guard: '모든 필수 + 동의', result: '다음 활성→확인 화면', message: '', placement: '', target: '.pd-btn-next' },
+          { state: '빈데이터', trigger: '진입', guard: '등록 아동 0명', result: '아동 등록 유도', message: '먼저 아동 프로필을 등록해 주세요', placement: 'full-page', target: '.pd-child' },
+          { state: '에러', trigger: '아동 조회', guard: '서버 오류', result: '재시도', message: '정보를 불러오지 못했어요', placement: 'inline' },
+          { state: '권한없음', trigger: '진입', guard: '로그인 만료', result: '로그인으로', message: '다시 로그인해 주세요', placement: 'full-page' },
+          { state: '엣지', trigger: '일정 선택', guard: '4개 이상 선택', result: '최대 3개 제한', message: '희망 일정은 최대 3개까지예요', placement: 'toast', target: '.pd-slots' },
+          // 입력검증 5종 (폼이라 커버리지 요구)
+          { state: '필수누락', trigger: '다음', guard: '아동/서비스/일정 미입력', result: '제출 막음', message: '필수 항목을 모두 입력해 주세요', placement: 'inline', target: '.pd-btn-next', priority: 'P1', testId: 'TC-BOOK-001' },
+          { state: '형식오류', trigger: '다음', guard: '일정이 과거 시각', result: '제출 막음', message: '지난 시간은 선택할 수 없어요', placement: 'inline', target: '.pd-slots', priority: 'P1', testId: 'TC-BOOK-002' },
+          { state: '범위경계', trigger: '일정 선택', guard: '운영시간 밖(예: 22:00)', result: '선택 차단', message: '예약 가능 시간(09~18시)만 선택돼요', placement: 'inline', target: '.pd-slots', priority: 'P2', testId: 'TC-BOOK-003' },
+          { state: '중복충돌', trigger: '다음', guard: '같은 제공자 동일 시간 기예약', result: '제출 막음', message: '이미 같은 시간에 신청한 예약이 있어요', placement: 'inline', target: '.pd-slots', priority: 'P2', testId: 'TC-BOOK-004' },
+          { state: '유효', trigger: '다음', guard: '동의 체크 + 필수 충족', result: '확인 화면으로', message: '', placement: '', target: '.pd-btn-next', priority: 'P0', testId: 'TC-BOOK-005' },
+        ],
+        interface: {
+          reads: [
+            { id: 'listChildren', intent: '등록 아동 조회', method: 'GET', path: '/me/children', response: '{entities.Child}[]', errors: [{ status: 401, when: '로그인 만료' }], auth: 'Bearer', target: '.pd-child' },
+          ],
+          writes: [], events: [],
+        },
+        flow: { to: [{ screen: 'SCR-CONFIRM-001', via: '다음', trigger: '.pd-btn-next' }] },
+      },
+      // ── 5. 예약 확인 (분기, 확정) ──
+      {
+        id: 'SCR-CONFIRM-001', label: '예약 확인', href: 'm-confirm.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '',
+        reqIds: ['REQ-004'],
+        context: '입력 요약을 확인하고 최종 동의 후 신청. 성공 시 완료, 실패 시 사유 안내.',
+        components: [
+          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-BOOK-001' } },
+          { role: '.pd-summary', kind: 'card', label: '예약 요약(제공자·아동·일정)' },
+          { role: '.pd-consent-final', kind: 'checkbox', label: '최종 동의' },
+          { role: '.pd-btn-submit', kind: 'button', label: '신청하기', action: { on: 'click', do: 'write:createBooking' } },
+        ],
+        description: [
+          { text: '예약 요약 — 제공자·아동·희망 일정 확인', target: '.pd-summary' },
+          { text: '신청하기 → createBooking → 성공 시 완료(SCR-DONE-001)', target: '.pd-btn-submit' },
+        ],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '요약 표시', message: '', placement: '', target: '.pd-summary' },
+          { state: '로딩', trigger: '신청하기', guard: '전송 중', result: '버튼 로딩·중복제출 방지', message: '', placement: '', target: '.pd-btn-submit' },
+          { state: '정상', trigger: '신청하기', guard: '신청 성공', result: '완료 화면(SCR-DONE-001)', message: '', placement: '', target: '.pd-btn-submit', api: { endpoint: 'POST /bookings', status: 201 }, priority: 'P0', testId: 'TC-CONF-001' },
+          { state: '에러', trigger: '신청하기', guard: '제공자 일정 마감', result: '같은 화면 유지 + 일정 재선택 유도', message: '선택한 시간이 마감됐어요. 다른 시간을 골라주세요', placement: 'toast', target: '.pd-btn-submit', api: { endpoint: 'POST /bookings', status: 409 }, priority: 'P0', testId: 'TC-CONF-002' },
+          { state: '권한없음', trigger: '신청하기', guard: '로그인 만료', result: '로그인 후 재시도', message: '다시 로그인해 주세요', placement: 'full-page', api: { endpoint: 'POST /bookings', status: 401 } },
+          { state: '빈데이터', trigger: '', guard: 'N/A: 요약 화면이라 빈데이터 없음', result: '', message: '', placement: '' },
+          { state: '엣지', trigger: '신청하기', guard: '네트워크 끊김', result: '재시도 안내(멱등키로 중복 방지)', message: '연결이 불안정해요. 다시 시도해 주세요', placement: 'toast', target: '.pd-btn-submit' },
+        ],
+        interface: {
+          reads: [],
+          writes: [
+            {
+              id: 'createBooking', intent: '예약 신청(승인 대기 생성)', method: 'POST', path: '/bookings', successStatus: 201,
+              request: '{entities.BookingDraft}', response: '{entities.Booking}',
+              errors: [
+                { status: 409, when: '제공자 일정 마감', message: '선택한 시간이 마감됐어요' },
+                { status: 422, when: '동의 누락/유효성 실패', message: '필수 동의가 필요해요' },
+                { status: 401, when: '로그인 만료' },
+              ],
+              auth: 'Bearer', idempotency: 'Idempotency-Key 헤더(중복신청 방지)', target: '.pd-btn-submit',
+            },
+          ],
+          events: [{ name: 'booking.requested', when: '예약 신청 생성 시(제공자 알림)', payload: '{entities.Booking}' }],
+        },
+        flow: {
+          to: [
+            { screen: 'SCR-DONE-001', via: '신청 성공', branch: '신청 성공 여부', onCall: 'createBooking' },
+            { screen: 'SCR-CONFIRM-001', via: '마감/실패(같은 화면)', branch: '신청 성공 여부', kind: 'auto' },
+          ],
+        },
+      },
+      // ── 6. 신청 완료 (와이어프레임, 자동/수동 복귀) ──
+      {
+        id: 'SCR-DONE-001', label: '신청 완료', href: 'm-done.html',
+        surface: 'mobile', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        reqIds: ['REQ-004'],
+        context: '예약 신청 완료 + 제공자 승인 대기 안내. 내 예약/홈으로 이동.',
+        components: [
+          { role: '.pd-title', kind: 'title', label: '신청 완료 안내' },
+          { role: '.pd-btn-mybooking', kind: 'button', label: '내 예약 보기', action: { on: 'click', do: 'go:SCR-HOME-001' } },
+          { role: '.pd-btn-home', kind: 'button', label: '홈으로', action: { on: 'click', do: 'go:SCR-HOME-001' } },
+        ],
+        description: [
+          { text: '신청 완료 + 승인 대기 안내(제공자 확인 후 알림)', target: '.pd-title' },
+          { text: '내 예약 보기 — 예약 현황(파일럿: 홈으로 연결)', target: '.pd-btn-mybooking' },
+          { text: '홈으로 — 홈(SCR-HOME-001)', target: '.pd-btn-home' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '신청 성공으로 진입', result: '완료 안내 + 승인 대기', message: '예약을 신청했어요. 제공자 승인 후 알려드릴게요', placement: 'full-page', target: '.pd-title' },
+        ],
+        interface: { reads: [], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-HOME-001', via: '홈으로', trigger: '.pd-btn-home' }] },
+      },
+    ],
+  },
+];
+window.PDK_SCREENS = window.PLANDECK_SCREENS;

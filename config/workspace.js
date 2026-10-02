@@ -19,6 +19,17 @@ window.PLANDECK_WORKSPACE = {
       updatedAt: '2026-10-02',
       tag: '데모',
     },
+    {
+      slug: 'dodam-care-match',
+      name: '도담 돌봄·치료 매칭',
+      desc: '장애아동 가정 ↔ 검증된 돌봄·치료 제공자 매칭·예약 (보호자 앱 핵심 플로우)',
+      path: 'projects/dodam-care-match/',
+      surfaces: ['모바일'],
+      owner: 'PM',
+      version: '0.1.0',
+      updatedAt: '2026-10-02',
+      tag: '파일럿',
+    },
     // /pd-init 이 새 프로젝트를 여기에 추가한다:
     // { slug:'...', name:'...', desc:'...', path:'projects/.../', surfaces:[...], owner:'...', version:'0.1.0', updatedAt:'YYYY-MM-DD' },
   ],
