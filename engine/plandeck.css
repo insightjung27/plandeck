@@ -409,6 +409,22 @@
    (배너 → 상단 바 → 목업 순서로 스택) */
 .pd-review-mode .pd-topbar { top: 64px; }
 .pd-review-mode .device-stage { padding-top: 112px; }
+
+/* ═══ 충실도(Fidelity): 디자인 이미지 / 프로토타입 임베드 렌더 + 토글 ═══ */
+.device-screen { position: relative; }
+.pd-figma-img-wrap { position: absolute; inset: 0; z-index: 30; overflow: hidden; }
+.pd-figma-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pd-figma-proto { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 30; display: block; background: #fff; }
+.pd-figma-hotspot { position: absolute; z-index: 31; display: block; cursor: pointer; border-radius: 6px; }
+.pd-figma-hotspot:hover { background: rgba(49,130,246,.14); outline: 2px solid rgba(49,130,246,.55); }
+.device-stage.pd-fidelity-design .pd-screen, .device-stage.pd-fidelity-proto .pd-screen { visibility: hidden; }
+.device-stage.pd-fidelity-design .pd-statusbar, .device-stage.pd-fidelity-design .pd-dynamic-island, .device-stage.pd-fidelity-design .pd-homebar, .device-stage.pd-fidelity-design .pd-browserbar,
+.device-stage.pd-fidelity-proto .pd-statusbar, .device-stage.pd-fidelity-proto .pd-dynamic-island, .device-stage.pd-fidelity-proto .pd-homebar, .device-stage.pd-fidelity-proto .pd-browserbar { display: none !important; }
+.pd-fid-toggle { display: inline-flex; background: #fff; border: 1px solid var(--pd-line); border-radius: 9px; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.pd-fid-btn { border: none; background: transparent; font-size: 12px; font-weight: 700; color: var(--pd-sub); padding: 7px 11px; cursor: pointer; font-family: "Pretendard", sans-serif; border-right: 1px solid var(--pd-line); }
+.pd-fid-btn:last-child { border-right: none; }
+.pd-fid-btn.is-on { background: var(--pd-primary); color: #fff; }
+.pd-fid-btn:not(.is-on):hover { background: #eff6ff; color: var(--pd-primary); }
 .pd-review-mode .pd-cases,
 .pd-review-mode .pd-interface,
 .pd-review-mode .pd-lint-banner,

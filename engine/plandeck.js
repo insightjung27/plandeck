@@ -202,6 +202,88 @@
     if (!tb) { tb = document.createElement('div'); tb.className = 'pd-topbar'; document.body.appendChild(tb); }
     return tb;
   }
+
+  // ═══ 1-d. 충실도(Fidelity) 승격 — 와이어프레임 ↔ 디자인(이미지) ↔ 프로토타입(임베드) ═══
+  // Figma 연동 Phase1: screens.js 의 figma{image,prototype,hotspots} + fidelity 를 런타임에 반영.
+  function figmaStages(page) {
+    var s = ['wireframe'];
+    if (page && page.figma && page.figma.image) s.push('design');
+    if (page && page.figma && (page.figma.prototype || page.figma.embed)) s.push('prototype');
+    return s;
+  }
+  function getFidelityPref() { try { return sessionStorage.getItem('pd-fidelity') || ''; } catch (e) { return ''; } }
+  function setFidelityPref(v) { try { if (v) sessionStorage.setItem('pd-fidelity', v); else sessionStorage.removeItem('pd-fidelity'); } catch (e) {} }
+  function effectiveFidelity(page) {
+    var stages = figmaStages(page), pref = getFidelityPref();
+    try { var u = new URLSearchParams(location.search).get('fidelity'); if (u) pref = u; } catch (e) {}
+    if (pref && stages.indexOf(pref) >= 0) return pref;
+    if (document.body.classList.contains('pd-review-mode')) return stages[stages.length - 1]; // 검토모드=가용 최고 충실도
+    if (page.fidelity && stages.indexOf(page.fidelity) >= 0) return page.fidelity;             // 화면 선언 기본(승격)
+    return 'wireframe';
+  }
+  function applyFidelity() {
+    var page = findCurrentPage();
+    var stage = document.querySelector('.device-stage');
+    var screen = document.querySelector('.device-screen');
+    if (!page || !stage || !screen) return;
+    var eff = effectiveFidelity(page);
+    stage.classList.remove('pd-fidelity-design', 'pd-fidelity-proto');
+    var wrap = screen.querySelector('.pd-figma-img-wrap');
+    var proto = screen.querySelector('.pd-figma-proto');
+    if (eff === 'design' && page.figma && page.figma.image) {
+      stage.classList.add('pd-fidelity-design');
+      if (!wrap) {
+        wrap = document.createElement('div'); wrap.className = 'pd-figma-img-wrap';
+        var fw = (page.figma.imageW || 0), fh = (page.figma.imageH || 0);
+        var hot = (page.figma.hotspots || []).map(function (h) {
+          var r = h.rect || [0, 0, 0, 0];
+          var pc = fw && fh ? ('left:' + (r[0] / fw * 100) + '%;top:' + (r[1] / fh * 100) + '%;width:' + (r[2] / fw * 100) + '%;height:' + (r[3] / fh * 100) + '%')
+            : ('left:' + r[0] + 'px;top:' + r[1] + 'px;width:' + r[2] + 'px;height:' + r[3] + 'px');
+          var tgt = byIdHref(h.to);
+          return '<a class="pd-figma-hotspot" style="' + pc + '"' + (tgt ? ' href="' + esc(tgt) + '"' : '') + ' title="' + esc(h.to || '') + '"></a>';
+        }).join('');
+        wrap.innerHTML = '<img class="pd-figma-img" src="' + esc(page.figma.image) + '" alt="디자인">' + hot;
+        screen.appendChild(wrap);
+      } else wrap.style.display = '';
+      if (proto) proto.style.display = 'none';
+    } else if (eff === 'prototype' && page.figma && (page.figma.prototype || page.figma.embed)) {
+      stage.classList.add('pd-fidelity-proto');
+      if (!proto) {
+        proto = document.createElement('iframe'); proto.className = 'pd-figma-proto';
+        proto.setAttribute('loading', 'lazy'); proto.setAttribute('allowfullscreen', '');
+        proto.src = page.figma.prototype || page.figma.embed;
+        screen.appendChild(proto);
+      } else proto.style.display = '';
+      if (wrap) wrap.style.display = 'none';
+    } else {
+      if (wrap) wrap.style.display = 'none';
+      if (proto) proto.style.display = 'none';
+    }
+  }
+  function byIdHref(id) { var p = flatPages().filter(function (x) { return x.id === id; })[0]; return p ? p.href : null; }
+  function injectFidelityToggle() {
+    var page = findCurrentPage();
+    if (!page) return;
+    var stages = figmaStages(page);
+    if (stages.length < 2) return;   // 전환할 게 없으면(와이어뿐) 생략
+    var tb = ensureTopbar();
+    if (tb.querySelector('.pd-fid-toggle')) return;
+    var eff = effectiveFidelity(page);
+    var labels = { wireframe: '와이어', design: '디자인', prototype: '프로토타입' };
+    var seg = document.createElement('div'); seg.className = 'pd-fid-toggle'; seg.title = '이 화면을 볼 충실도';
+    ['wireframe', 'design', 'prototype'].forEach(function (s) {
+      if (s !== 'wireframe' && stages.indexOf(s) < 0) return;
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'pd-fid-btn' + (s === eff ? ' is-on' : '');
+      btn.textContent = labels[s];
+      btn.addEventListener('click', function () {
+        setFidelityPref(s); applyFidelity();
+        seg.querySelectorAll('.pd-fid-btn').forEach(function (b) { b.classList.remove('is-on'); });
+        btn.classList.add('is-on');
+      });
+      seg.appendChild(btn);
+    });
+    tb.appendChild(seg);
+  }
   // 현재 화면 정보(타이틀·ID·Figma)를 좌측 패널에서 떼어 목업 상단(검토 모드 옆)에 표시
   function injectScreenMeta() {
     var page = findCurrentPage();
@@ -757,6 +839,8 @@
         if ((p.cases || []).length) marks.push('🧩');
         if (p.interface && ((p.interface.reads || []).length || (p.interface.writes || []).length)) marks.push('🔌');
         if (p.designed) marks.push('🎨');
+        if (p.figma && p.figma.image) marks.push('<span title="Figma 디자인 이미지 연결">🖼</span>');
+        if (p.figma && (p.figma.prototype || p.figma.embed)) marks.push('<span title="Figma 프로토타입 임베드">▶</span>');
         var ds = ((p.label || '') + ' ' + (p.id || '') + ' ' + (p.surface || '') + ' ' + (surfLabel[p.surface] || '')).toLowerCase();
         return '<tr data-search="' + esc(ds) + '"><td><a href="' + esc(p.href) + '">' + esc(p.label) + '</a>' + (p.entry ? ' <span class="pd-tag">진입</span>' : '') + '</td>' +
           '<td><code>' + esc(p.id) + '</code></td>' +
@@ -940,7 +1024,7 @@
   function setupReviewMode() {
     var params = new URLSearchParams(location.search);
     var on = params.get('mode') === 'review' || reviewGet();
-    if (on) { document.body.classList.add('pd-review-mode'); reviewSet(true); reviewBanner(); }
+    if (on) { document.body.classList.add('pd-review-mode'); reviewSet(true); reviewBanner(); try { applyFidelity(); } catch (e) {} }
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'pd-mode-toggle';
@@ -955,6 +1039,7 @@
       if (o && !document.querySelector('.pd-review-banner')) reviewBanner();
       var b = document.querySelector('.pd-review-banner'); if (!o && b) b.remove();
       sync();
+      try { applyFidelity(); } catch (e) {}
     });
     sync();
     var tb = ensureTopbar();
@@ -1086,9 +1171,11 @@
     try { applySurfaceDevice(); } catch (e) {}
     try { injectMobileChrome(); } catch (e) {}
     try { injectWideChrome(); } catch (e) {}
+    try { applyFidelity(); } catch (e) {}   // 충실도(와이어/디자인/프로토타입) — 썸네일에도 반영
     if (bare) return;   // 썸네일(bare): 디바이스만 렌더, 패널 생략
     try { injectScreenTopnav(); } catch (e) {}
     try { injectScreenMeta(); } catch (e) {}
+    try { injectFidelityToggle(); } catch (e) {}
     try { injectStatusChips(); } catch (e) {}
     try { injectNavSearch(); } catch (e) {}
     try { enhanceFlowPanel(); } catch (e) {}

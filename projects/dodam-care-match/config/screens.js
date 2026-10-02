@@ -7,6 +7,16 @@ window.PLANDECK_SCREENS = [
       {
         id: 'SCR-HOME-001', label: '홈', href: 'm-home.html',
         surface: 'mobile', entry: true, status: 'ready-for-dev', designed: false, figmaLink: '',
+        // Figma 연동 Phase1 데모 — 실제 MCP/REST 연결 전 플레이스홀더 디자인(SVG). /pd-figma-sync 가 이 필드를 채움.
+        fidelity: 'design',
+        figma: {
+          image: 'assets/figma/SCR-HOME-001.svg', imageW: 360, imageH: 782,
+          hotspots: [
+            { rect: [24, 106, 312, 52], to: 'SCR-SEARCH-001' },   // 검색바 → 검색결과
+            { rect: [24, 356, 312, 96], to: 'SCR-PROVIDER-001' }, // 추천 카드 → 제공자 상세
+          ],
+          rev: 1, syncedAt: '2026-10-03', note: 'Phase1 데모(실제 Figma 연결 전 플레이스홀더)',
+        },
         _hash: 'h1whcgw',   // /pd-lint 동결(실제 해시) — 이후 편집되면 '변경됨' 자동 표시
         reqIds: ['REQ-001'],
         context: '앱 진입 첫 화면. 검색바 + 서비스 카테고리 + 검증된 추천 제공자. 여기서 탐색을 시작한다.',
