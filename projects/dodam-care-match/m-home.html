@@ -11,73 +11,44 @@
   <div class="device-stage"><div class="device-mockup"><div class="device-frame"><div class="device-screen">
     <div class="pd-screen">
       <div class="pd-safe-top"></div>
-      <div style="padding:6px 20px 10px;display:flex;align-items:center;justify-content:space-between;background:#fff">
-        <div>
-          <div style="font-size:13px;color:#8B95A1;font-weight:600">안녕하세요, 보호자님</div>
-          <div style="font-size:21px;font-weight:800;color:#1A2536;margin-top:3px;letter-spacing:-.3px">오늘도 도담이 함께해요</div>
-        </div>
-        <div class="pd-avatar" style="width:42px;height:42px">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z"/></svg>
-        </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 18px 4px">
+        <div class="pd-wf-title" style="font-size:20px">도담</div>
+        <div class="pd-avatar" style="width:34px;height:34px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></div>
       </div>
-      <button class="pd-search pd-searchbar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/></svg>
-        지역·서비스로 검색
-      </button>
       <div class="pd-app-body">
-        <div class="pd-section-title">어떤 도움이 필요하세요?</div>
-        <div class="pd-cat" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
-            <div class="pd-row-icon" style="width:52px;height:52px;border-radius:16px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-5A8 8 0 1121 12z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span style="font-size:12px;font-weight:600;color:#5A6472">언어치료</span>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
-            <div class="pd-row-icon" style="width:52px;height:52px;border-radius:16px;background:#FFF3E0;color:#FF9500"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 4a2 2 0 114 0v1h3a1 1 0 011 1v3h1a2 2 0 110 4h-1v3a1 1 0 01-1 1h-3v-1a2 2 0 10-4 0v1H6a1 1 0 01-1-1v-3H4a2 2 0 110-4h1V6a1 1 0 011-1h4V4z" stroke-linejoin="round"/></svg></div>
-            <span style="font-size:12px;font-weight:600;color:#5A6472">놀이치료</span>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
-            <div class="pd-row-icon" style="width:52px;height:52px;border-radius:16px;background:#E6F7EC;color:#1BA345"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 13V5a1.5 1.5 0 013 0v6m0-1V4a1.5 1.5 0 013 0v7m0-1V6a1.5 1.5 0 013 0v7a6 6 0 01-6 6h-1a5 5 0 01-4-2l-2.5-3a1.6 1.6 0 012.4-2L8 13z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span style="font-size:12px;font-weight:600;color:#5A6472">감각통합</span>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
-            <div class="pd-row-icon" style="width:52px;height:52px;border-radius:16px;background:#FDE8EA;color:#F04452"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9zM8.5 11l1.5 1.5L13 9.5M8.5 16l1.5 1.5L13 14.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <span style="font-size:12px;font-weight:600;color:#5A6472">발달검사</span>
-          </div>
+        <button class="pd-search pd-searchbar">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/></svg>
+          지역·서비스로 검색
+        </button>
+        <div class="pd-section-title">서비스 카테고리</div>
+        <div class="pd-cat" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="pd-row-icon" style="width:100%;aspect-ratio:1;height:auto"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-5A8 8 0 1121 12z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="pd-wf-label">언어치료</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="pd-row-icon" style="width:100%;aspect-ratio:1;height:auto"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div><span class="pd-wf-label">놀이치료</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="pd-row-icon" style="width:100%;aspect-ratio:1;height:auto"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 13V5a1.5 1.5 0 013 0v6m0-1V4a1.5 1.5 0 013 0v7m0-1V6a1.5 1.5 0 013 0v7a6 6 0 01-6 6h-1a5 5 0 01-4-2l-2.5-3a1.6 1.6 0 012.4-2L8 13z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="pd-wf-label">감각통합</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div class="pd-row-icon" style="width:100%;aspect-ratio:1;height:auto"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9zM8.5 11l1.5 1.5L13 9.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="pd-wf-label">발달검사</span></div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
-          <div class="pd-section-title" style="margin:0">검증된 추천 제공자</div>
-          <span style="font-size:13px;color:#8B95A1;font-weight:600">전체</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:2px">
+          <div class="pd-section-title">검증된 추천 제공자</div>
+          <span class="pd-wf-label">전체 ></span>
         </div>
         <div class="pd-reco pd-list">
           <button class="pd-row">
-            <div class="pd-avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="#B0B8C1"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z"/></svg></div>
-            <div class="pd-row-main">
-              <div class="pd-row-title">햇살아이 발달센터 <span class="pd-badge brand" style="height:20px">✓ 검증</span></div>
-              <div class="pd-row-sub">서울 강서구 · 언어치료, 놀이치료</div>
-            </div>
-            <div class="pd-row-trail">
-              <span class="pd-rating"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.3 6.9.9-5 4.8 1.2 6.8L12 17.8 5.9 20.8 7.1 14 2 9.2l6.9-.9z"/></svg>4.8</span>
-              <svg class="pd-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg>
-            </div>
+            <div class="pd-avatar"></div>
+            <div class="pd-row-main"><div class="pd-row-title">햇살아이 발달센터 <span class="pd-badge">검증</span></div><div class="pd-row-sub">서울 강서구 · 언어치료, 놀이치료</div></div>
+            <div class="pd-row-trail"><span class="pd-rating"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.3 6.9.9-5 4.8 1.2 6.8L12 17.8 5.9 20.8 7.1 14 2 9.2l6.9-.9z"/></svg>4.8</span><svg class="pd-chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></div>
           </button>
           <button class="pd-row">
-            <div class="pd-avatar"><svg width="22" height="22" viewBox="0 0 24 24" fill="#B0B8C1"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z"/></svg></div>
-            <div class="pd-row-main">
-              <div class="pd-row-title">맑은마음 아동센터 <span class="pd-badge brand" style="height:20px">✓ 검증</span></div>
-              <div class="pd-row-sub">서울 양천구 · 감각통합, 발달검사</div>
-            </div>
-            <div class="pd-row-trail">
-              <span class="pd-rating"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.3 6.9.9-5 4.8 1.2 6.8L12 17.8 5.9 20.8 7.1 14 2 9.2l6.9-.9z"/></svg>4.9</span>
-              <svg class="pd-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg>
-            </div>
+            <div class="pd-avatar"></div>
+            <div class="pd-row-main"><div class="pd-row-title">맑은마음 아동센터 <span class="pd-badge">검증</span></div><div class="pd-row-sub">서울 양천구 · 감각통합, 발달검사</div></div>
+            <div class="pd-row-trail"><span class="pd-rating"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.3 6.9.9-5 4.8 1.2 6.8L12 17.8 5.9 20.8 7.1 14 2 9.2l6.9-.9z"/></svg>4.9</span><svg class="pd-chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round"/></svg></div>
           </button>
         </div>
       </div>
       <nav class="pd-tabbar">
-        <button class="pd-tab is-active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</button>
-        <button class="pd-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/></svg>검색</button>
-        <button class="pd-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg>예약</button>
-        <button class="pd-tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" stroke-linecap="round"/></svg>마이</button>
+        <button class="pd-tab is-active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10" stroke-linecap="round" stroke-linejoin="round"/></svg>홈</button>
+        <button class="pd-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/></svg>검색</button>
+        <button class="pd-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg>예약</button>
+        <button class="pd-tab"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" stroke-linecap="round"/></svg>마이</button>
       </nav>
     </div>
   </div></div><div class="device-stand"></div><div class="device-base"></div></div></div>
