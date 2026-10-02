@@ -15,28 +15,12 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function flat() { var o = []; SCREENS.forEach(function (c) { (c.pages || []).forEach(function (p) { o.push(p); }); }); return o; }
 
-  // 작업 콘솔 앱 셸(plandeck.js 와 동일 — handoff 페이지는 plandeck.js 미로드라 자체 내장)
-  function sideNavLinks(active) {
-    return [
-      { key: 'overview', href: 'index.html',   label: '개요' },
-      { key: 'prd',      href: 'prd.html',      label: 'PRD' },
-      { key: 'flows',    href: 'flows.html',    label: '🧭 플로우' },
-      { key: 'spec',     href: 'spec.html',     label: '상세 기획서' },
-      { key: 'handoff',  href: 'handoff.html',  label: '핸드오프' },
-    ].map(function (l) {
-      return '<a class="pd-side-link' + (l.key === active ? ' is-current' : '') + '" href="' + l.href + '">' + esc(l.label) + '</a>';
-    }).join('');
-  }
+  // 앱 셸은 plandeck.js(SSOT)가 소유 — 복제 금지, window.PlanDeck 로 위임(handoff.html 이 plandeck.js 선로드).
   function pageShell(active, bodyHtml, actionsHtml) {
-    return '<aside class="pd-sidenav">' +
-      '<a class="pd-side-brand" href="../../index.html" title="워크스페이스로">PlanDeck</a>' +
-      '<div class="pd-side-proj">' + esc(PROJECT.name || '프로젝트') +
-        (PROJECT.version ? '<span class="pd-side-ver">v' + esc(PROJECT.version) + '</span>' : '') + '</div>' +
-      '<nav class="pd-side-nav">' + sideNavLinks(active) + '</nav>' +
-      (actionsHtml ? '<div class="pd-side-actions">' + actionsHtml + '</div>' : '') +
-      '<a class="pd-side-ws" href="../../index.html">⌂ 워크스페이스</a>' +
-      '</aside>' +
-      '<main class="pd-main"><div class="pd-doc pd-prd-doc">' + bodyHtml + '</div></main>';
+    if (window.PlanDeck && window.PlanDeck.pageShell) return window.PlanDeck.pageShell(active, bodyHtml, actionsHtml);
+    // 폴백(plandeck.js 미로드 시): 네비 없는 단순 본문
+    return '<main class="pd-main" style="margin-left:0"><div class="pd-doc pd-prd-doc">' +
+      '<nav class="pd-prd-nav"><a class="pd-nav-link" href="index.html">← 개요</a></nav>' + bodyHtml + '</div></main>';
   }
   function refName(ref) { var m = String(ref || '').match(/^\{entities\.([A-Za-z0-9_]+)\}$/); return m ? m[1] : null; }
 

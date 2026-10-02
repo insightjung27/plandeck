@@ -133,6 +133,41 @@
       return '<a class="pd-side-link' + (l.key === active ? ' is-current' : '') + '" href="' + l.href + '">' + esc(l.label) + '</a>';
     }).join('');
   }
+  // iframe 지연 로드(뷰포트 근처 진입 시만 src 주입) — 플로우 썸네일 수십 개 동시 부팅 방지
+  function lazyLoadIframes(root) {
+    var ifr = [].slice.call((root || document).querySelectorAll('iframe[data-src]'));
+    if (!ifr.length) return;
+    if (!('IntersectionObserver' in window)) { ifr.forEach(function (f) { f.src = f.getAttribute('data-src'); f.removeAttribute('data-src'); }); return; }
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) { if (e.isIntersecting) { var f = e.target; f.src = f.getAttribute('data-src'); f.removeAttribute('data-src'); io.unobserve(f); } });
+    }, { rootMargin: '500px' });
+    ifr.forEach(function (f) { io.observe(f); });
+  }
+  // 문서형 페이지 검색/필터 바(화면명·ID·서피스) — 화면이 많아질 때 즉시 찾기
+  function docFilterBar(ph, extra) {
+    return '<div class="pd-doc-filter"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg>' +
+      '<input type="search" placeholder="' + esc(ph || '화면명·ID·서피스 검색') + '" autocomplete="off">' +
+      '<span class="pd-doc-filter-count"></span>' + (extra || '') + '</div>';
+  }
+  function wireDocFilter(root) {
+    var box = root.querySelector('.pd-doc-filter'); if (!box) return null;
+    var input = box.querySelector('input'); var count = box.querySelector('.pd-doc-filter-count');
+    var items = [].slice.call(root.querySelectorAll('[data-search]'));
+    function apply() {
+      var q = input.value.trim().toLowerCase(); var shown = 0;
+      items.forEach(function (it) { var hit = !q || it.getAttribute('data-search').indexOf(q) >= 0; it.style.display = hit ? '' : 'none'; if (hit) shown++; });
+      root.querySelectorAll('.pd-cat-group').forEach(function (g) {
+        var any = [].slice.call(g.querySelectorAll('[data-search]')).some(function (it) { return it.style.display !== 'none'; });
+        g.style.display = any ? '' : 'none';
+      });
+      count.textContent = q ? (shown + '개 일치') : '';
+    }
+    input.addEventListener('input', apply);
+    root.querySelectorAll('.pd-surf-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () { input.value = chip.getAttribute('data-surf') || ''; apply(); input.focus(); });
+    });
+    return apply;
+  }
   function pageShell(active, bodyHtml, actionsHtml, docClass) {
     var dc = docClass || (active === 'flows' ? 'pd-flows-doc' : 'pd-prd-doc');
     return '<aside class="pd-sidenav">' +
@@ -664,10 +699,11 @@
     var surfaces = PROJECT.surfaces || [];
     var pages = flatPages();
 
+    var surfLabel = {}; surfaces.forEach(function (s) { surfLabel[s.key] = s.label || s.key; });
     var surfaceTabs = surfaces.length
       ? '<div class="pd-chip-row">' + surfaces.map(function (s) {
           var n = pages.filter(function (p) { return p.surface === s.key; }).length;
-          return '<span class="pd-chip">' + esc(s.label || s.key) + ' · ' + n + '화면</span>';
+          return '<span class="pd-chip pd-surf-chip" data-surf="' + esc(s.label || s.key) + '" title="이 서피스만 보기">' + esc(s.label || s.key) + ' · ' + n + '화면</span>';
         }).join('') + '</div>' : '';
 
     var inv = SCREENS.map(function (cat) {
@@ -680,13 +716,14 @@
         if ((p.cases || []).length) marks.push('🧩');
         if (p.interface && ((p.interface.reads || []).length || (p.interface.writes || []).length)) marks.push('🔌');
         if (p.designed) marks.push('🎨');
-        return '<tr><td><a href="' + esc(p.href) + '">' + esc(p.label) + '</a>' + (p.entry ? ' <span class="pd-tag">진입</span>' : '') + '</td>' +
+        var ds = ((p.label || '') + ' ' + (p.id || '') + ' ' + (p.surface || '') + ' ' + (surfLabel[p.surface] || '')).toLowerCase();
+        return '<tr data-search="' + esc(ds) + '"><td><a href="' + esc(p.href) + '">' + esc(p.label) + '</a>' + (p.entry ? ' <span class="pd-tag">진입</span>' : '') + '</td>' +
           '<td><code>' + esc(p.id) + '</code></td>' +
-          '<td>' + (p.surface ? esc(p.surface) : '<span class="pd-dim">—</span>') + '</td>' +
+          '<td>' + (p.surface ? esc(surfLabel[p.surface] || p.surface) : '<span class="pd-dim">—</span>') + '</td>' +
           '<td>' + chip + '</td><td>' + marks.join(' ') + '</td></tr>';
       }).join('');
-      return '<div class="pd-prd-sec"><h2>' + esc(cat.category || '화면') + '</h2>' +
-        '<div class="pd-table-wrap"><table class="pd-table"><thead><tr><th>화면</th><th>ID</th><th>서피스</th><th>상태</th><th>레이어</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+      return '<details class="pd-prd-sec pd-cat-group" open><summary><span class="pd-cat-title">' + esc(cat.category || '화면') + '</span> <span class="pd-dim">(' + (cat.pages || []).length + ')</span></summary>' +
+        '<div class="pd-table-wrap"><table class="pd-table"><thead><tr><th>화면</th><th>ID</th><th>서피스</th><th>상태</th><th>레이어</th></tr></thead><tbody>' + rows + '</tbody></table></div></details>';
     }).join('');
 
     // ── 진행 현황 + 다음 할 일 (실무 기획자 길잡이) ──
@@ -730,11 +767,22 @@
       '<div class="pd-next-why">' + esc(next.why) + '</div>' +
       '<div class="pd-dim" style="margin-top:8px;font-size:12.5px">막히면 <code>/pd</code> 만 치세요 — 지금 뭘 할지 안내합니다.</div></div>';
 
-    // 좌측 사이드바에 이미 PRD/플로우/상세기획서/핸드오프 네비가 있으므로,
-    // 여기선 사이드바에 없는 고유 액션(프로토타입 검토 모드)만 눈에 띄게 둔다(중복 제거).
-    var quick = n ? ('<div class="pd-chip-row" style="margin:14px 0">' +
-      '<a class="pd-chip pd-link pd-chip-cta" href="' + esc((pages.filter(function(p){return p.entry;})[0] || pages[0]).href) + '?mode=review">👁 검토 모드로 프로토타입 보기</a>' +
-      '</div>') : '';
+    // ── 역할별로 시작하기 — 각 역할이 '여기서 뭘·어디서'를 1클릭으로(쉬운 진입) ──
+    var entryHref = n ? esc((pages.filter(function (p) { return p.entry; })[0] || pages[0]).href) : '';
+    var roleCards = [
+      { ic: '🧭', role: '기획자', job: 'PRD·화면·예외·인터페이스를 작성·관리 (여기가 작업장). 단위테스트 목록은 핸드오프에서 추출.', links: [['PRD', 'prd.html'], ['상세 기획서', 'spec.html']] },
+      { ic: '🎨', role: '디자이너', job: '화면별 구성요소·상태(cases)를 확인하고 Figma 시안을 연결·반영(🎨 표시).', links: [['화면별 구성요소', 'spec.html']] },
+      { ic: '🛠', role: '개발자·퍼블리셔', job: 'API·데이터 계약·예외 분기·화면 흐름 확인. OpenAPI·번들로 받기. 부족하면 보강 요청.', links: [['개발 핸드오프', 'handoff.html']] },
+      { ic: '🧪', role: 'QA', job: '화면별 수용기준(GWT)·상태 커버리지 확인, 테스트플랜(.feature)·체크리스트 추출.', links: [['테스트플랜 받기', 'handoff.html'], ['경우의 수', 'spec.html']] },
+      { ic: '👁', role: '의사결정자', job: '목업·프로토타입을 눌러보며 둘러보기 — 기술 패널은 자동으로 숨겨집니다.', links: n ? [['프로토타입 둘러보기', entryHref + '?mode=review']] : [] },
+    ];
+    var roleGuide = '<section class="pd-roles"><div class="pd-roles-head">👥 역할별로 시작하기 <span class="pd-dim">— 내 역할에서 할 일과 바로가기</span></div>' +
+      '<div class="pd-roles-grid">' + roleCards.map(function (r) {
+        return '<div class="pd-role-card"><div class="pd-role-top"><span class="pd-role-ic">' + r.ic + '</span><span class="pd-role-name">' + esc(r.role) + '</span></div>' +
+          '<div class="pd-role-job">' + esc(r.job) + '</div>' +
+          (r.links.length ? '<div class="pd-role-links">' + r.links.map(function (l) { return '<a href="' + l[1] + '">' + esc(l[0]) + ' →</a>'; }).join('') + '</div>' : '') +
+          '</div>';
+      }).join('') + '</div></section>';
 
     var cheat = '<details class="pd-prd-sec pd-cheat"><summary>📖 커맨드 치트시트</summary>' +
       '<div class="pd-table-wrap"><table class="pd-table"><tbody>' +
@@ -761,11 +809,13 @@
     var body =
       '<h1>' + esc(PROJECT.name || 'PlanDeck 프로젝트') + (PROJECT.version ? '<span class="pd-ver-badge">v' + esc(PROJECT.version) + '</span>' : '') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '아직 설정 전 — <code>/pd-init</code> 으로 시작하세요.') + '</div>' +
-      surfaceTabs + quick + progressCard + nextCard +
+      surfaceTabs + roleGuide + progressCard + nextCard +
       (d.goals && d.goals.length ? '<div class="pd-prd-sec"><h2>목표</h2>' + ul(d.goals) + '</div>' : '') +
-      (pages.length ? inv : '<div class="pd-empty"><div class="pd-empty-icon">🗂️</div><div class="pd-empty-title">아직 화면이 없습니다</div><div class="pd-empty-sub"><code>/pd-prd</code> → <code>/pd-scaffold</code> 로<br>PRD에서 화면을 생성하세요.</div></div>') +
+      (pages.length ? ('<div class="pd-inv-head"><h2>화면 목록 <span class="pd-dim">(' + pages.length + ')</span></h2>' + docFilterBar('화면명·ID·서피스로 찾기') + '</div>' + inv)
+        : '<div class="pd-empty"><div class="pd-empty-icon">🗂️</div><div class="pd-empty-title">아직 화면이 없습니다</div><div class="pd-empty-sub"><code>/pd-prd</code> → <code>/pd-scaffold</code> 로<br>PRD에서 화면을 생성하세요.</div></div>') +
       verCard + cheat;
     el.innerHTML = pageShell('overview', body);
+    try { wireDocFilter(el); } catch (e) {}
   }
 
   // ═══ 9. 상세 기획서 렌더 (#pd-spec-root) — 의사결정자/팀 열람·인쇄용 ═══
@@ -793,9 +843,10 @@
       var flow = ((p.flow && p.flow.to) || []).map(function (t) {
         return '<li>' + (t.via ? '[' + esc(t.via) + '] ' : '') + '→ ' + esc(t.screen) + (t.branch ? ' <span class="pd-dim">(' + esc(t.branch) + ')</span>' : '') + '</li>';
       }).join('');
-      return '<div class="pd-prd-sec pd-spec-screen">' +
-        '<h2>' + esc(p.label) + ' <code>' + esc(p.id) + '</code> <span class="pd-status-chip ' + st.cls + '">' + st.label + '</span>' +
-          (p.surface ? ' <span class="pd-tag">' + esc(p.surface) + '</span>' : '') + '</h2>' +
+      var ds = ((p.label || '') + ' ' + (p.id || '') + ' ' + (p.surface || '')).toLowerCase();
+      return '<details class="pd-prd-sec pd-spec-screen" open id="spec-' + esc(p.id) + '" data-search="' + esc(ds) + '">' +
+        '<summary><span class="pd-spec-sum-title">' + esc(p.label) + '</span> <code>' + esc(p.id) + '</code> <span class="pd-status-chip ' + st.cls + '">' + st.label + '</span>' +
+          (p.surface ? ' <span class="pd-tag">' + esc(p.surface) + '</span>' : '') + '</summary>' +
         (p.context ? '<p><b>목적/맥락</b> — ' + esc(p.context) + '</p>' : '') +
         '<div class="pd-spec-grid">' +
           '<div><h3>구성요소/버튼</h3>' + (comp ? '<ul>' + comp + '</ul>' : '<span class="pd-dim">—</span>') + '</div>' +
@@ -805,10 +856,23 @@
         '</div>' +
         (cases ? '<h3>경우의 수(예외)</h3><div class="pd-table-wrap"><table class="pd-table"><thead><tr><th>상태</th><th>트리거/조건</th><th>결과</th><th>안내문구</th></tr></thead><tbody>' + cases + '</tbody></table></div>' : '') +
         (p.href ? '<p><a href="' + esc(p.href) + '">↗ 이 화면 프로토타입 열기</a></p>' : '') +
-        '</div>';
+        '</details>';
     }).join('');
-    var content = head + (pages.length ? body : '<div class="pd-empty"><div class="pd-empty-icon">📄</div><div class="pd-empty-title">아직 화면이 없습니다</div></div>');
-    el.innerHTML = pageShell('spec', content, '<a class="pd-side-action" href="#" onclick="window.print();return false;">🖨 인쇄</a>', 'pd-prd-doc pd-spec-doc');
+    var toolbar = pages.length ? ('<div class="pd-inv-head">' + docFilterBar('화면명·ID로 찾기') +
+      '<button class="pd-collapse-toggle" type="button">모두 접기</button></div>' +
+      '<div class="pd-spec-toc">' + pages.map(function (p) { return '<a href="#spec-' + esc(p.id) + '">' + esc(p.label) + '</a>'; }).join('') + '</div>') : '';
+    var content = head + toolbar + (pages.length ? body : '<div class="pd-empty"><div class="pd-empty-icon">📄</div><div class="pd-empty-title">아직 화면이 없습니다</div></div>');
+    el.innerHTML = pageShell('spec', content, '<a class="pd-side-action" href="#" onclick="document.querySelectorAll(\'.pd-spec-screen\').forEach(function(d){d.open=true});window.print();return false;">🖨 인쇄</a>', 'pd-prd-doc pd-spec-doc');
+    try { wireDocFilter(el); } catch (e) {}
+    try {
+      var ct = el.querySelector('.pd-collapse-toggle');
+      if (ct) ct.addEventListener('click', function () {
+        var cards = [].slice.call(el.querySelectorAll('.pd-spec-screen'));
+        var anyOpen = cards.some(function (d) { return d.open; });
+        cards.forEach(function (d) { d.open = !anyOpen; });
+        ct.textContent = anyOpen ? '모두 펼치기' : '모두 접기';
+      });
+    } catch (e) {}
   }
 
   // ═══ 10. 검토 모드 (의사결정자) — sessionStorage 로 이동해도 유지 ═══
@@ -945,7 +1009,7 @@
         var fw = wide ? 260 : 150, scale = (fw / devW).toFixed(4);
         strip += '<div class="pd-step">' +
           '<a class="pd-step-frame' + (wide ? ' wide' : '') + '" href="' + esc(p.href) + '" title="' + esc(p.label) + '">' +
-          '<iframe src="' + esc(p.href) + '?bare=1" scrolling="no" style="width:' + devW + 'px;height:' + devH + 'px;transform:scale(' + scale + ')"></iframe></a>' +
+          '<iframe data-src="' + esc(p.href) + '?bare=1" loading="lazy" scrolling="no" style="width:' + devW + 'px;height:' + devH + 'px;transform:scale(' + scale + ')"></iframe></a>' +
           '<div class="pd-step-label">' + esc(p.label) + '</div><div class="pd-step-id">' + esc(p.id) + '</div></div>';
       });
       return '<div class="pd-flow-block"><div class="pd-flow-head"><span class="pd-flow-name">' + esc(f.name) + '</span>' +
@@ -954,6 +1018,7 @@
         '<div class="pd-strip">' + strip + '</div></div>';
     }).join('');
     el.innerHTML = pageShell('flows', head + blocks);
+    try { lazyLoadIframes(el); } catch (e) {}
   }
 
   // ═══ init ═══
@@ -961,6 +1026,7 @@
     var bare = false;
     try { bare = new URLSearchParams(location.search).get('bare') === '1'; } catch (e) {}
     if (bare) document.body.classList.add('pd-bare');
+    if (document.getElementById('pd-handoff-root')) { return; }  // 핸드오프는 handoff.js가 렌더(여기선 셸 헬퍼만 노출)
     if (document.getElementById('pd-workspace-root')) { try { renderWorkspace(); } catch (e) {} return; }
     if (document.getElementById('pd-prd-root')) { try { renderPRD(); } catch (e) {} return; }
     if (document.getElementById('pd-overview-root')) { try { renderOverview(); } catch (e) {} return; }
@@ -990,10 +1056,12 @@
     setTimeout(init, 0);
   }
 
-  // 외부(핸드오프 등)에서 쓰도록 노출
+  // 외부(핸드오프 등)에서 쓰도록 노출 — 셸/네비는 SSOT로 여기만 소유(복제 금지)
   window.PlanDeck = {
     screens: SCREENS, project: PROJECT, entities: ENTITIES,
     SCREEN_STATES: SCREEN_STATES, VALIDATION_STATES: VALIDATION_STATES,
     flatPages: flatPages, resolveRef: resolveRef, specHash: specHash, lint: lint,
+    DOC_LINKS: DOC_LINKS, sideNavLinks: sideNavLinks, pageShell: pageShell,
+    docFilterBar: docFilterBar, wireDocFilter: wireDocFilter, lazyLoadIframes: lazyLoadIframes,
   };
 })();
