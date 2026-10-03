@@ -352,3 +352,23 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-step-arrow { flex-shrink: 0; color: var(--w-line-2); padding: 0 6px; align-self: center; margin-bottom: 28px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .pd-step-arrow .via { font-size: 10.5px; color: var(--w-label); white-space: nowrap; }
 .pd-flow-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+
+/* ─── 로그인(관리자·슈퍼 PC웹) ─── */
+.pd-auth { min-height: 480px; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: var(--w-fill); }
+.pd-auth-super { background: var(--w-white); }
+.pd-auth-card { width: 100%; max-width: 360px; background: var(--w-white); border: 1px solid var(--w-line); border-radius: 14px; padding: 32px 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
+.pd-auth-brand { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.pd-auth-brand .pd-hero-img { width: 56px; height: 56px; border-radius: 12px; }
+.pd-auth-form { display: flex; flex-direction: column; gap: 12px; }
+
+/* ─── QR 출석 영역 ─── */
+.pd-qr-area { display: flex; justify-content: center; padding: 20px 0; }
+.pd-qr-area .pd-hero-img { width: 180px; height: 180px; border-radius: 12px; }
+
+/* ─── 약관·방침 본문 ─── */
+.pd-legal { border: 1px solid var(--w-line); border-radius: 10px; padding: 18px; background: var(--w-white); }
+.pd-legal .pd-wf-title { margin-bottom: 8px; }
+
+/* ─── 설정 목록 ─── */
+.pd-settings .pd-row { cursor: pointer; }
+.pd-withdraw { color: var(--w-sub); }

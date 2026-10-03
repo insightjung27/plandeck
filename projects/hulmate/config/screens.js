@@ -1,4 +1,4 @@
-/* 훌메이트 — 소규모 교회 화이트라벨 PWA. 전체 페이지 와이어프레임(4서피스(현재 49화면→보강중)).
+/* 훌메이트 — 소규모 교회 화이트라벨 PWA. 전체 페이지 와이어프레임(4서피스 61화면).
  * 기본은 흑백 와이어프레임(화면설계서 수준). 디자인은 Figma 연동(옵션)으로 승격. */
 window.PLANDECK_SCREENS = [
   {
@@ -120,7 +120,7 @@ window.PLANDECK_SCREENS = [
           { state: '빈데이터', trigger: '진입', guard: '0건', result: '첫 글 유도', message: '첫 나눔을 남겨보세요', placement: 'inline', target: '.pd-feed' },
           { state: '권한없음', trigger: '글쓰기', guard: '비로그인', result: '로그인 유도', message: '로그인 후 작성할 수 있어요', placement: 'toast', target: '.pd-write' },
         ],
-        interface: { reads: [{ id: 'listPosts', intent: '커뮤니티 피드', method: 'GET', path: '/app/community', response: '{entities.Member}[]', auth: 'Bearer', target: '.pd-feed' }], writes: [{ id: 'writePost', intent: '글 작성', method: 'POST', path: '/app/community', auth: 'Bearer', target: '.pd-write' }], events: [] },
+        interface: { reads: [{ id: 'listPosts', intent: '커뮤니티 피드', method: 'GET', path: '/app/community', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }, { in: 'query', name: 'limit', type: 'number', required: false, example: '20' }], response: '{entities.Post}[]', auth: 'Bearer', target: '.pd-feed' }], writes: [{ id: 'writePost', intent: '글 작성', method: 'POST', path: '/app/community', auth: 'Bearer', target: '.pd-write' }], events: [] },
         flow: { to: [] },
       },
       // ── 6. 아나바다(중고나눔) ──
@@ -559,7 +559,7 @@ window.PLANDECK_SCREENS = [
           { state: '정상', trigger: '진입', guard: '관리자', result: '대시보드', message: '', target: '.pd-kpi', api: { endpoint: 'GET /admin/overview', status: 200 } },
           { state: '권한없음', trigger: '진입', guard: '관리자 아님', result: '접근 거부', message: '관리자 권한이 필요해요', placement: 'full-page', api: { endpoint: 'GET /admin/overview', status: 403 } },
         ],
-        interface: { reads: [{ id: 'adminOverview', intent: '운영 현황', method: 'GET', path: '/admin/overview', response: '{entities.Member}[]', auth: 'Bearer(관리자)', target: '.pd-kpi' }], writes: [], events: [] },
+        interface: { reads: [{ id: 'adminOverview', intent: '운영 현황', method: 'GET', path: '/admin/overview', response: '{ memberCount:number, pendingApprovals:number, attendanceRate:number, offeringThisMonth:number, longAbsentCount:number }', auth: 'Bearer(관리자)', target: '.pd-kpi' }], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-ADM-002', via: '성도관리', trigger: '.pd-nav-members' }] },
       },
       // ── 성도관리(교적) ──
@@ -671,13 +671,13 @@ window.PLANDECK_SCREENS = [
           { state: '정상', trigger: '발급', guard: '대상 성도', result: '영수증 발급', message: '기부금영수증을 발급했어요', placement: 'toast', target: '.pd-receipt', api: { endpoint: 'POST /admin/receipts', status: 201 } },
           { state: '권한없음', trigger: '진입', guard: '재정 권한 없음', result: '차단', message: '재정 열람 권한이 필요해요', placement: 'full-page', api: { endpoint: 'GET /admin/finance', status: 403 } },
         ],
-        interface: { reads: [{ id: 'getFinance', intent: '헌금 집계', method: 'GET', path: '/admin/finance', auth: 'Bearer(재정권한)', target: '.pd-finance-kpi' }], writes: [{ id: 'issueReceipt', intent: '기부금영수증 발급', method: 'POST', path: '/admin/receipts', successStatus: 201, auth: 'Bearer(재정권한)', target: '.pd-receipt' }], events: [{ name: 'receipt.issued', when: '발급 시', payload: '{entities.Member}' }] },
+        interface: { reads: [{ id: 'getFinance', intent: '헌금 집계', method: 'GET', path: '/admin/finance', auth: 'Bearer(재정권한)', target: '.pd-finance-kpi' }], writes: [{ id: 'issueReceipt', intent: '기부금영수증 발급', method: 'POST', path: '/admin/receipts', idempotencyKey: true, successStatus: 201, response: '{entities.Receipt}', errors: [{ status: 409, when: '이미 발급(동일 성도·연도)', message: '이미 발급된 영수증이에요. 재발급할까요?' }, { status: 422, when: '주민번호 미등록', message: '영수증 발급에 필요한 정보가 없어요' }], auth: 'Bearer(재정권한)', target: '.pd-receipt' }], events: [{ name: 'receipt.issued', when: '발급 시', payload: '{entities.Receipt}' }] },
         flow: { to: [] },
       },
       // ── 홈페이지·화이트라벨 설정 ──
       {
         id: 'SCR-ADM-007', label: '홈페이지 설정', href: 'c-homepage.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-017'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-017', 'REQ-028'],
         context: '공개홈 템플릿(환영형/말씀형 등) 선택·브랜드(색·로고)·메뉴 설정. 화이트라벨 핵심.',
         components: [
           { role: '.pd-concept-picker', kind: 'list', label: '공개홈 템플릿 선택' },
@@ -845,7 +845,7 @@ window.PLANDECK_SCREENS = [
       // ── 구독·과금 ──
       {
         id: 'SCR-SUP-005', label: '구독·과금', href: 'x-subscription.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018', 'REQ-033'],
         context: '교회별 구독 현황·월 매출·연체 관리.',
         components: [{ role: '.pd-sub-table', kind: 'table', label: '구독 현황' }],
         description: [{ text: '월 매출·활성 구독·연체·교회별 플랜' }],
@@ -871,6 +871,234 @@ window.PLANDECK_SCREENS = [
         ],
         interface: { reads: [{ id: 'listDomains', intent: '도메인 목록', method: 'GET', path: '/super/domains', auth: 'Bearer(슈퍼)' }], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-SUP-003', via: '교회', trigger: '.pd-domain-table' }] },
+      },
+
+      // ══════════ 보강 신규 화면 (교인 셀프서비스·로그인·법적문서·운영) ══════════
+      // ── 통합 검색 ──
+      {
+        id: 'SCR-APP-021', label: '검색', href: 'a-search.html',
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-030'],
+        context: '설교·공지·성도매장 통합 검색. 최근 검색어·유형별 결과. 설교(SCR-APP-003) 상단 검색 아이콘에서 진입.',
+        components: [
+          { role: '.pd-searchbar', kind: 'input', label: '검색 입력' },
+          { role: '.pd-list', kind: 'list', label: '검색 결과' },
+        ],
+        description: [
+          { text: '검색 입력 — 설교·공지·매장 통합', target: '.pd-searchbar' },
+          { text: '결과 — 유형 뱃지로 구분', target: '.pd-list' },
+        ],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '최근 검색어', message: '', target: '.pd-searchbar' },
+          { state: '정상', trigger: '검색', guard: '키워드 입력', result: '결과 목록', message: '', target: '.pd-list', api: { endpoint: 'GET /app/search', status: 200 } },
+          { state: '빈데이터', trigger: '검색', guard: '결과 없음', result: '빈 상태', message: '검색 결과가 없어요', placement: 'inline', target: '.pd-list' },
+          { state: '형식오류', trigger: '검색', guard: '2자 미만', result: '막음', message: '두 글자 이상 입력해 주세요', placement: 'inline', target: '.pd-searchbar', priority: 'P2' },
+        ],
+        interface: { reads: [{ id: 'search', intent: '통합 검색', method: 'GET', path: '/app/search', params: [{ in: 'query', name: 'q', type: 'string', required: true, example: '로마서' }, { in: 'query', name: 'type', type: 'string', required: false, example: 'sermon|notice|store' }, { in: 'query', name: 'cursor', type: 'string', required: false }], response: '{ results: Array<{type,id,title,sub}>, nextCursor:string }', auth: 'Bearer', target: '.pd-list' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 기부금영수증(교인) ──
+      {
+        id: 'SCR-APP-022', label: '기부금영수증', href: 'a-receipts.html',
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-022'],
+        context: '교인 본인 기부금영수증 연도별 조회·발급(연말정산). 세무 발급 이력은 감사기록. 마이(SCR-APP-004)에서 진입.',
+        components: [{ role: '.pd-receipt-list', kind: 'list', label: '연도별 영수증' }],
+        description: [{ text: '연도별 합계·발급 버튼', target: '.pd-receipt-list' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '로그인 성도', result: '연도별 목록', message: '', target: '.pd-receipt-list', api: { endpoint: 'GET /app/receipts', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '헌금 내역 없음', result: '빈 상태', message: '발급 가능한 영수증이 없어요', placement: 'inline', target: '.pd-receipt-list' },
+          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '로그인 유도', message: '로그인이 필요해요', placement: 'inline', priority: 'P1' },
+          { state: '필수누락', trigger: '발급', guard: '주민번호 미등록', result: '막음', message: '영수증 발급에 필요한 정보가 없어요. 교회에 문의해 주세요', placement: 'inline', priority: 'P1' },
+          { state: '유효', trigger: '발급', guard: '정보 완비', result: 'PDF 발급', message: '영수증을 발급했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /app/receipts/{year}', status: 201 } },
+        ],
+        interface: { reads: [{ id: 'listMyReceipts', intent: '내 영수증', method: 'GET', path: '/app/receipts', response: '{entities.Receipt}[]', auth: 'Bearer', target: '.pd-receipt-list' }], writes: [{ id: 'issueMyReceipt', intent: '본인 영수증 발급', method: 'POST', path: '/app/receipts/{year}', idempotencyKey: true, successStatus: 201, response: '{entities.Receipt}', errors: [{ status: 422, when: '주민번호 미등록', message: '발급 정보가 없어요' }], auth: 'Bearer' }], events: [{ name: 'receipt.issued', when: '본인 발급 시', payload: '{entities.Receipt}' }] },
+        flow: { to: [] },
+      },
+      // ── 개인정보 권리요청(교인) ──
+      {
+        id: 'SCR-APP-023', label: '개인정보 권리요청', href: 'a-privacy-request.html',
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-021'],
+        context: '교인 본인 개인정보 열람·정정·삭제·처리정지 요청(PIPA). 관리자 처리(SCR-ADM-013) 연계·결과 알림. 마이/설정에서 진입.',
+        components: [
+          { role: '.pd-right-form', kind: 'form', label: '권리요청 폼' },
+          { role: '.pd-list', kind: 'list', label: '요청 내역' },
+        ],
+        description: [
+          { text: '요청 유형·상세·본인확인 동의', target: '.pd-right-form' },
+          { text: '내 요청 처리 상태', target: '.pd-list' },
+        ],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '로그인', result: '요청 폼', message: '', target: '.pd-right-form' },
+          { state: '필수누락', trigger: '제출', guard: '유형/동의 누락', result: '막음', message: '요청 유형과 본인확인 동의가 필요해요', placement: 'inline', target: '.pd-right-form', priority: 'P1' },
+          { state: '유효', trigger: '제출', guard: '정상', result: '접수', message: '요청이 접수됐어요. 처리 결과는 알림으로 안내됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /app/privacy-requests', status: 201 } },
+          { state: '중복충돌', trigger: '제출', guard: '동일 유형 처리중', result: '막음', message: '이미 처리 중인 동일 요청이 있어요', placement: 'inline', priority: 'P2' },
+        ],
+        interface: { reads: [{ id: 'listMyRights', intent: '내 권리요청', method: 'GET', path: '/app/privacy-requests', response: '{entities.PrivacyRequest}[]', auth: 'Bearer', target: '.pd-list' }], writes: [{ id: 'createRight', intent: '권리요청 제출', method: 'POST', path: '/app/privacy-requests', idempotencyKey: true, successStatus: 201, response: '{entities.PrivacyRequest}', errors: [{ status: 409, when: '동일 유형 처리중', message: '이미 처리 중이에요' }], auth: 'Bearer', target: '.pd-right-form' }], events: [{ name: 'privacy.request.created', when: '제출 시', payload: '{entities.PrivacyRequest}' }] },
+        flow: { to: [] },
+      },
+      // ── 출석 체크(교인 QR/온라인) ──
+      {
+        id: 'SCR-APP-024', label: '출석 체크', href: 'a-attendance.html',
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-023'],
+        context: '교인 출석 — 현장 QR 스캔 또는 온라인 예배 시청 자동 출석. 월별 출석 현황. 관리자 출석관리(SCR-ADM-003)와 연동.',
+        components: [
+          { role: '.pd-qr-check', kind: 'button', label: 'QR 출석' },
+          { role: '.pd-online-check', kind: 'button', label: '온라인 출석' },
+        ],
+        description: [
+          { text: 'QR 출석 — 예배 시간대만 활성', target: '.pd-qr-check' },
+          { text: '온라인 출석 — 설교 시청 연계', target: '.pd-online-check' },
+        ],
+        cases: [
+          { state: '정상', trigger: 'QR 스캔', guard: '예배 시간대·유효 QR', result: '출석 기록', message: '출석됐어요', placement: 'toast', target: '.pd-qr-check', api: { endpoint: 'POST /app/attendance', status: 201 } },
+          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '로그인 유도', message: '로그인이 필요해요', placement: 'inline', priority: 'P1' },
+          { state: '에러', trigger: 'QR 스캔', guard: '시간대 아님', result: '막음', message: '지금은 출석 체크 시간이 아니에요', placement: 'inline', priority: 'P2' },
+          { state: '중복충돌', trigger: 'QR 스캔', guard: '이미 출석', result: '안내', message: '이미 출석 처리됐어요', placement: 'inline', priority: 'P2' },
+        ],
+        interface: { reads: [{ id: 'myAttendance', intent: '내 출석 현황', method: 'GET', path: '/app/attendance', response: '{ month:string, present:number, absent:number }', auth: 'Bearer' }], writes: [{ id: 'checkIn', intent: '출석 체크', method: 'POST', path: '/app/attendance', idempotencyKey: true, successStatus: 201, errors: [{ status: 409, when: '이미 출석', message: '이미 출석했어요' }, { status: 422, when: '시간대 아님', message: '출석 시간이 아니에요' }], auth: 'Bearer', target: '.pd-qr-check' }], events: [{ name: 'attendance.checked', when: '출석 시', payload: '{ memberId, service, at }' }] },
+        flow: { to: [{ screen: 'SCR-APP-011', via: '온라인 예배 출석', trigger: '.pd-online-check' }] },
+      },
+      // ── 알림 수신설정(교인) ──
+      {
+        id: 'SCR-APP-025', label: '알림 설정', href: 'a-notif-settings.html',
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-024'],
+        context: '교인 알림 수신 설정 — 종류별(설교·공지·댓글)·채널별(푸시·문자) 토글. 수신동의·야간발송 제한(21~08시) 연계.',
+        components: [{ role: '.pd-toggle', kind: 'toggle', label: '알림 토글' }],
+        description: [{ text: '종류별·채널별 수신 토글', target: '.pd-toggle' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '로그인', result: '현재 설정 로드', message: '', api: { endpoint: 'GET /app/notification-settings', status: 200 } },
+          { state: '정상', trigger: '토글 변경', guard: '', result: '저장', message: '알림 설정을 저장했어요', placement: 'toast', api: { endpoint: 'PATCH /app/notification-settings', status: 200 } },
+          { state: '에러', trigger: '푸시 켜기', guard: '브라우저 권한 거부', result: '안내', message: '브라우저 알림 권한을 허용해 주세요', placement: 'inline', priority: 'P2' },
+        ],
+        interface: { reads: [{ id: 'getNotifSettings', intent: '알림 설정', method: 'GET', path: '/app/notification-settings', response: '{ sermon:boolean, notice:boolean, comment:boolean, push:boolean, sms:boolean }', auth: 'Bearer' }], writes: [{ id: 'updateNotifSettings', intent: '알림 설정 저장', method: 'PATCH', path: '/app/notification-settings', auth: 'Bearer', target: '.pd-toggle' }], events: [] },
+        flow: { to: [] },
+      },
+      // ── 설정·회원탈퇴(교인) ──
+      {
+        id: 'SCR-APP-026', label: '설정', href: 'a-settings.html',
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-029'],
+        context: '앱 설정 허브 — 알림·글자크기·권리요청·약관·로그아웃·회원탈퇴(개인정보 파기·확인 2단계).',
+        components: [
+          { role: '.pd-settings', kind: 'list', label: '설정 목록' },
+          { role: '.pd-withdraw', kind: 'button', label: '회원 탈퇴' },
+        ],
+        description: [
+          { text: '설정 항목 — 알림·글자크기·권리요청·약관', target: '.pd-settings' },
+          { text: '회원 탈퇴 — 개인정보 파기(확인 2단계)', target: '.pd-withdraw' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '로그인', result: '설정 목록', message: '', target: '.pd-settings' },
+          { state: '유효', trigger: '탈퇴', guard: '확인 2단계', result: '탈퇴·파기', message: '탈퇴 처리됐어요. 개인정보는 파기됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'DELETE /app/account', status: 200 } },
+          { state: '권한없음', trigger: '탈퇴', guard: '미확인', result: '막음', message: '탈퇴 확인이 필요해요', placement: 'inline', target: '.pd-withdraw', priority: 'P1' },
+        ],
+        interface: { reads: [], writes: [{ id: 'withdraw', intent: '회원 탈퇴·파기', method: 'DELETE', path: '/app/account', confirm: true, errors: [{ status: 409, when: '미처리 요청 존재', message: '처리 중인 요청이 있어요' }], auth: 'Bearer', target: '.pd-withdraw' }], events: [{ name: 'member.withdrawn', when: '탈퇴 시', payload: '{ memberId, purgedAt }' }] },
+        flow: { to: [{ screen: 'SCR-APP-025', via: '알림 설정' }, { screen: 'SCR-APP-023', via: '권리요청' }, { screen: 'SCR-SITE-011', via: '약관' }] },
+      },
+      // ── 약관·개인정보처리방침(공개홈) ──
+      {
+        id: 'SCR-SITE-011', label: '약관·개인정보처리방침', href: 's-terms.html',
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-026'],
+        context: '이용약관·개인정보처리방침 법적 고지(공개). 공개홈·앱 설정·가입 동의에서 참조. PIPA 수집항목·목적·보유기간·권리행사 고지.',
+        components: [{ role: '.pd-legal', kind: 'doc', label: '법적 문서 본문' }],
+        description: [{ text: '이용약관/처리방침 탭·조항', target: '.pd-legal' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '약관 본문', message: '' },
+          { state: '정상', trigger: '탭 전환', guard: '', result: '처리방침 본문', message: '' },
+        ],
+        interface: { reads: [{ id: 'getLegal', intent: '법적 문서', method: 'GET', path: '/site/legal', params: [{ in: 'query', name: 'doc', type: 'string', required: false, example: 'terms|privacy' }], response: '{ terms:string, privacy:string, updatedAt:string }', auth: 'None', target: '.pd-legal' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
+      // ── 관리자 로그인 ──
+      {
+        id: 'SCR-ADM-014', label: '관리자 로그인', href: 'c-login.html',
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-025'],
+        context: '교회 관리자 콘솔 로그인(PC웹). 실패 5회 잠금·비밀번호 재설정. 관리자 권한은 담임목사가 위임(RBAC). 대시보드(SCR-ADM-001) 진입.',
+        components: [{ role: '.pd-auth-form', kind: 'form', label: '로그인 폼' }],
+        description: [{ text: '아이디·비밀번호·비번재설정', target: '.pd-auth-form' }],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '로그인 폼', message: '', target: '.pd-auth-form' },
+          { state: '필수누락', trigger: '로그인', guard: '미입력', result: '막음', message: '아이디와 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-auth-form', priority: 'P1' },
+          { state: '권한없음', trigger: '로그인', guard: '자격 불일치', result: '막음', message: '아이디 또는 비밀번호를 확인해 주세요', placement: 'inline', priority: 'P1' },
+          { state: '잠금', trigger: '로그인', guard: '5회 실패', result: '계정 잠금', message: '로그인을 5회 실패해 잠겼어요. 잠시 후 다시 시도해 주세요', placement: 'inline', priority: 'P1' },
+          { state: '유효', trigger: '로그인', guard: '정상', result: '대시보드 이동', message: '', priority: 'P0', api: { endpoint: 'POST /admin/auth/login', status: 200 } },
+        ],
+        interface: { reads: [], writes: [{ id: 'adminLogin', intent: '관리자 로그인', method: 'POST', path: '/admin/auth/login', response: '{ token:string, member:{entities.Member} }', errors: [{ status: 401, when: '자격 불일치', message: '아이디 또는 비밀번호를 확인해 주세요' }, { status: 423, when: '5회 실패 잠금', message: '계정이 잠겼어요' }], auth: 'None', target: '.pd-auth-form' }], events: [{ name: 'admin.login', when: '로그인 성공', payload: '{ memberId, tenantId, at }' }] },
+        flow: { to: [{ screen: 'SCR-ADM-001', via: '로그인', trigger: '.pd-btn' }] },
+      },
+      // ── 공개홈 콘텐츠 관리(관리자) ──
+      {
+        id: 'SCR-ADM-015', label: '공개홈 콘텐츠 관리', href: 'c-site-content.html',
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-027'],
+        context: '공개홈에 노출되는 예배시간·교회소개·교역자·오시는길·소식을 관리자가 직접 관리(content.edit 권한). 공개홈(SCR-SITE) 렌더에 반영.',
+        components: [
+          { role: '.pd-segment', kind: 'tab', label: '콘텐츠 영역 탭' },
+          { role: '.pd-wpanel', kind: 'panel', label: '편집 패널' },
+        ],
+        description: [
+          { text: '영역 탭 — 예배/소개/교역자/위치/소식', target: '.pd-segment' },
+          { text: '예배 시간표 등 편집 테이블', target: '.pd-wpanel' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: 'content.edit 권한', result: '콘텐츠 로드', message: '', api: { endpoint: 'GET /admin/site-content', status: 200 } },
+          { state: '권한없음', trigger: '진입', guard: '권한 없음', result: '막음', message: '콘텐츠 편집 권한이 없어요', placement: 'inline', priority: 'P1' },
+          { state: '필수누락', trigger: '저장', guard: '필수 항목 누락', result: '막음', message: '필수 항목을 입력해 주세요', placement: 'inline', priority: 'P1' },
+          { state: '유효', trigger: '저장', guard: '정상', result: '공개홈 반영', message: '저장했어요. 공개홈에 반영됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'PUT /admin/site-content', status: 200 } },
+        ],
+        interface: { reads: [{ id: 'getSiteContent', intent: '공개홈 콘텐츠', method: 'GET', path: '/admin/site-content', response: '{entities.SiteContent}', auth: 'Bearer(content.edit)', target: '.pd-wpanel' }], writes: [{ id: 'saveSiteContent', intent: '콘텐츠 저장', method: 'PUT', path: '/admin/site-content', response: '{entities.SiteContent}', auth: 'Bearer(content.edit)', target: '.pd-wpanel' }], events: [{ name: 'site.content.updated', when: '저장 시', payload: '{entities.SiteContent}' }] },
+        flow: { to: [] },
+      },
+      // ── UGC 모더레이션(관리자) ──
+      {
+        id: 'SCR-ADM-016', label: 'UGC 모더레이션', href: 'c-moderation.html',
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-031'],
+        context: '커뮤니티·아나바다 신고 게시물 숨김/무시, 성도 매장 승인/반려(moderate 권한). 사용자 생성 콘텐츠 운영.',
+        components: [
+          { role: '.pd-report-table', kind: 'table', label: '신고 목록' },
+          { role: '.pd-wpanel', kind: 'panel', label: '매장 승인' },
+        ],
+        description: [
+          { text: '신고 게시물 — 숨김/무시', target: '.pd-report-table' },
+          { text: '성도 매장 승인/반려', target: '.pd-wpanel' },
+        ],
+        cases: [
+          { state: '정상', trigger: '진입', guard: 'moderate 권한', result: '신고/승인대기 목록', message: '', api: { endpoint: 'GET /admin/moderation', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '신고 없음', result: '빈 상태', message: '처리할 신고가 없어요', placement: 'inline', target: '.pd-report-table' },
+          { state: '권한없음', trigger: '진입', guard: '권한 없음', result: '막음', message: '모더레이션 권한이 없어요', placement: 'inline', priority: 'P1' },
+          { state: '유효', trigger: '숨김', guard: '정상', result: '게시물 숨김', message: '숨김 처리했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/moderation/{id}/hide', status: 200 } },
+          { state: '중복충돌', trigger: '숨김', guard: '이미 처리', result: '안내', message: '이미 처리된 항목이에요', placement: 'inline', priority: 'P2' },
+        ],
+        interface: { reads: [{ id: 'listReports', intent: '신고/승인대기', method: 'GET', path: '/admin/moderation', response: '{ reports:{entities.Post}[], storeApprovals:{entities.Store}[] }', auth: 'Bearer(moderate)', target: '.pd-report-table' }], writes: [{ id: 'hidePost', intent: '게시물 숨김', method: 'POST', path: '/admin/moderation/{id}/hide', idempotencyKey: true, errors: [{ status: 409, when: '이미 처리', message: '이미 처리됐어요' }], auth: 'Bearer(moderate)', target: '.pd-report-table' }, { id: 'approveStore', intent: '매장 승인', method: 'POST', path: '/admin/stores/{id}/approve', response: '{entities.Store}', auth: 'Bearer(moderate)', target: '.pd-wpanel' }], events: [{ name: 'ugc.hidden', when: '숨김 시', payload: '{ postId, by, at }' }] },
+        flow: { to: [] },
+      },
+      // ── 운영자 로그인(슈퍼) ──
+      {
+        id: 'SCR-SUP-007', label: '운영자 로그인', href: 'x-login.html',
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-025'],
+        context: '플랫폼 슈퍼관리자 로그인(PC웹). 2단계 인증(OTP)·비밀번호 재설정. 교차테넌트 접근 권한이므로 보안 강화. 테넌트 관리(SCR-SUP-001) 진입.',
+        components: [{ role: '.pd-auth-form', kind: 'form', label: '운영자 로그인 폼' }],
+        description: [{ text: '이메일·비밀번호·OTP', target: '.pd-auth-form' }],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '', result: '로그인 폼', message: '', target: '.pd-auth-form' },
+          { state: '필수누락', trigger: '로그인', guard: '미입력', result: '막음', message: '이메일과 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-auth-form', priority: 'P1' },
+          { state: '권한없음', trigger: '로그인', guard: 'OTP 불일치', result: '막음', message: '인증 코드를 확인해 주세요', placement: 'inline', priority: 'P1' },
+          { state: '유효', trigger: '로그인', guard: '정상+OTP', result: '테넌트 관리 이동', message: '', priority: 'P0', api: { endpoint: 'POST /super/auth/login', status: 200 } },
+        ],
+        interface: { reads: [], writes: [{ id: 'superLogin', intent: '운영자 로그인', method: 'POST', path: '/super/auth/login', response: '{ token:string }', errors: [{ status: 401, when: '자격/OTP 불일치', message: '인증 정보를 확인해 주세요' }], auth: 'None', target: '.pd-auth-form' }], events: [{ name: 'super.login', when: '로그인 성공', payload: '{ superId, at }' }] },
+        flow: { to: [{ screen: 'SCR-SUP-001', via: '로그인', trigger: '.pd-btn' }] },
+      },
+      // ── 감사로그(슈퍼) ──
+      {
+        id: 'SCR-SUP-008', label: '감사로그', href: 'x-audit.html',
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-032'],
+        context: '슈퍼관리자의 교차테넌트 접근·민감정보(pii.read) 열람·중요 변경·대량발송 전수 기록(보존 3년). 멀티테넌트 격리 계약의 감사 축.',
+        components: [{ role: '.pd-audit-table', kind: 'table', label: '접근 기록' }],
+        description: [{ text: '시각·운영자·교회·액션·대상', target: '.pd-audit-table' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '로그 목록', message: '', api: { endpoint: 'GET /super/audit', status: 200 } },
+          { state: '빈데이터', trigger: '필터', guard: '해당 로그 없음', result: '빈 상태', message: '조건에 맞는 기록이 없어요', placement: 'inline', target: '.pd-audit-table' },
+          { state: '권한없음', trigger: '진입', guard: '슈퍼 아님', result: '막음', message: '접근 권한이 없어요', placement: 'inline', priority: 'P1' },
+        ],
+        interface: { reads: [{ id: 'listAudit', intent: '감사로그', method: 'GET', path: '/super/audit', params: [{ in: 'query', name: 'action', type: 'string', required: false, example: 'pii.read|tenant.create|message.send' }, { in: 'query', name: 'tenantId', type: 'string', required: false }, { in: 'query', name: 'cursor', type: 'string', required: false }], response: '{ logs: Array<{at,actor,tenant,action,target}>, nextCursor:string }', auth: 'Bearer(슈퍼)', target: '.pd-audit-table' }], writes: [], events: [] },
+        flow: { to: [] },
       },
     ],
   },
