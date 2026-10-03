@@ -17,6 +17,7 @@ PlanDeck은 빌드 없는 정적 HTML 기획 협업 도구다. `projects/<name>/
 4. **SSOT 정합** — `projects/<name>/config/screens.js`(화면 메타) ↔ 화면 HTML을 항상 일치. 화면 추가/수정/삭제 시 screens.js도 함께.
 5. **아이콘 = 아웃라인 SVG** (이모지 금지).
 6. **엔진 변경은 additive** — `engine/*`는 모든 프로젝트 공유. 삭제 0, 타 프로젝트 무회귀.
+7. **병렬 작업 안전(Orca 등 ADE)** — 여러 에이전트가 병렬 worktree에서 동시 작업 가능. 변경은 화면·파일 단위로 독립적·머지 가능하게, 공유 파일(`engine/*`·`config/screens.js`) 동시 대규모 수정 지양. 로컬 전용 가정 금지.
 
 ## 화면 작업
 - 다수 화면은 단일 생성기 패턴 권장(컴포넌트 헬퍼 조립). id 체계 `SCR-<SURFACE>-NNN`.

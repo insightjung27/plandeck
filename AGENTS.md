@@ -1,6 +1,6 @@
 # AGENTS.md — PlanDeck 작업 규칙 (AI 코딩 에이전트 공용)
 
-이 레포는 **AI가 붙은 어떤 코딩 도구로 열어도**(Cursor · Antigravity · Orca · Claude Code · Aider 등) 동일한 규칙으로 기획 작업을 할 수 있도록 설계됐다. 이 문서가 그 **작업 규칙 SSOT**다. (대부분의 AI 코딩 도구가 `AGENTS.md`를 자동 로드하며, Claude Code는 `CLAUDE.md`에서, Cursor는 `.cursor/rules/plandeck.mdc`에서, Antigravity는 루트 `AGENTS.md`와 `.agents/rules/plandeck.md`에서 이 문서를 가져온다.)
+이 레포는 **AI가 붙은 어떤 코딩 도구로 열어도**(Cursor · Antigravity · Orca · Claude Code · Aider 등) 동일한 규칙으로 기획 작업을 할 수 있도록 설계됐다. 이 문서가 그 **작업 규칙 SSOT**다. (대부분의 AI 코딩 도구가 `AGENTS.md`를 자동 로드하며, Claude Code는 `CLAUDE.md`에서, Cursor는 `.cursor/rules/plandeck.mdc`에서, Antigravity는 루트 `AGENTS.md`와 `.agents/rules/plandeck.md`에서 이 문서를 가져온다. **Orca(ADE)** 는 전용 규칙 포맷이 없다 — 이 `AGENTS.md`를 standing brief로 직접 읽고, Orca가 병렬 worktree로 실행하는 각 CLI 에이전트(Claude Code·Cursor CLI·Codex·Gemini 등)가 위 각자 규칙 파일을 읽는다.)
 
 ## PlanDeck이란
 빌드 없는(no-build) 정적 HTML 기획 협업 도구. `projects/<name>/config/*.js`(SSOT)를 고치면 엔진(`engine/*`)이 화면·문서를 자동 렌더한다. git이 동기화 버스, GitHub Pages가 공유 배포다.
@@ -18,6 +18,7 @@
 4. **SSOT 정합** — `projects/<name>/config/screens.js`(화면 메타: id·label·href·surface·components·description·cases·interface·flow)와 화면 HTML을 **항상 일치**시킨다. 화면을 추가/수정/삭제하면 screens.js도 같이 고친다.
 5. **아이콘 = 아웃라인 SVG** (이모지 금지).
 6. **엔진 변경은 additive** — `engine/*`는 모든 프로젝트 공유이므로 삭제 0, 타 프로젝트 무회귀를 보장한다.
+7. **병렬 작업 안전(Orca 등 ADE)** — 여러 에이전트가 병렬 worktree에서 동시에 작업할 수 있다. 변경은 화면·파일 단위로 독립적이고 머지 가능하게 유지하고, 공유 파일(`engine/*`·`config/screens.js`)의 동시 대규모 수정은 피한다. 로컬 전용을 가정하지 말 것(SSH/원격 worktree 가능).
 
 ## 화면 작업 가이드
 - 다수 화면은 **단일 생성기 패턴** 권장(컴포넌트 헬퍼로 조립 → 일관성·오류 최소화).
