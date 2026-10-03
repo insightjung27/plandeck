@@ -193,7 +193,7 @@ window.PLANDECK_SCREENS = [
           { role: '.pd-notice-body', kind: 'card', label: '공지 본문' },
         ],
         description: [
-          { text: '공지 본문 — 제목·일시·내용', target: '.pd-notice-body' },
+          { text: '공지 본문 — 제목·일시·내용·문의 안내', target: '.pd-notice-body' },
         ],
         cases: [
           { state: '정상', trigger: '진입', guard: '', result: '공지 표시', message: '', target: '.pd-notice-body', api: { endpoint: 'GET /app/notices/{id}', status: 200 } },
