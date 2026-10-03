@@ -1223,16 +1223,39 @@
     var seen = {}, dups = [];
     projs.forEach(function (p) { if (seen[p.slug] || seen[p.path]) dups.push(p.slug || p.path); seen[p.slug] = 1; seen[p.path] = 1; });
     var dupWarn = dups.length ? '<div class="pd-lint-banner" style="position:static;max-width:none;margin-bottom:16px"><span class="pd-lint-icon">⚠️</span><span class="pd-lint-text">중복 프로젝트 등록: ' + esc(dups.join(', ')) + '</span></div>' : '';
-    var cards = projs.map(function (p) {
-      var sf = (p.surfaces || []).map(function (s) { return '<span class="pd-chip">' + esc(s) + '</span>'; }).join('');
+    // 버전 비교(내림차순) · 태그에서 버전숫자 제거(짧은 라벨)
+    function vcmp(a, b) { var pa = (a.version || '0').split('.').map(Number), pb = (b.version || '0').split('.').map(Number); for (var i = 0; i < 3; i++) { var d = (pb[i] || 0) - (pa[i] || 0); if (d) return d; } return 0; }
+    function shortTag(t) { return String(t || '').replace(/\s*v?[0-9][0-9.]*\s*$/, '').trim() || String(t || ''); }
+    function sfChips(p) { return (p.surfaces || []).map(function (s) { return '<span class="pd-chip">' + esc(s) + '</span>'; }).join(''); }
+    function singleCard(p) {
       return '<a class="pd-proj-card" href="' + esc(p.path) + 'index.html">' +
         '<div class="pd-proj-head"><span class="pd-proj-name">' + esc(p.name) + '</span>' +
         (p.tag ? '<span class="pd-status-chip is-wire">' + esc(p.tag) + '</span>' : '') + '</div>' +
         '<div class="pd-proj-desc">' + esc(p.desc || '') + '</div>' +
-        '<div class="pd-chip-row">' + sf + (p.version ? '<span class="pd-chip">v' + esc(p.version) + '</span>' : '') +
+        '<div class="pd-chip-row">' + sfChips(p) + (p.version ? '<span class="pd-chip">v' + esc(p.version) + '</span>' : '') +
         (p.updatedAt ? '<span class="pd-chip">' + esc(p.updatedAt) + '</span>' : '') + '</div>' +
         '</a>';
-    }).join('');
+    }
+    // 같은 versionGroup = 한 프로젝트의 여러 버전(브랜치) → 카드 1개 + 버전 스위처
+    function groupedCard(vs) {
+      var sorted = vs.slice().sort(vcmp);
+      var cur = vs.filter(function (x) { return x.current; })[0] || sorted[0];
+      var pills = sorted.map(function (x) {
+        return '<a class="pd-ver-pill' + (x === cur ? ' is-current' : '') + '" href="' + esc(x.path) + 'index.html" title="' + esc(x.desc || '') + '">' +
+          '<span class="pd-ver-num">v' + esc(x.version) + '</span>' + (shortTag(x.tag) ? '<span class="pd-ver-tag">' + esc(shortTag(x.tag)) + '</span>' : '') + '</a>';
+      }).join('');
+      return '<div class="pd-proj-card pd-proj-card-grouped">' +
+        '<div class="pd-proj-head"><a class="pd-proj-name pd-proj-name-link" href="' + esc(cur.path) + 'index.html">' + esc(cur.name) + '</a>' +
+        (cur.tag ? '<span class="pd-status-chip is-wire">' + esc(cur.tag) + '</span>' : '') + '</div>' +
+        '<div class="pd-proj-desc">' + esc(cur.desc || '') + '</div>' +
+        '<div class="pd-chip-row">' + sfChips(cur) + (cur.updatedAt ? '<span class="pd-chip">' + esc(cur.updatedAt) + '</span>' : '') + '</div>' +
+        '<div class="pd-ver-switch"><span class="pd-ver-switch-label">⎇ 버전 ' + sorted.length + '</span>' + pills + '</div>' +
+        '</div>';
+    }
+    var groups = {}, order = [];
+    projs.forEach(function (p) { var g = p.versionGroup || ('__' + (p.slug || p.path)); if (!groups[g]) { groups[g] = []; order.push(g); } groups[g].push(p); });
+    var projCount = order.length;
+    var cards = order.map(function (g) { var vs = groups[g]; return vs.length > 1 ? groupedCard(vs) : singleCard(vs[0]); }).join('');
     // 새 프로젝트 만들기 — 구체적 단계 가이드(코딩 불필요)
     var steps = [
       ['이 폴더를 <b>AI 코딩 도구</b>로 연다', '<b>Cursor·Antigravity·Orca·Claude Code</b> 등 어디든 — 작업 규칙은 <code>AGENTS.md</code>가 자동 적용된다. 새로 시작이면 GitHub에서 <b>“Use this template”</b>로 내 레포를 먼저 만든다.'],
@@ -1258,8 +1281,8 @@
       '<div class="pd-prd-sub">여러 기획 프로젝트를 한곳에서. 아래에서 프로젝트를 열거나, 새로 만드세요.</div></div>' +
       dupWarn +
       guide +
-      '<div class="pd-ws-projects"><h2>내 프로젝트' + (projs.length ? ' <span class="pd-dim">(' + projs.length + ')</span>' : '') + '</h2>' +
-      (projs.length ? '<div class="pd-proj-grid">' + cards + '</div>'
+      '<div class="pd-ws-projects"><h2>내 프로젝트' + (projCount ? ' <span class="pd-dim">(' + projCount + ')</span>' : '') + '</h2>' +
+      (projCount ? '<div class="pd-proj-grid">' + cards + '</div>'
         : '<div class="pd-empty"><div class="pd-empty-icon">🗂️</div><div class="pd-empty-title">아직 프로젝트가 없습니다</div><div class="pd-empty-sub">위 <b>새 프로젝트 만들기</b>의 <code>/pd-init</code> 로 시작하세요.</div></div>') +
       '</div>';
   }

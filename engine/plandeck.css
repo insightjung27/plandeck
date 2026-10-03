@@ -369,6 +369,18 @@
 .page-detail.pd-desc-resized { max-height: none; }
 .page-detail.pd-desc-resized .page-detail-body { flex: 1 1 auto; overflow-y: auto; }
 
+/* 워크스페이스: 버전(브랜치) 스위처 — 같은 프로젝트의 여러 버전을 한 카드에서 전환(git 브랜치 개념) */
+.pd-proj-card-grouped { display: flex; flex-direction: column; }
+.pd-proj-name-link { color: inherit; text-decoration: none; }
+.pd-proj-name-link:hover { color: var(--pd-primary); text-decoration: underline; }
+.pd-ver-switch { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 12px; border-top: 1px dashed #e5e7eb; }
+.pd-ver-switch-label { font-size: 11px; font-weight: 700; color: #9ca3af; margin-right: 2px; }
+.pd-ver-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 999px; border: 1px solid #e5e7eb; background: #fff; font-size: 11.5px; color: #4b5563; text-decoration: none; transition: border-color .12s, color .12s, background .12s; }
+.pd-ver-pill:hover { border-color: var(--pd-primary); color: var(--pd-primary); }
+.pd-ver-pill.is-current { background: var(--pd-primary); border-color: var(--pd-primary); color: #fff; font-weight: 700; }
+.pd-ver-num { font-variant-numeric: tabular-nums; }
+.pd-ver-tag { font-size: 10px; opacity: .8; }
+
 /* 좌측 화면 목록 토글(우하단 dock 아이콘으로 열고/닫기) */
 .page-nav.is-hidden { display: none; }
 .pd-nav-toggle-btn.is-off { opacity: .5; }
