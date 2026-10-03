@@ -1087,7 +1087,7 @@
     }).join('');
     // 새 프로젝트 만들기 — 구체적 단계 가이드(코딩 불필요)
     var steps = [
-      ['이 폴더에서 <b>Claude Code</b>를 연다', '터미널에서 이 레포 폴더로 이동 후 <code>claude</code> 실행 (또는 VS Code 확장에서 열기). 새로 시작이면 GitHub에서 <b>“Use this template”</b>로 내 레포를 먼저 만든다.'],
+      ['이 폴더를 <b>AI 코딩 도구</b>로 연다', '<b>Cursor·Antigravity·Orca·Claude Code</b> 등 어디든 — 작업 규칙은 <code>AGENTS.md</code>가 자동 적용된다. 새로 시작이면 GitHub에서 <b>“Use this template”</b>로 내 레포를 먼저 만든다.'],
       ['<code>/pd-init</code> 입력 → 질문에 답만', '프로젝트 <b>이름</b>·<b>서피스</b>(모바일/PC웹/태블릿/키오스크)·버전을 물어본다. 답하면 <code>projects/&lt;이름&gt;/</code> 폴더가 자동 생성되고 이 목록에 등록된다. <i>직접 폴더·파일을 만들 필요 없음.</i>'],
       ['<code>/pd-prd</code> → 상위 기획(PRD) 작성', '핵심만 적으면 된다. 부족하면 되물어 채워준다(역질문). 정본은 <code>docs/PRD.md</code>로 버전 관리된다.'],
       ['<code>/pd-scaffold</code> → 기본 화면 자동 생성', 'PRD에서 기본 프로세스 화면들을 뽑아준다. 이후 <code>/pd-wireframe</code> → <code>/pd-cases</code> → <code>/pd-interface</code>로 화면을 상세화.'],
@@ -1100,7 +1100,7 @@
       '<div class="pd-newproj-head"><span class="pd-newproj-title">🚀 새 프로젝트 만들기</span>' +
       '<span class="pd-newproj-badge">약 3분 · 코딩 불필요</span></div>' +
       '<ol class="pd-steps">' + stepHtml + '</ol>' +
-      '<div class="pd-newproj-foot">막히면 아무 때나 <code>/pd</code> — 지금 뭘 할지 안내합니다. · 브라우저로 보기: <b>start.command</b>(맥)/<b>start.bat</b>(윈도) 더블클릭 → 자동 오픈.' +
+      '<div class="pd-newproj-foot">아래 <code>/pd-*</code> 는 <b>Claude Code</b> 커맨드입니다. Cursor·Antigravity·Orca 등 다른 도구에선 같은 내용을 <b>자연어로</b> 요청하세요(규칙은 <code>AGENTS.md</code>가 보장). · 막히면 <code>/pd</code> — 지금 뭘 할지 안내. · 브라우저로 보기: <b>start.command</b>(맥)/<b>start.bat</b>(윈도) 더블클릭 → 자동 오픈.' +
       ' · 문서: <a href="docs/GUIDE.md">GUIDE</a> · <a href="docs/TEAM.md">TEAM</a> · <a href="docs/OPERATIONS.md">OPERATIONS</a></div>' +
       '</section>';
 
