@@ -232,6 +232,13 @@ a.pd-row, a.pd-tile, a.pd-media, a.pd-tab, a.pd-feature, a.pd-sermon-card, a.pd-
 a.pd-wpanel-sub { text-decoration: none; }
 .pd-sidebar .nav-item .pd-badge { margin-left: auto; }
 .pd-empty-state .pd-row-icon { margin-left: auto; margin-right: auto; }
+.pd-qty { display: inline-flex; align-items: center; border: 1px solid var(--w-line); border-radius: 8px; overflow: hidden; }
+.pd-qty-btn { width: 40px; height: 40px; border: none; background: var(--w-white); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--w-ink); }
+.pd-qty-n { min-width: 44px; text-align: center; font-size: 15px; font-weight: 600; }
+.pd-field-inline-2 { display: flex; gap: 10px; }
+.pd-field-inline-2 .pd-field { flex: 1; }
+.pd-rating-input { display: flex; gap: 4px; color: var(--w-line-2); }
+.pd-rating-input svg { width: 32px; height: 32px; }
 
 /* 구 스켈레톤 호환(혹시 남아있으면 흑백 톤) */
 .pd-sk-box, .pd-sk-title, .pd-sk-line, .pd-sk-row, .pd-sk-hero, .pd-sk-input, .pd-sk-chip { background: var(--w-fill); border: 1px solid var(--w-line); }

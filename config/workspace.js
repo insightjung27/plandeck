@@ -11,13 +11,13 @@ window.PLANDECK_WORKSPACE = {
     {
       slug: 'order-pay',
       name: '간편결제 데모',
-      desc: 'PlanDeck 전체 기능 시연 — 모바일 간편결제',
+      desc: '비회원 간편결제 — 상품탐색·장바구니·주문서·결제·주문관리·마이 19화면(실서비스 수준)',
       path: 'projects/order-pay/',
       surfaces: ['모바일'],
       owner: 'PlanDeck',
       version: '1.0.0',
       updatedAt: '2026-10-03',
-      tag: '데모 v1.0',
+      tag: '완성 v1.0',
     },
     {
       slug: 'dodam-care-match',

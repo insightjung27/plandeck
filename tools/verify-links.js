@@ -45,14 +45,16 @@ function hasRuntimeNav(file) {
   return compGo || flowTo;
 }
 
-let broken = [], deadend = [], noback = [], scrMissing = [], dangling = [], unregistered = [];
+let broken = [], deadend = [], noback = [], scrMissing = [], dangling = [], unregistered = [], emptyLinks = [];
 const hrefRe = /href="([^"]+)"/g;
 
 screens.forEach(f => {
   const html = fs.readFileSync(DIR + f, 'utf8');
+  if (/href="#"(?!\s*onclick)/.test(html)) emptyLinks.push(f); // 순수 빈 링크만(뒤로 history.back의 onclick 동작은 제외)
   let m, outbound = 0, internal = [];
   while ((m = hrefRe.exec(html))) {
     const h = m[1];
+    if (h === '#') continue;
     if (h.startsWith('http') || h.startsWith('#') || h.startsWith('mailto') || h === '') continue;
     if (h.includes('../')) continue; // 엔진/문서 상대경로(런타임 주입) 제외
     const file = h.split('?')[0].split('#')[0];
@@ -78,6 +80,7 @@ console.log('화면 파일: ' + screens.length + '개' + (scrLoaded ? ' · scree
 
 console.log('\n[오류 — 반드시 수정]');
 console.log('  깨진 링크: ' + broken.length + (broken.length ? ' → ' + broken.map(b => b.from + '→' + b.to).join(', ') : ' ✅'));
+console.log('  빈 링크(href="#"): ' + emptyLinks.length + (emptyLinks.length ? ' → ' + [...new Set(emptyLinks)].join(', ') : ' ✅'));
 console.log('  screens.js href 파일없음: ' + scrMissing.length + (scrMissing.length ? ' → ' + scrMissing.join(', ') : ' ✅'));
 console.log('  flow.to dangling: ' + dangling.length + (dangling.length ? ' → ' + dangling.join(', ') : ' ✅'));
 
@@ -88,6 +91,7 @@ console.log('  screens.js 미등록 화면: ' + unregistered.length + (unregiste
 
 const fail = [];
 if (broken.length) fail.push('깨진 링크 ' + broken.length);
+if (emptyLinks.length) fail.push('빈 링크 ' + [...new Set(emptyLinks)].length);
 if (scrMissing.length) fail.push('href 파일없음 ' + scrMissing.length);
 if (dangling.length) fail.push('flow.to dangling ' + dangling.length);
 const warned = deadend.length || noback.length || unregistered.length;
