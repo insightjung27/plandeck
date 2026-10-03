@@ -55,6 +55,8 @@
     book: P('<path d="M4 5a2 2 0 012-2h12v16H6a2 2 0 00-2 2V5zM18 3v18"/>'),
     qr: P('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2M18 14v6M14 18h2"/>'),
     globe: P('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>'),
+    briefcase: P('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 12h18"/>'),
+    badgeCheck: P('<path d="M12 3l2.2 1.6 2.7-.2 1 2.5 2.3 1.4-.6 2.7.6 2.7-2.3 1.4-1 2.5-2.7-.2L12 21l-2.2-1.6-2.7.2-1-2.5L3.8 15.7l.6-2.7-.6-2.7 2.3-1.4 1-2.5 2.7.2z"/><path d="M9 12l2 2 4-4"/>'),
   };
 
   // ── 코어: href 있으면 <a>, 없으면 fallback 태그 ──
@@ -144,6 +146,13 @@
   function signalCard(title, body, token) { return '<div class="pd-signal-card">' + ICON.sun + '<div class="pd-wf-title">' + title + '</div><div class="pd-wf-text">' + body + '</div>' + hero('square') + (token ? '<div class="pd-wf-label">' + token + '</div>' : '') + '</div>'; }
   // 플로팅 액션 버튼(FAB) — inner=내용, to=이동
   function fab(inner, to, cls) { return '<a class="pd-fab' + (cls ? ' ' + cls : '') + '" href="' + to + '"><span>' + inner + '</span></a>'; }
+  // 진행 단계 표시(온보딩·심사 파이프라인). items=단계명[], current=현재 인덱스(0-base)
+  function stepper(items, current) {
+    return '<div class="pd-stepper">' + items.map(function (s, i) {
+      var st = i < current ? ' is-done' : i === current ? ' is-active' : '';
+      return '<div class="pd-step' + st + '"><span class="pd-step-dot">' + (i < current ? '✓' : (i + 1)) + '</span><span class="pd-step-label">' + s + '</span></div>';
+    }).join('') + '</div>';
+  }
 
   // ── 관리자(데스크톱) 셸 컴포넌트 ──
   function gnb(logo, menu, active) {
@@ -173,7 +182,7 @@
     btn: btn, btnInline: btnInline, ctaBar: ctaBar, callBtn: callBtn,
     row: row, list: list, tiles: tiles, feature: feature,
     field: field, fieldChips: fieldChips, textarea: textarea, check: check, toggle: toggle, form: form, commentBar: commentBar,
-    doneState: doneState, heroBlock: heroBlock, emptyState: emptyState, legalDoc: legalDoc, bubble: bubble, chatLog: chatLog, heroCard: heroCard, signalCard: signalCard, fab: fab,
+    doneState: doneState, heroBlock: heroBlock, emptyState: emptyState, legalDoc: legalDoc, bubble: bubble, chatLog: chatLog, heroCard: heroCard, signalCard: signalCard, fab: fab, stepper: stepper,
     gnb: gnb, sidebar: sidebar, pagehead: pagehead, kpi: kpi, wpanel: wpanel, table: table, badge: badge,
   };
 

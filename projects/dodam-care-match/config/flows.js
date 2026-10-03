@@ -50,5 +50,28 @@ window.PLANDECK_FLOWS = [
       { screen: 'SCR-PARENT-032' },
     ],
   },
+  {
+    id: 'FLOW-ONBOARD', name: '파트너 온보딩 검증', surface: '파트너스앱',
+    desc: '공급자 검증 파이프라인 — 역할→자격→동의/서류→성범죄경력조회→보험/교육→심사현황',
+    steps: [
+      { screen: 'SCR-PTNR-003' },
+      { screen: 'SCR-PTNR-004' },
+      { screen: 'SCR-PTNR-005' },
+      { screen: 'SCR-PTNR-006' },
+      { screen: 'SCR-PTNR-007' },
+      { screen: 'SCR-PTNR-008' },
+      { screen: 'SCR-PTNR-010' },
+      { screen: 'SCR-PTNR-012' },
+    ],
+  },
+  {
+    id: 'FLOW-JOB', name: '일감 수락·정산', surface: '파트너스앱',
+    desc: '돌보미 매칭 요청 → 상세(수락 전 마스킹) → 수락(선점) → 정산(원천징수 3.3%)',
+    steps: [
+      { screen: 'SCR-PTNR-013' },
+      { screen: 'SCR-PTNR-014' },
+      { screen: 'SCR-PTNR-015' },
+    ],
+  },
 ];
 window.PDK_FLOWS = window.PLANDECK_FLOWS;

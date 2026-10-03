@@ -412,3 +412,14 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-herocard { text-align: center; padding: 22px 16px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .pd-herocard .pd-hero-img.square { width: 64px; height: 64px; border-radius: 16px; }
 .pd-herocard svg { width: 56px; height: 56px; }
+
+/* 진행 단계(stepper) — 온보딩·심사 파이프라인 */
+.pd-stepper { display: flex; align-items: flex-start; gap: 4px; padding: 6px 0 2px; }
+.pd-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; }
+.pd-step:not(:last-child)::after { content: ''; position: absolute; top: 11px; left: 50%; width: 100%; height: 2px; background: var(--w-line); z-index: 0; }
+.pd-step.is-done:not(:last-child)::after { background: var(--w-ink); }
+.pd-step-dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--w-line); background: var(--w-white); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--w-sub); z-index: 1; }
+.pd-step.is-done .pd-step-dot { background: var(--w-ink); border-color: var(--w-ink); color: var(--w-white); }
+.pd-step.is-active .pd-step-dot { border-color: var(--w-ink); color: var(--w-ink); }
+.pd-step-label { font-size: 11px; color: var(--w-sub); text-align: center; line-height: 1.2; }
+.pd-step.is-active .pd-step-label { color: var(--w-ink); font-weight: 700; }
