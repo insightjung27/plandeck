@@ -119,8 +119,8 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-PARENT-007', label: '커뮤니티', href: 'p-community.html',
         surface: 'parent', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-P15'],
         context: '부모 커뮤니티 — 자조·자유·전문가 Q&A·매거진·아빠교실·장소제안. 글쓰기는 도담패스(소프트게이트).',
-        components: [{ role: '.pd-toolbar', kind: 'toolbar', label: '카테고리 탭' }, { role: '.pd-list', kind: 'list', label: '게시글 피드' }],
-        description: [{ text: '카테고리 세그', target: '.pd-toolbar' }, { text: '게시글(자녀유형 칩·신고)', target: '.pd-list' }],
+        components: [{ role: '.pd-tabs', kind: 'tabs', label: '카테고리 탭(선택 시 피드 전환)' }, { role: '.pd-list', kind: 'list', label: '게시글 피드' }],
+        description: [{ text: '카테고리 탭 — 선택 시 해당 피드로 내용 전환', target: '.pd-tabs' }, { text: '게시글(자녀유형 칩·신고)', target: '.pd-list' }],
         cases: [
           { state: '정상', trigger: '진입', guard: '', result: '피드', message: '', api: { endpoint: 'GET /app/community', status: 200 } },
           { state: '권한없음', trigger: '글쓰기', guard: '무료·비로그인', result: '도담패스 유도', message: '글쓰기는 도담 패스 후원으로 열려요', placement: 'inline', priority: 'P1' },

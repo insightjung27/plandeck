@@ -92,6 +92,13 @@
   function banner(t, cls, to) { return to ? '<a class="pd-banner' + (cls ? ' ' + cls : '') + '" href="' + to + '">' + t + '</a>' : '<div class="pd-banner' + (cls ? ' ' + cls : '') + '">' + t + '</div>'; }
   function chips(arr) { return '<div class="pd-chips">' + arr.map(function (c, i) { return '<span class="pd-chip' + (i === 0 ? ' is-active' : '') + '">' + c + '</span>'; }).join('') + '</div>'; }
   function segment(arr, act) { return '<div class="pd-segment">' + arr.map(function (s, i) { return '<div' + (i === (act == null ? 0 : act) ? ' class="is-active"' : '') + '>' + s + '</div>'; }).join('') + '</div>'; }
+  // 탭+내용 묶음 — 탭 클릭 시 해당 패널로 내용 전환(프로토타입). items=탭명[], panels=각 탭 내용 HTML[], act=기본 인덱스.
+  function tabs(items, panels, act) {
+    act = act == null ? 0 : act;
+    var seg = '<div class="pd-segment">' + items.map(function (s, i) { return '<div' + (i === act ? ' class="is-active"' : '') + '>' + s + '</div>'; }).join('') + '</div>';
+    var pnl = '<div class="pd-tabpanels">' + (panels || []).map(function (p, i) { return '<div class="pd-tabpanel' + (i === act ? ' is-active' : '') + '">' + (p || '') + '</div>'; }).join('') + '</div>';
+    return '<div class="pd-tabs">' + seg + pnl + '</div>';
+  }
   function toolbar(inner) { return '<div class="pd-toolbar">' + inner + '</div>'; }
   function searchbar(ph) { return '<div class="pd-searchbar">' + ICON.search + (ph || '검색') + '</div>'; }
 
@@ -190,7 +197,7 @@
     ICON: ICON, P: P, tag: tag,
     iconbtn: iconbtn, apptop: apptop, appbar: appbar, appBody: appBody, safeTop: safeTop, tabbar: tabbar,
     secHead: secHead, divider: divider, text: text, label: label, hero: hero,
-    banner: banner, chips: chips, segment: segment, toolbar: toolbar, searchbar: searchbar,
+    banner: banner, chips: chips, segment: segment, tabs: tabs, toolbar: toolbar, searchbar: searchbar,
     btn: btn, btnInline: btnInline, ctaBar: ctaBar, callBtn: callBtn,
     row: row, list: list, tiles: tiles, feature: feature,
     field: field, fieldChips: fieldChips, textarea: textarea, check: check, toggle: toggle, form: form, commentBar: commentBar,

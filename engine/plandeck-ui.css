@@ -75,6 +75,10 @@
 .pd-segment > * { flex: 1; text-align: center; padding: 9px 0; font-size: 13px; font-weight: 600; color: var(--w-sub); border: none; background: var(--w-white); cursor: pointer; border-right: 1px solid var(--w-line); }
 .pd-segment > *:last-child { border-right: none; }
 .pd-segment > .is-active { background: var(--w-fill-2); color: var(--w-ink); }
+/* 탭+내용 묶음 — 탭 클릭 시 해당 패널만 표시(enhanceInteractions) */
+.pd-tabs { display: flex; flex-direction: column; gap: 14px; }
+.pd-tabpanel { display: none; flex-direction: column; gap: 12px; }
+.pd-tabpanel.is-active { display: flex; }
 
 /* ─── 칩/태그(필터) ─── */
 .pd-chips { display: flex; gap: 7px; overflow-x: auto; }

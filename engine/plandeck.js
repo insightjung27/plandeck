@@ -1368,13 +1368,19 @@
   function enhanceInteractions() {
     var screen = document.querySelector('.pd-screen');
     if (!screen) return;
-    // 세그먼트(탭) — 단일 선택(라디오)
+    // 세그먼트(탭) — 단일 선택 + .pd-tabs 안이면 해당 인덱스 패널로 내용 전환(프로토타입)
     screen.querySelectorAll('.pd-segment').forEach(function (seg) {
       seg.addEventListener('click', function (e) {
         var item = e.target; while (item && item.parentNode !== seg) item = item.parentNode;
         if (!item || item.tagName === 'A') return;
-        [].forEach.call(seg.children, function (k) { k.classList.remove('is-active'); });
+        var kids = [].slice.call(seg.children);
+        var idx = kids.indexOf(item);
+        kids.forEach(function (k) { k.classList.remove('is-active'); });
         item.classList.add('is-active');
+        var wrap = seg.closest && seg.closest('.pd-tabs');
+        if (wrap) {
+          [].forEach.call(wrap.querySelectorAll('.pd-tabpanel'), function (p, i) { p.classList.toggle('is-active', i === idx); });
+        }
       });
     });
     // 칩 — 개별 토글(링크/필터 칩 제외)
