@@ -120,6 +120,7 @@
   // 동일한 링크 세트로 어디서든 필요한 페이지로 점프. active 키는 현재 위치 강조용.
   var DOC_LINKS = [
     { key: 'workspace', href: '../../index.html', label: '⌂ 워크스페이스' },
+    { key: 'guide',     href: '../../guide.html', label: '📖 가이드' },
     { key: 'overview',  href: 'index.html',        label: '개요' },
     { key: 'prd',       href: 'prd.html',           label: 'PRD' },
     { key: 'ia',        href: 'ia.html',            label: '🗂 IA(정보구조)' },
