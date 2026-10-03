@@ -10,15 +10,15 @@ window.PLANDECK_SCREENS = [
         surface: 'app', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
         context: '교인앱 첫 화면. 이번 주 설교·공지·바로가기. 교회별 브랜드(화이트라벨)로 표시.',
         components: [
-          { role: '.pd-live', kind: 'banner', label: '주일 라이브 배너', action: { on: 'click', do: 'go:SCR-APP-002' } },
-          { role: '.pd-sermon-card', kind: 'card', label: '이번 주 설교', action: { on: 'click', do: 'go:SCR-APP-002' } },
+          { role: '.pd-live', kind: 'banner', label: '주일 라이브 배너', action: { on: 'click', do: 'go:SCR-APP-011' } },
+          { role: '.pd-sermon-card', kind: 'card', label: '이번 주 설교', action: { on: 'click', do: 'go:SCR-APP-011' } },
           { role: '.pd-notice', kind: 'list', label: '공지 목록', action: { on: 'click', do: 'go:SCR-APP-009' } },
           { role: '.pd-quick', kind: 'list', label: '바로가기', action: { on: 'click', do: 'go:SCR-APP-003' } },
           { role: '.pd-tabbar', kind: 'tabbar', label: '하단 탭', action: { on: 'click', do: 'go:SCR-APP-004' } },
         ],
         description: [
-          { text: '주일 라이브 배너 — 탭하면 설교(SCR-APP-002)', target: '.pd-live' },
-          { text: '이번 주 설교 — 탭하면 재생(SCR-APP-002)', target: '.pd-sermon-card' },
+          { text: '주일 라이브 배너 — 탭하면 설교 상세·재생(SCR-APP-011)', target: '.pd-live' },
+          { text: '이번 주 설교 — 탭하면 설교 상세·재생(SCR-APP-011)', target: '.pd-sermon-card' },
           { text: '바로가기 — 헌금안내(SCR-APP-003)·예배', target: '.pd-quick' },
           { text: '하단 탭 — 홈·설교·헌금·마이(SCR-APP-004)', target: '.pd-tabbar' },
         ],
@@ -29,7 +29,7 @@ window.PLANDECK_SCREENS = [
           { state: '권한없음', trigger: '진입', guard: '비로그인', result: '공개 콘텐츠 + 로그인 유도', message: '로그인하면 더 많은 기능을 쓸 수 있어요', placement: 'inline' },
         ],
         interface: { reads: [{ id: 'appHome', intent: '홈 집계', method: 'GET', path: '/app/home', response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-card', errors: [{ status: 500, when: '서버 오류', message: '정보를 불러오지 못했어요' }] }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-APP-002', via: '설교', trigger: '.pd-sermon-card' }, { screen: 'SCR-APP-003', via: '헌금안내', trigger: '.pd-quick' }, { screen: 'SCR-APP-009', via: '공지', trigger: '.pd-notice' }, { screen: 'SCR-APP-004', via: '마이', trigger: '.pd-tabbar' }] },
+        flow: { to: [{ screen: 'SCR-APP-011', via: '설교 상세·재생', trigger: '.pd-sermon-card' }, { screen: 'SCR-APP-003', via: '헌금안내', trigger: '.pd-quick' }, { screen: 'SCR-APP-009', via: '공지', trigger: '.pd-notice' }, { screen: 'SCR-APP-004', via: '마이', trigger: '.pd-tabbar' }] },
       },
       // ── 2. 설교 ──
       {
