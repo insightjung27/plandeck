@@ -1189,11 +1189,12 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-010', label: '매장 상세(운영)', href: 'ad-store-detail.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A04'],
         context: '열람·수정·인증 보류/해제·삭제. 삭제 시 의존 행 있으면 소프트 정지.',
-        components: [{ role: '.pd-kpi', kind: 'kpi', label: '집계' }, { role: '.pd-wpanel', kind: 'panel', label: '6축·이력' }],
+        components: [{ role: '.pd-kpi', kind: 'kpi', label: '집계' }, { role: '.pd-wpanel', kind: 'panel', label: '6축·이력' }, { role: '.pd-confirm', kind: 'confirm', label: '삭제(소프트) 사유·확인' }],
         description: [{ text: '후기·신청·신고 집계', target: '.pd-kpi' }, { text: '6축 접근성', target: '.pd-wpanel' }],
         cases: [
           { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'reviewer', result: '매장 상세', message: '' },
+          { state: '필수누락', trigger: '삭제', guard: '사유 없음', result: '막음', message: '삭제 사유를 입력해 주세요', placement: 'inline', target: '.pd-confirm', priority: 'P1' },
           { state: '유효', trigger: '삭제', guard: '의존 행 존재', result: '소프트 정지', message: '연결 데이터가 있어 노출을 중단했어요(복구 가능)', placement: 'inline', priority: 'P1', api: { endpoint: 'DELETE /admin/stores/{id}', status: 200 } },
         ],
         interface: { reads: [{ id: 'getStore', intent: '매장 상세', method: 'GET', path: '/admin/stores/{id}', response: '{entities.Store}', auth: 'Bearer(reviewer)' }], writes: [{ id: 'deleteStore', intent: '매장 삭제', method: 'DELETE', path: '/admin/stores/{id}', confirm: true, auth: 'Bearer(reviewer:write)' }], events: [] },
