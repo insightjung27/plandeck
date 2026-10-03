@@ -23,7 +23,7 @@ Figma 디자인                            화면(device frame) 안에
         /pd-figma-sync 가 config/screens.js(figma 필드) + assets/figma/ 에 커밋 → 배포
 ```
 
-- **MCP = 작성시점 브리지**: Claude Code가 디자인(이미지·토큰·코드맵)을 끌어와 레포에 **굽는다**.
+- **MCP = 작성시점 브리지**: Claude Code(또는 Cursor 등 MCP 지원 도구)가 디자인(이미지·토큰·코드맵)을 끌어와 레포에 **굽는다**.
 - **런타임 = 구워진 결과 표시**: 이미지(정적·항상 동작) 기본, 프로토타입 임베드(상호작용)는 상위 승격.
 - REST API는 **헤드리스 폴백**(데스크톱·MCP 없이 토큰만으로 이미지 내보내기).
 
