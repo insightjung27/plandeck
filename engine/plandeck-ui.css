@@ -50,6 +50,9 @@
 
 /* ─── 헤더(GNB)/앱바 ─── */
 .pd-appbar { position: sticky; top: 0; z-index: 20; min-height: 46px; padding: calc(var(--pd-safe-top) + 4px) 10px 6px; display: flex; align-items: center; gap: 4px; background: var(--w-white); border-bottom: 1px solid var(--w-line); box-sizing: content-box; }
+/* safe-top 이중 방지 — .pd-safe-top 스페이서가 앱바 앞에 있으면 상태바는 스페이서가 비켜주므로
+   앱바 자체 safe-top 패딩은 중복(타이틀이 과도하게 내려옴). 이 경우 상단 패딩만 축소. */
+.pd-app .pd-safe-top + .pd-appbar { padding-top: 8px; }
 .pd-appbar .pd-ab-title { flex: 1; text-align: center; font-size: 16px; font-weight: 700; color: var(--w-ink); }
 .pd-appbar .pd-ab-btn { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; color: var(--w-ink); }
 .pd-appbar .pd-ab-spacer { width: 38px; }
