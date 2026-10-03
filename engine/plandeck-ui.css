@@ -131,7 +131,14 @@
 .pd-check .box.radio { border-radius: 50%; }
 .pd-toggle { width: 46px; height: 28px; border-radius: 999px; border: 1px solid var(--w-line-2); background: var(--w-fill); position: relative; flex-shrink: 0; }
 .pd-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--w-line-2); background: var(--w-white); }
-.pd-toggle.on::after { left: 21px; background: var(--w-fill-2); }
+.pd-toggle.on, .pd-toggle.is-on { background: var(--w-ink); border-color: var(--w-ink); }
+.pd-toggle.on::after, .pd-toggle.is-on::after { left: 21px; background: var(--w-white); border-color: var(--w-white); }
+/* 프로토타입 상호작용 상태 — 체크마크·편집가능 입력(enhanceInteractions) */
+.pd-check.on .box { background: var(--w-ink); border-color: var(--w-ink); }
+.pd-check.on .box::after { content: ''; width: 5px; height: 10px; border: solid var(--w-white); border-width: 0 2px 2px 0; transform: translateY(-1px) rotate(45deg); }
+.pd-input[contenteditable], .pd-textarea[contenteditable] { cursor: text; }
+.pd-input[contenteditable]:not(.ph), .pd-textarea[contenteditable]:not(.ph) { color: var(--w-ink); }
+.pd-input[contenteditable]:focus, .pd-textarea[contenteditable]:focus { border-color: var(--w-ink); outline: none; }
 
 /* ─── 버튼(클릭요소 — 흑백이되 '버튼'으로 식별되게) ─── */
 .pd-btn { height: 48px; border-radius: 8px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 18px; }

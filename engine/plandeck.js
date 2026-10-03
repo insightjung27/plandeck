@@ -1363,6 +1363,60 @@
     try { lazyLoadIframes(el); } catch (e) {}
   }
 
+  // 목업 프로토타입 상호작용 — 탭/세그먼트 선택·칩 토글·체크박스·스위치·텍스트 입력(타이핑 확인).
+  // 와이어프레임을 '클릭 가능한 프로토타입'으로: 링크(네비게이션)는 건드리지 않고 폼 요소만 반응.
+  function enhanceInteractions() {
+    var screen = document.querySelector('.pd-screen');
+    if (!screen) return;
+    // 세그먼트(탭) — 단일 선택(라디오)
+    screen.querySelectorAll('.pd-segment').forEach(function (seg) {
+      seg.addEventListener('click', function (e) {
+        var item = e.target; while (item && item.parentNode !== seg) item = item.parentNode;
+        if (!item || item.tagName === 'A') return;
+        [].forEach.call(seg.children, function (k) { k.classList.remove('is-active'); });
+        item.classList.add('is-active');
+      });
+    });
+    // 칩 — 개별 토글(링크/필터 칩 제외)
+    screen.querySelectorAll('.pd-chips').forEach(function (grp) {
+      grp.addEventListener('click', function (e) {
+        var chip = e.target.closest ? e.target.closest('.pd-chip') : null;
+        if (!chip || chip.tagName === 'A' || chip.getAttribute('href')) return;
+        chip.classList.toggle('is-active');
+      });
+    });
+    // 체크박스 — 토글(.on → 체크마크)
+    screen.querySelectorAll('.pd-check').forEach(function (chk) {
+      chk.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('a,button')) return;
+        e.preventDefault();
+        chk.classList.toggle('on');
+      });
+    });
+    // 토글 스위치 — 켜기/끄기(.is-on)
+    screen.querySelectorAll('.pd-toggle').forEach(function (tg) {
+      tg.addEventListener('click', function (e) {
+        e.preventDefault();
+        var on = tg.classList.toggle('is-on');
+        tg.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+    });
+    // 입력/텍스트 — 편집 가능(타이핑하면 텍스트가 어떻게 들어가는지 확인)
+    screen.querySelectorAll('.pd-input, .pd-textarea').forEach(function (inp) {
+      if ((inp.querySelector && inp.querySelector('input,textarea')) || inp.getAttribute('contenteditable')) return;
+      if (inp.classList.contains('ph')) inp.setAttribute('data-ph', inp.textContent);
+      inp.setAttribute('contenteditable', 'true');
+      inp.setAttribute('role', 'textbox'); inp.setAttribute('tabindex', '0');
+      inp.addEventListener('focus', function () {
+        if (inp.classList.contains('ph')) { inp.textContent = ''; inp.classList.remove('ph'); }
+      });
+      inp.addEventListener('blur', function () {
+        if (!(inp.textContent || '').trim()) { var ph = inp.getAttribute('data-ph'); if (ph != null) { inp.textContent = ph; inp.classList.add('ph'); } }
+      });
+      if (inp.classList.contains('pd-input')) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') e.preventDefault(); });
+    });
+  }
+
   // ═══ init ═══
   function init() {
     var bare = false;
@@ -1396,6 +1450,7 @@
     try { injectLintBanner(); } catch (e) {}
     try { bindActions(); } catch (e) {}
     try { setupReviewMode(); } catch (e) {}
+    try { enhanceInteractions(); } catch (e) {}
   }
   // common.js 의 동기 init 이 끝난 뒤 실행
   if (document.readyState === 'loading') {
