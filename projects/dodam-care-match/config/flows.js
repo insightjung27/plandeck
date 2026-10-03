@@ -73,5 +73,23 @@ window.PLANDECK_FLOWS = [
       { screen: 'SCR-PTNR-015' },
     ],
   },
+  {
+    id: 'FLOW-REVIEW', name: '관리자 심사(파트너·매장)', surface: '관리자',
+    desc: '대시보드 처리 큐 → 파트너 3게이트 심사 / 매장 6축 인증 → 앱 노출',
+    steps: [
+      { screen: 'SCR-ADMIN-002' },
+      { screen: 'SCR-ADMIN-005' },
+      { screen: 'SCR-ADMIN-008' },
+    ],
+  },
+  {
+    id: 'FLOW-SAFETY-OPS', name: '관리자 안전·정산', surface: '관리자',
+    desc: '안전 사건 분류→해결(메모 필수) / 정산 회차 확정→지급(net 정합)',
+    steps: [
+      { screen: 'SCR-ADMIN-002' },
+      { screen: 'SCR-ADMIN-014' },
+      { screen: 'SCR-ADMIN-012' },
+    ],
+  },
 ];
 window.PDK_FLOWS = window.PLANDECK_FLOWS;

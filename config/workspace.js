@@ -22,7 +22,7 @@ window.PLANDECK_WORKSPACE = {
     {
       slug: 'dodam-care-match',
       name: '도담 — 발달장애 가족 동행 플랫폼',
-      desc: '일산·파주 발달장애 아동 가족의 동행자 — 부모앱·파트너스앱·관리자 3채널(안심매장·시간제돌봄·시그널카드·커뮤니티·검증·정산). 실서비스(dodam-app) 기준 재구축.',
+      desc: '일산·파주 발달장애 아동 가족의 동행자 — 부모앱·파트너스앱·관리자 3채널 108화면(안심매장·시간제돌봄·시그널카드·커뮤니티·공급 검증·정산·운영). 실서비스(dodam-app) 기준 재구축.',
       path: 'projects/dodam-care-match/',
       surfaces: ['부모앱', '파트너스앱', '관리자콘솔'],
       owner: 'PM',

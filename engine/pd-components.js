@@ -142,6 +142,8 @@
   function chatLog(bubbles) { return '<div class="pd-chatlog">' + bubbles.join('') + '</div>'; }
   // 중앙 히어로 카드(지갑 잔액·프로필 등) — lead=hero('square') 또는 아이콘
   function heroCard(title, sub, lead) { return '<div class="pd-herocard">' + (lead || hero('square')) + '<div class="pd-wf-title">' + title + '</div>' + (sub ? '<div class="pd-wf-text">' + sub + '</div>' : '') + '</div>'; }
+  // 로그인/인증 카드(관리자·운영 콘솔 — 데스크톱 중앙 카드)
+  function authCard(brandTitle, sub, inner) { return '<div class="pd-auth"><div class="pd-auth-card"><div class="pd-auth-brand">' + hero('square') + '<div class="pd-wf-title">' + brandTitle + '</div>' + (sub ? '<div class="pd-wf-text">' + sub + '</div>' : '') + '</div>' + inner + '</div></div>'; }
   // 시그널 카드(해바라기 배려요청 + QR 토큰)
   function signalCard(title, body, token) { return '<div class="pd-signal-card">' + ICON.sun + '<div class="pd-wf-title">' + title + '</div><div class="pd-wf-text">' + body + '</div>' + hero('square') + (token ? '<div class="pd-wf-label">' + token + '</div>' : '') + '</div>'; }
   // 플로팅 액션 버튼(FAB) — inner=내용, to=이동
@@ -182,7 +184,7 @@
     btn: btn, btnInline: btnInline, ctaBar: ctaBar, callBtn: callBtn,
     row: row, list: list, tiles: tiles, feature: feature,
     field: field, fieldChips: fieldChips, textarea: textarea, check: check, toggle: toggle, form: form, commentBar: commentBar,
-    doneState: doneState, heroBlock: heroBlock, emptyState: emptyState, legalDoc: legalDoc, bubble: bubble, chatLog: chatLog, heroCard: heroCard, signalCard: signalCard, fab: fab, stepper: stepper,
+    doneState: doneState, heroBlock: heroBlock, emptyState: emptyState, legalDoc: legalDoc, bubble: bubble, chatLog: chatLog, heroCard: heroCard, signalCard: signalCard, fab: fab, stepper: stepper, authCard: authCard,
     gnb: gnb, sidebar: sidebar, pagehead: pagehead, kpi: kpi, wpanel: wpanel, table: table, badge: badge,
   };
 
