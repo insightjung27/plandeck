@@ -407,3 +407,8 @@ a.pd-wpanel-sub { text-decoration: none; }
 /* 시그널 카드 */
 .pd-signal-card { text-align: center; padding: 24px 16px; border: 1px solid var(--w-line); border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: var(--w-fill); }
 .pd-signal-card .pd-hero-img.square { width: 120px; height: 120px; }
+
+/* 중앙 히어로 카드(지갑·프로필) */
+.pd-herocard { text-align: center; padding: 22px 16px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.pd-herocard .pd-hero-img.square { width: 64px; height: 64px; border-radius: 16px; }
+.pd-herocard svg { width: 56px; height: 56px; }
