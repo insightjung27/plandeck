@@ -38,4 +38,4 @@
 - [ ] screens.js ↔ 화면 HTML 정합, flow.to 참조 ID 유효 (`node tools/verify-roles.js <project>`)
 - [ ] 엔진 변경 시 additive(삭제 0)
 - [ ] **CSS 충돌 0** — 컴포넌트 추가 시 기존 베이스 클래스를 덮어쓰지 않았는가 (`node tools/verify-css.js`). 새 컴포넌트는 고유 클래스명 또는 `.parent .child` 스코프. 충돌=렌더 깨짐(.pd-step 회귀 유형).
-- [ ] **렌더 검증** — 내용이 긴 화면은 목업 안에서 왜곡(압축) 없이 스크롤되는가. 스크롤 컨테이너(.pd-app-body/.pd-content)의 flex 자식은 flex-shrink로 눌리면 안 됨(압축 회귀 유형).
+- [ ] **렌더 검증** (`node tools/verify-render.js <project>`) — 전 화면 pd-screen+스크롤컨테이너 보유·인라인스타일0·빈본문0. 내용 긴 화면은 목업 안에서 왜곡(압축) 없이 스크롤되는가(스크롤 컨테이너 .pd-app-body/.pd-content의 flex 자식은 flex-shrink로 눌리면 안 됨 = 압축 회귀 유형).
