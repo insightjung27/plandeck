@@ -358,6 +358,17 @@
 }
 .page-flow .pd-flow-resize:hover { opacity: 1; border-color: var(--pd-primary); }
 
+/* Description 패널도 Flow와 동일하게 크기 조절(좌하단 그립 — 패널은 우상단 고정 → 좌·하로 확장) */
+.page-detail .pd-desc-resize {
+  position: absolute; bottom: 2px; left: 2px; width: 16px; height: 16px; z-index: 6;
+  cursor: nesw-resize; border-bottom: 2px solid #c4c9d4; border-left: 2px solid #c4c9d4;
+  border-bottom-left-radius: 7px; opacity: .55; touch-action: none;
+}
+.page-detail .pd-desc-resize:hover { opacity: 1; border-color: var(--pd-primary); }
+/* 리사이즈로 명시 높이를 주면 max-height 제한을 풀고, 리스트가 남는 높이를 채우며 스크롤 */
+.page-detail.pd-desc-resized { max-height: none; }
+.page-detail.pd-desc-resized .page-detail-body { flex: 1 1 auto; overflow-y: auto; }
+
 /* 좌측 화면 목록 토글(우하단 dock 아이콘으로 열고/닫기) */
 .page-nav.is-hidden { display: none; }
 .pd-nav-toggle-btn.is-off { opacity: .5; }

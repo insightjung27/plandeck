@@ -432,6 +432,62 @@
     (function waitSvg() { if (svg()) { applyZoom(); } else if (tries++ < 50) { setTimeout(waitSvg, 150); } })();
   }
 
+  // Description(.page-detail) 패널 강화: Flow와 동일하게 코너 리사이즈 + 크기 저장(localStorage 영속)
+  function enhanceDescPanel() {
+    var panel = document.querySelector('.page-detail');
+    if (!panel || panel.__pdDescEnhanced) return;
+    var header = panel.querySelector('.page-detail-header');
+    var body = panel.querySelector('.page-detail-body');
+    var closeBtn = panel.querySelector('.page-detail-close');
+    if (!header || !body) return;
+    panel.__pdDescEnhanced = true;
+
+    var KEY = 'pd-desc-prefs:' + (PROJECT.name || 'default');
+    var prefs = {};
+    try { prefs = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+    if (prefs.w || prefs.h) {
+      panel.classList.add('pd-desc-resized');
+      if (prefs.w) panel.style.width = prefs.w + 'px';
+      if (prefs.h) panel.style.height = prefs.h + 'px';
+    }
+
+    var dirty = false;
+    // 저장 버튼(변경 전까지 비활성) — Flow와 동일한 .pd-flow-save 스타일 재사용, 닫기 버튼 앞에 삽입
+    var saveBtn = document.createElement('button');
+    saveBtn.type = 'button'; saveBtn.className = 'pd-flow-save'; saveBtn.textContent = '저장';
+    saveBtn.disabled = true; saveBtn.title = 'Description 영역 크기를 저장(다음에도 유지)';
+    if (closeBtn) header.insertBefore(saveBtn, closeBtn); else header.appendChild(saveBtn);
+    function markDirty() { if (!dirty) { dirty = true; saveBtn.disabled = false; saveBtn.classList.add('is-dirty'); } }
+    saveBtn.addEventListener('click', function () {
+      var r = panel.getBoundingClientRect();
+      prefs = { w: Math.round(r.width), h: Math.round(r.height) };
+      try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch (e) {}
+      dirty = false; saveBtn.disabled = true; saveBtn.classList.remove('is-dirty');
+      var t = saveBtn.textContent; saveBtn.textContent = '저장됨 ✓';
+      setTimeout(function () { saveBtn.textContent = t; }, 1200);
+    });
+
+    // ── 코너 리사이즈(좌하단 — 패널은 우상단 고정이므로 좌·하로 확장) ──
+    var handle = document.createElement('div');
+    handle.className = 'pd-desc-resize'; handle.title = '드래그해 Description 영역 크기 조절';
+    panel.appendChild(handle);
+    var rz = false, sx = 0, sy = 0, sw = 0, sh = 0;
+    handle.addEventListener('pointerdown', function (e) {
+      rz = true; sx = e.clientX; sy = e.clientY;
+      var r = panel.getBoundingClientRect(); sw = r.width; sh = r.height;
+      panel.classList.add('pd-desc-resized');
+      try { handle.setPointerCapture(e.pointerId); } catch (ex) {}
+      e.preventDefault(); e.stopPropagation();
+    });
+    handle.addEventListener('pointermove', function (e) {
+      if (!rz) return;
+      var w = Math.max(240, Math.min(sw + (sx - e.clientX), window.innerWidth - 80));
+      var h = Math.max(140, Math.min(sh + (e.clientY - sy), window.innerHeight - 80));
+      panel.style.width = w + 'px'; panel.style.height = h + 'px';
+    });
+    handle.addEventListener('pointerup', function (e) { if (rz) { rz = false; markDirty(); try { handle.releasePointerCapture(e.pointerId); } catch (ex) {} } });
+  }
+
   // 좌측 화면 목록(.page-nav) 열고/닫기 — 우하단 dock에 토글 아이콘 추가(DESCRIPTION·FLOW와 동일 방식)
   function injectPageNavToggle() {
     var nav = document.querySelector('.page-nav');
@@ -1273,6 +1329,7 @@
     try { injectStatusChips(); } catch (e) {}
     try { injectNavSearch(); } catch (e) {}
     try { enhanceFlowPanel(); } catch (e) {}
+    try { enhanceDescPanel(); } catch (e) {}
     try { injectCasesPanel(); } catch (e) {}
     try { injectInterfacePanel(); } catch (e) {}
     try { injectDockButtons(); } catch (e) {}
