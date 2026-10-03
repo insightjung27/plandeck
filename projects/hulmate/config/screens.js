@@ -313,7 +313,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-004' } }],
         description: [{ text: '이름·연락처·아이디·부서·동의' }],
         cases: [{ state: '필수누락', trigger: '가입', guard: '필수 동의(수집·이용) 미체크', result: '막음', message: '필수 개인정보 수집·이용 동의가 필요해요', placement: 'inline', priority: 'P1' }, { state: '권한없음', trigger: '가입', guard: '14세 미만·법정대리인 미동의', result: '막음', message: '만 14세 미만은 법정대리인 동의가 필요해요(PIPA)', placement: 'inline', priority: 'P0' }, { state: '유효', trigger: '가입', guard: '목적별 동의 완료', result: '승인대기', message: '가입 신청됐어요. 관리자 승인 후 이용 가능해요', placement: 'toast', priority: 'P0' }],
-        interface: { reads: [], writes: [{ id: 'signup', intent: '회원가입(목적별 분리 동의)', method: 'POST', path: '/auth/signup', successStatus: 201, request: '{ member:{entities.Member}, consents:[{ purpose:"required|sensitive|messaging|photo|guardian", granted:boolean }] }', errors: [{ status: 422, when: '필수 동의 누락/미성년 법정대리인 미동의', message: '필수 동의가 필요해요' }], auth: 'None' }], events: [{ name: 'member.signup.requested', when: '가입 신청', payload: '{entities.Member}' }, { name: 'consent.recorded', when: '동의 기록', payload: '{entities.Consent}[]' }] },
+        interface: { reads: [], writes: [{ id: 'signup', intent: '회원가입(목적별 분리 동의)', method: 'POST', path: '/auth/signup', successStatus: 201, request: '{ member:{entities.Member}, consents:[{ purpose:"required|messaging|photo|guardian", granted:boolean }] }', errors: [{ status: 422, when: '필수 동의 누락/미성년 법정대리인 미동의', message: '필수 동의가 필요해요' }], auth: 'None' }], events: [{ name: 'member.signup.requested', when: '가입 신청', payload: '{entities.Member}' }, { name: 'consent.recorded', when: '동의 기록', payload: '{entities.Consent}[]' }] },
         flow: { to: [{ screen: 'SCR-APP-004', via: '가입 완료', kind: 'auto' }] },
       },
       // ── 19. 내 정보 수정 ──
@@ -916,7 +916,7 @@ window.PLANDECK_SCREENS = [
           { state: '필수누락', trigger: '발급 요청', guard: '주민번호 미등록', result: '막음', message: '영수증 발급에 필요한 정보가 없어요. 교회에 문의해 주세요', placement: 'inline', priority: 'P1' },
           { state: '유효', trigger: '발급 요청', guard: '미발급분', result: '교회에 발급 요청(발급 주체=교회)', message: '발급을 요청했어요. 교회 승인 후 다운로드할 수 있어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /app/receipts/{year}/request', status: 202 } },
         ],
-        interface: { reads: [{ id: 'listMyReceipts', intent: '내 영수증', method: 'GET', path: '/app/receipts', response: '{entities.Receipt}[]', auth: 'Bearer', target: '.pd-receipt-list' }, { id: 'downloadReceipt', intent: '영수증 다운로드', method: 'GET', path: '/app/receipts/{year}/pdf', response: 'application/pdf', auth: 'Bearer' }], writes: [{ id: 'requestReceipt', intent: '영수증 발급 요청(발급주체=교회)', method: 'POST', path: '/app/receipts/{year}/request', successStatus: 202, errors: [{ status: 422, when: '주민번호 미등록', message: '발급 정보가 없어요. 교회에 문의해 주세요' }], auth: 'Bearer' }], events: [{ name: 'receipt.requested', when: '발급 요청', payload: '{ memberId, year }' }] },
+        interface: { reads: [{ id: 'listMyReceipts', intent: '내 영수증', method: 'GET', path: '/app/receipts', response: '{entities.Receipt}[]', auth: 'Bearer', target: '.pd-receipt-list' }, { id: 'downloadReceipt', intent: '영수증 다운로드', method: 'GET', path: '/app/receipts/{year}/pdf', response: 'application/pdf', auth: 'Bearer' }], writes: [{ id: 'requestReceipt', intent: '영수증 발급 요청(발급주체=교회)', method: 'POST', path: '/app/receipts/{year}/request', request: '{ rrnEnc:string(암호화·발급요청 시점 수집), consent:boolean }', successStatus: 202, errors: [{ status: 422, when: '주민번호 미입력/미동의', message: '주민번호 입력·동의가 필요해요(연말정산 세무)' }], auth: 'Bearer' }], events: [{ name: 'receipt.requested', when: '발급 요청', payload: '{ memberId, year }' }] },
         flow: { to: [] },
       },
       // ── 개인정보 권리요청(교인) ──
@@ -989,14 +989,14 @@ window.PLANDECK_SCREENS = [
         ],
         description: [
           { text: '설정 항목 — 알림·글자크기·권리요청·약관', target: '.pd-settings' },
-          { text: '회원 탈퇴 — 개인정보 파기(확인 2단계)', target: '.pd-withdraw' },
+          { text: '회원 탈퇴 — 개인정보 파기(확인 2단계·기부금영수증 등 법정 보존 항목 예외)', target: '.pd-withdraw' },
         ],
         cases: [
           { state: '정상', trigger: '진입', guard: '로그인', result: '설정 목록', message: '', target: '.pd-settings' },
-          { state: '유효', trigger: '탈퇴', guard: '확인 2단계', result: '탈퇴·파기', message: '탈퇴 처리됐어요. 개인정보는 파기됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'DELETE /app/account', status: 200 } },
+          { state: '유효', trigger: '탈퇴', guard: '확인 2단계', result: '탈퇴·파기(법정 보존 예외)', message: '탈퇴 처리됐어요. 개인정보는 파기되며, 기부금영수증 등 법정 보존 항목은 보존기간 경과 후 파기됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'DELETE /app/account', status: 200 } },
           { state: '권한없음', trigger: '탈퇴', guard: '미확인', result: '막음', message: '탈퇴 확인이 필요해요', placement: 'inline', target: '.pd-withdraw', priority: 'P1' },
         ],
-        interface: { reads: [], writes: [{ id: 'withdraw', intent: '회원 탈퇴·파기', method: 'DELETE', path: '/app/account', confirm: true, errors: [{ status: 409, when: '미처리 요청 존재', message: '처리 중인 요청이 있어요' }], auth: 'Bearer', target: '.pd-withdraw' }], events: [{ name: 'member.withdrawn', when: '탈퇴 시', payload: '{ memberId, purgedAt }' }] },
+        interface: { reads: [], writes: [{ id: 'withdraw', intent: '회원 탈퇴·파기(법정 보존 예외)', method: 'DELETE', path: '/app/account', confirm: true, note: '기부금영수증 등 법정 보존 의무 항목은 보존기간까지 분리보관 후 파기(H2 세무 정합)', errors: [{ status: 409, when: '미처리 요청 존재', message: '처리 중인 요청이 있어요' }], auth: 'Bearer', target: '.pd-withdraw' }], events: [{ name: 'member.withdrawn', when: '탈퇴 시', payload: '{ memberId, purgedAt, retainedForLegal:["receipt"] }' }] },
         flow: { to: [{ screen: 'SCR-APP-025', via: '알림 설정' }, { screen: 'SCR-APP-023', via: '권리요청' }, { screen: 'SCR-SITE-011', via: '약관' }] },
       },
       // ── 약관·개인정보처리방침(공개홈) ──
