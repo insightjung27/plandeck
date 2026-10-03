@@ -415,14 +415,16 @@ a.pd-wpanel-sub { text-decoration: none; }
 
 /* 진행 단계(stepper) — 온보딩·심사 파이프라인 */
 .pd-stepper { display: flex; align-items: flex-start; gap: 4px; padding: 6px 0 2px; }
-.pd-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; }
-.pd-step:not(:last-child)::after { content: ''; position: absolute; top: 11px; left: 50%; width: 100%; height: 2px; background: var(--w-line); z-index: 0; }
-.pd-step.is-done:not(:last-child)::after { background: var(--w-ink); }
-.pd-step-dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--w-line); background: var(--w-white); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--w-sub); z-index: 1; }
-.pd-step.is-done .pd-step-dot { background: var(--w-ink); border-color: var(--w-ink); color: var(--w-white); }
-.pd-step.is-active .pd-step-dot { border-color: var(--w-ink); color: var(--w-ink); }
-.pd-step-label { font-size: 11px; color: var(--w-sub); text-align: center; line-height: 1.2; }
-.pd-step.is-active .pd-step-label { color: var(--w-ink); font-weight: 700; }
+/* ⚠ 아래는 stepper 전용 — 반드시 .pd-stepper 로 스코프할 것.
+   (스코프 안 하면 flows 필름스트립의 .pd-step / .pd-step-label 과 충돌해 User Flow 화면이 깨짐 — 2026-10-03 회귀) */
+.pd-stepper .pd-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; }
+.pd-stepper .pd-step:not(:last-child)::after { content: ''; position: absolute; top: 11px; left: 50%; width: 100%; height: 2px; background: var(--w-line); z-index: 0; }
+.pd-stepper .pd-step.is-done:not(:last-child)::after { background: var(--w-ink); }
+.pd-stepper .pd-step-dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--w-line); background: var(--w-white); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--w-sub); z-index: 1; }
+.pd-stepper .pd-step.is-done .pd-step-dot { background: var(--w-ink); border-color: var(--w-ink); color: var(--w-white); }
+.pd-stepper .pd-step.is-active .pd-step-dot { border-color: var(--w-ink); color: var(--w-ink); }
+.pd-stepper .pd-step-label { font-size: 11px; color: var(--w-sub); text-align: center; line-height: 1.2; }
+.pd-stepper .pd-step.is-active .pd-step-label { color: var(--w-ink); font-weight: 700; }
 
 /* 비가역 쓰기 확인 패널(사유 필수) */
 .pd-confirm { border: 1px solid var(--w-line-2); border-radius: 12px; padding: 14px 16px; background: var(--w-fill); display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
@@ -442,3 +444,13 @@ a.pd-wpanel-sub { text-decoration: none; }
 @media (forced-colors: active) {
   .pd-btn, .pd-chip, .pd-row, .pd-tile, .pd-confirm, .pd-toggle { border: 1px solid; }
 }
+
+/* ─── 목업 내부 스크롤(J 지적) — flex 컬럼 자식이 눌리지 않게(flex-shrink:0)
+   → 내용이 프레임보다 길면 '높이 압축' 대신 해당 영역(.pd-app-body / .pd-content)이 스크롤된다.
+   (appbar sticky top · tabbar sticky bottom 은 고정, 그 사이 본문만 스크롤) ─── */
+.pd-app-body > *, .pd-content > * { flex-shrink: 0; }
+
+/* 스크롤 안전망 — app-body/content 없는 레이아웃(로그인 등 .pd-auth)도 내용이 길면 프레임이 잘리지 않고 스크롤.
+   app-body/content 레이아웃은 app-body가 flex:1로 정확히 채워 pd-screen이 넘치지 않으므로 이 규칙은 무해(회귀 0). */
+.pd-screen { overflow-y: auto; }
+.pd-auth { flex-shrink: 0; }
