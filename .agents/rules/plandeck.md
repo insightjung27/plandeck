@@ -1,0 +1,22 @@
+# PlanDeck 작업 규칙 (Antigravity)
+
+이 레포의 전체 작업 규칙은 루트 **AGENTS.md** 를 따른다(AI 도구 공용 SSOT — Antigravity·Cursor·Orca·Claude Code 등 동일). 이 파일은 그 전용 미러다.
+
+PlanDeck은 빌드 없는 정적 HTML 기획 협업 도구다. `projects/<name>/config/*.js`(SSOT)를 고치면 엔진(`engine/*`)이 화면·문서를 자동 렌더한다. git이 동기화 버스, GitHub Pages가 공유 배포다.
+
+## 불변식 (반드시 준수)
+1. **와이어프레임이 기본** — 흑백 화면설계서 수준. 디자인·Figma 연동은 옵션(토글 승격).
+2. **컴포넌트 라이브러리만** — `engine/plandeck-ui.css`의 클래스만 조립. 인라인 스타일·즉석 CSS 금지. 없으면 라이브러리에 additive(삭제 0) 추가 후 재사용.
+3. **클릭 가능** — 목록행·카드·버튼·타일·뒤로·탭·사이드 등 모든 인터랙션은 실제 `href`로 연결(누르면 예상 화면으로 이동).
+4. **SSOT 정합** — `projects/<name>/config/screens.js`(화면 메타) ↔ 화면 HTML을 항상 일치. 화면 추가/수정/삭제 시 screens.js도 함께.
+5. **아이콘 = 아웃라인 SVG** (이모지 금지).
+6. **엔진 변경은 additive** — `engine/*`는 모든 프로젝트 공유. 삭제 0, 타 프로젝트 무회귀.
+
+## 화면 작업
+- 다수 화면은 단일 생성기 패턴 권장(컴포넌트 헬퍼 조립). id 체계 `SCR-<SURFACE>-NNN`.
+- 네비(목록→상세·+등록·수정·뒤로) href를 끊김 없이 채운다.
+
+## 작업 후 (필수)
+`node tools/verify-links.js <project>` 로 링크 무결성(깨진 링크 0, 막다른 화면 0, flow.to dangling 0)을 확인한다. 커밋·푸시는 사용자 지시가 있을 때만.
+
+자세히: 루트 `AGENTS.md` · `docs/ARCHITECTURE.md`
