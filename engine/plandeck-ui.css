@@ -223,9 +223,9 @@ a.pd-row, a.pd-tile, a.pd-media, a.pd-tab, a.pd-feature, a.pd-sermon-card, a.pd-
 .pd-comment-bar { display: flex; gap: 8px; align-items: flex-end; margin-top: 12px; }
 .pd-comment-bar .pd-field { flex: 1; margin: 0; }
 .pd-comment-bar .pd-btn { height: 44px; white-space: nowrap; }
-.pd-field-inline { display: flex; gap: 8px; }
+.pd-field-inline { display: flex; gap: 8px; } /* dup-ok: 기존 .pd-field-inline(상단 align-items 버전)과 공존·결정론 later-wins */
 .pd-field-inline .pd-btn { flex: 1; }
-.pd-textarea { min-height: 96px; border: 1px solid var(--w-line); border-radius: 8px; padding: 11px 12px; color: var(--w-sub); font-size: 14px; background: var(--w-white); }
+.pd-textarea { min-height: 96px; border: 1px solid var(--w-line); border-radius: 8px; padding: 11px 12px; color: var(--w-sub); font-size: 14px; background: var(--w-white); } /* dup-ok: 기존 .pd-textarea(상단)와 공존·결정론 later-wins */
 
 /* 인라인 스타일 대체 공통 클래스 (컴포넌트 라이브러리 SSOT — style= 금지 준수) */
 .pd-wpanel-sub { font-size: 13px; font-weight: 400; color: var(--w-sub); }
@@ -354,7 +354,7 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-flow-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
 
 /* ─── 로그인(관리자·슈퍼 PC웹) ─── */
-.pd-auth { min-height: 480px; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: var(--w-fill); }
+.pd-auth { min-height: 480px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: var(--w-fill); }
 .pd-auth-super { background: var(--w-white); }
 .pd-auth-card { width: 100%; max-width: 360px; background: var(--w-white); border: 1px solid var(--w-line); border-radius: 14px; padding: 32px 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
 .pd-auth-brand { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
@@ -451,6 +451,6 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-app-body > *, .pd-content > * { flex-shrink: 0; }
 
 /* 스크롤 안전망 — app-body/content 없는 레이아웃(로그인 등 .pd-auth)도 내용이 길면 프레임이 잘리지 않고 스크롤.
-   app-body/content 레이아웃은 app-body가 flex:1로 정확히 채워 pd-screen이 넘치지 않으므로 이 규칙은 무해(회귀 0). */
+   app-body/content 레이아웃은 app-body가 flex:1로 정확히 채워 pd-screen이 넘치지 않으므로 이 규칙은 무해(회귀 0).
+   (.pd-auth 의 flex-shrink:0 은 위 베이스 규칙에 병합) */
 .pd-screen { overflow-y: auto; }
-.pd-auth { flex-shrink: 0; }
