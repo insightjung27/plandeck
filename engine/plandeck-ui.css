@@ -347,6 +347,14 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-step-frame.wide { width: 260px; height: 170px; border-radius: 10px; }
 .pd-step-frame iframe { border: none; position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
 .pd-step-frame:hover { border-color: var(--w-line-2); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+/* flows 정적 스텝 카드 — 라이브 iframe(45개 중첩 로드) 대체. 가볍고 확실히 렌더·캡처 가능, 클릭 시 실화면 이동. */
+.pd-step-card { display: flex; flex-direction: column; align-items: stretch; padding: 0; text-decoration: none; }
+.pd-step-card-bar { height: 34px; flex-shrink: 0; background: var(--w-fill); border-bottom: 1px solid var(--w-line); }
+.pd-step-frame.wide .pd-step-card-bar { height: 26px; }
+.pd-step-card-name { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; text-align: center; padding: 14px 12px; font-size: 14px; font-weight: 700; line-height: 1.35; color: var(--w-ink); word-break: keep-all; }
+.pd-step-frame.wide .pd-step-card-name { font-size: 15px; }
+.pd-step-missing { cursor: default; }
+.pd-step-missing .pd-step-card-name { color: var(--w-label); font-weight: 600; }
 .pd-step-label { font-size: 12.5px; font-weight: 700; color: var(--w-ink); text-align: center; max-width: 160px; }
 .pd-step-id { font-size: 11px; color: var(--w-label); }
 .pd-step-arrow { flex-shrink: 0; color: var(--w-line-2); padding: 0 6px; align-self: center; margin-bottom: 28px; display: flex; flex-direction: column; align-items: center; gap: 2px; }

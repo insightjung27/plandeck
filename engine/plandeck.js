@@ -1341,13 +1341,12 @@
       steps.forEach(function (st, i) {
         var p = byId[st.screen];
         if (i > 0) strip += '<div class="pd-step-arrow"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + (st.via ? '<span class="via">' + esc(st.via) + '</span>' : '') + '</div>';
-        if (!p) { strip += '<div class="pd-step"><div class="pd-step-frame" style="display:flex;align-items:center;justify-content:center;color:#9aa0a8">미등록</div><div class="pd-step-label">' + esc(st.screen) + '</div></div>'; return; }
-        var d = deviceForPage(p), devW = d.width, devH = d.height, wide = devW > devH;
-        var fw = wide ? 260 : 150, scale = (fw / devW).toFixed(4);
+        if (!p) { strip += '<div class="pd-step"><span class="pd-step-frame pd-step-card pd-step-missing"><span class="pd-step-card-bar"></span><span class="pd-step-card-name">미등록</span></span><div class="pd-step-id">' + esc(st.screen) + '</div></div>'; return; }
+        var d = deviceForPage(p), wide = d.width > d.height;
         strip += '<div class="pd-step">' +
-          '<a class="pd-step-frame' + (wide ? ' wide' : '') + '" href="' + esc(p.href) + '" title="' + esc(p.label) + '">' +
-          '<iframe data-src="' + esc(p.href) + '?bare=1" loading="lazy" scrolling="no" style="width:' + devW + 'px;height:' + devH + 'px;transform:scale(' + scale + ')"></iframe></a>' +
-          '<div class="pd-step-label">' + esc(p.label) + '</div><div class="pd-step-id">' + esc(p.id) + '</div></div>';
+          '<a class="pd-step-frame pd-step-card' + (wide ? ' wide' : '') + '" href="' + esc(p.href) + '" title="' + esc(p.label) + '">' +
+          '<span class="pd-step-card-bar"></span><span class="pd-step-card-name">' + esc(p.label) + '</span></a>' +
+          '<div class="pd-step-id">' + esc(p.id) + '</div></div>';
       });
       return '<div class="pd-flow-block"><div class="pd-flow-head"><span class="pd-flow-name">' + esc(f.name) + '</span>' +
         (f.surface ? '<span class="pd-flow-meta">· ' + esc(f.surface) + '</span>' : '') + '<span class="pd-flow-meta">· ' + steps.length + '화면</span></div>' +
