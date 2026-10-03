@@ -493,9 +493,9 @@
 .pd-changelog code { background: #eef2ff; color: var(--pd-primary); border-radius: 4px; padding: 0 5px; }
 
 /* ═══ AI 편집 패널 (로컬 편집 서버 전용) ═══ */
-.pd-ai-fab { position: fixed; right: 20px; bottom: 150px; width: 52px; height: 52px; border-radius: 50%; background: #16182a; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,.28); z-index: 9000; transition: transform .12s; }
+.pd-ai-fab { position: fixed; left: 20px; bottom: 24px; width: 52px; height: 52px; border-radius: 50%; background: #16182a; color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,.28); z-index: 9000; transition: transform .12s; }
 .pd-ai-fab:hover { transform: scale(1.06); }
-.pd-ai-panel { position: fixed; right: 20px; bottom: 214px; width: 360px; max-width: calc(100vw - 40px); max-height: 68vh; background: #fff; border: 1px solid #e3e3ea; border-radius: 14px; box-shadow: 0 14px 44px rgba(0,0,0,.22); z-index: 9001; display: flex; flex-direction: column; overflow: hidden; }
+.pd-ai-panel { position: fixed; left: 20px; bottom: 88px; width: 360px; max-width: calc(100vw - 40px); max-height: 68vh; background: #fff; border: 1px solid #e3e3ea; border-radius: 14px; box-shadow: 0 14px 44px rgba(0,0,0,.22); z-index: 9001; display: flex; flex-direction: column; overflow: hidden; }
 .pd-ai-panel.is-hidden { display: none; }
 .pd-ai-head { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: #16182a; color: #fff; font-weight: 700; font-size: 14px; }
 .pd-ai-close { background: none; border: none; color: #fff; font-size: 21px; cursor: pointer; line-height: 1; padding: 0 2px; }
