@@ -22,13 +22,13 @@ window.PLANDECK_WORKSPACE = {
     {
       slug: 'dodam-care-match',
       name: '도담 돌봄·치료 매칭',
-      desc: '장애아동 가정 ↔ 검증된 돌봄·치료 제공자 매칭·예약 (보호자 앱 핵심 플로우)',
+      desc: '장애아동 가정 ↔ 검증된 돌봄·치료 제공자 매칭·예약·이용 관리(보호자 앱) + 운영자 콘솔(심사·예약관리). 17화면 기획 완성.',
       path: 'projects/dodam-care-match/',
-      surfaces: ['모바일'],
+      surfaces: ['보호자앱', '운영자콘솔', '태블릿'],
       owner: 'PM',
-      version: '0.1.0',
-      updatedAt: '2026-10-02',
-      tag: '파일럿',
+      version: '1.0.0',
+      updatedAt: '2026-10-03',
+      tag: '완성 v1.0',
     },
     {
       slug: 'hulmate',

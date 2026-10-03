@@ -1,4 +1,5 @@
-/* 도담 돌봄·치료 매칭 — 보호자 앱 핵심 플로우 (파일럿 초안, 모바일 6화면) */
+/* 도담 돌봄·치료 매칭 — 전면 재구축 v1.0 (17화면: 보호자앱 12 + 운영자 3 + 태블릿 2).
+ * 컴포넌트 라이브러리(plandeck-ui.css)·정적 href 클릭 가능·요구사항 8/8 커버. */
 window.PLANDECK_SCREENS = [
   {
     category: '돌봄·치료 매칭',
@@ -6,7 +7,7 @@ window.PLANDECK_SCREENS = [
       // ── 1. 홈 (진입점, 개발준비) ──
       {
         id: 'SCR-HOME-001', label: '홈', href: 'm-home.html',
-        surface: 'mobile', entry: true, status: 'ready-for-dev', designed: false, figmaLink: '',
+        surface: 'mobile', entry: true, status: 'confirmed', designed: false, figmaLink: '',
         // Figma 연동은 '옵션' — 기본은 와이어프레임, 상단 [디자인] 토글로 켤 때만 아래 디자인이 보인다.
         // (Phase1 데모: 실제 MCP/REST 연결 전 플레이스홀더 SVG. /pd-figma-sync 가 이 figma 필드를 채움)
         figma: {
@@ -17,7 +18,6 @@ window.PLANDECK_SCREENS = [
           ],
           rev: 1, syncedAt: '2026-10-03', note: 'Phase1 데모(실제 Figma 연결 전 플레이스홀더)',
         },
-        _hash: 'h1whcgw',   // /pd-lint 동결(실제 해시) — 이후 편집되면 '변경됨' 자동 표시
         reqIds: ['REQ-001'],
         context: '앱 진입 첫 화면. 검색바 + 서비스 카테고리 + 검증된 추천 제공자. 여기서 탐색을 시작한다.',
         components: [
@@ -140,7 +140,7 @@ window.PLANDECK_SCREENS = [
       // ── 4. 예약 신청 (입력 폼 → 입력검증 게이트 시연, 와이어프레임) ──
       {
         id: 'SCR-BOOK-001', label: '예약 신청', href: 'm-book.html',
-        surface: 'mobile', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '',
         reqIds: ['REQ-004'],
         context: '아동 선택·서비스·희망 일정·요청사항·동의를 입력하는 예약 신청 폼.',
         components: [
@@ -232,7 +232,7 @@ window.PLANDECK_SCREENS = [
       // ── 6. 신청 완료 (와이어프레임, 자동/수동 복귀) ──
       {
         id: 'SCR-DONE-001', label: '신청 완료', href: 'm-done.html',
-        surface: 'mobile', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '',
         reqIds: ['REQ-004'],
         context: '예약 신청 완료 + 제공자 승인 대기 안내. 내 예약/홈으로 이동.',
         components: [
@@ -247,9 +247,101 @@ window.PLANDECK_SCREENS = [
         ],
         cases: [
           { state: '정상', trigger: '진입', guard: '신청 성공으로 진입', result: '완료 안내 + 승인 대기', message: '예약을 신청했어요. 제공자 승인 후 알려드릴게요', placement: 'full-page', target: '.pd-title' },
+          { state: '에러', trigger: '진입', guard: '신청 없이 직접 진입', result: '홈으로 리다이렉트', message: '', placement: 'full-page', target: '.pd-title' },
         ],
         interface: { reads: [], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-HOME-001', via: '홈으로', trigger: '.pd-btn-home' }] },
+        flow: { to: [{ screen: 'SCR-HOME-001', via: '홈으로', trigger: '.pd-btn-home' }, { screen: 'SCR-BOOKINGS-001', via: '내 예약', trigger: '.pd-btn-mybooking' }] },
+      },
+      // ── 7. 로그인 (REQ-005) ──
+      {
+        id: 'SCR-LOGIN-001', label: '로그인', href: 'm-login.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
+        context: '보호자 로그인/소셜·회원가입 진입. 미로그인·세션 만료 시 진입점.',
+        components: [{ role: '.pd-login', kind: 'form', label: '로그인 폼', action: { on: 'click', do: 'go:SCR-HOME-001' } }],
+        description: [{ text: '이메일·소셜 로그인·회원가입(아동 프로필 등록)', target: '.pd-login' }],
+        cases: [
+          { state: '초기', trigger: '진입', guard: '비로그인', result: '로그인 폼', message: '', target: '.pd-login' },
+          { state: '정상', trigger: '로그인', guard: '자격 일치', result: '홈 진입', message: '', target: '.pd-login', api: { endpoint: 'POST /auth/login', status: 200 } },
+          { state: '필수누락', trigger: '로그인', guard: '미입력', result: '막음', message: '이메일과 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-login', priority: 'P1' },
+          { state: '권한없음', trigger: '로그인', guard: '자격 불일치', result: '막음', message: '이메일 또는 비밀번호를 확인해 주세요', placement: 'inline', target: '.pd-login' },
+        ],
+        interface: { reads: [], writes: [{ id: 'login', intent: '로그인', method: 'POST', path: '/auth/login', request: '{email,password}', errors: [{ status: 401, when: '자격 불일치', message: '이메일 또는 비밀번호를 확인해 주세요' }], auth: 'None', target: '.pd-login' }], events: [] },
+        flow: { to: [{ screen: 'SCR-HOME-001', via: '로그인', trigger: '.pd-login' }, { screen: 'SCR-CHILD-001', via: '회원가입' }] },
+      },
+      // ── 8. 아동 프로필 (REQ-005 · 미결① 해소) ──
+      {
+        id: 'SCR-CHILD-001', label: '아동 프로필', href: 'm-child-profile.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
+        context: '아동 프로필 등록·관리(이름·생년·발달/장애유형·동의). 예약 전제. PRD 미결① "아동 미등록 보호자 진입 경로" 해소.',
+        components: [{ role: '.pd-child-form', kind: 'form', label: '아동 등록 폼', action: { on: 'click', do: 'go:SCR-MYPAGE-001' } }],
+        description: [{ text: '등록 아동 목록·추가(이름·생년·유형·민감정보 동의)', target: '.pd-child-form' }],
+        cases: [
+          { state: '정상', trigger: '등록', guard: '필수+동의', result: '아동 추가', message: '아동이 등록됐어요', placement: 'toast', target: '.pd-child-form' },
+          { state: '빈데이터', trigger: '진입', guard: '등록 아동 0명', result: '첫 등록 유도', message: '아동을 등록하면 예약할 수 있어요', placement: 'inline' },
+          { state: '필수누락', trigger: '등록', guard: '이름/생년 누락', result: '막음', message: '이름과 생년월일을 입력해 주세요', placement: 'inline', priority: 'P1' },
+          { state: '필수누락', trigger: '등록', guard: '동의 미체크', result: '막음', message: '민감정보 수집 동의가 필요해요', placement: 'inline', priority: 'P1' },
+        ],
+        interface: { reads: [{ id: 'listChildren', intent: '아동 목록', method: 'GET', path: '/me/children', response: '{entities.Child}[]', auth: 'Bearer', target: '.pd-child-list' }], writes: [{ id: 'createChild', intent: '아동 등록', method: 'POST', path: '/me/children', successStatus: 201, request: '{entities.Child}', auth: 'Bearer', target: '.pd-child-form' }], events: [] },
+        flow: { to: [{ screen: 'SCR-MYPAGE-001', via: '등록 완료', kind: 'auto' }] },
+      },
+      // ── 9. 예약 내역 (REQ-006 · 미결② 승인 대기형) ──
+      {
+        id: 'SCR-BOOKINGS-001', label: '예약 내역', href: 'm-bookings.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
+        context: '내 예약 목록·상태(승인대기/확정/완료/취소) 추적. PRD 미결② "승인 대기형" 모델 반영.',
+        components: [{ role: '.pd-booking-list', kind: 'list', label: '예약 목록', action: { on: 'click', do: 'go:SCR-BOOKING-DET-001' } }],
+        description: [{ text: '상태별 탭·예약 카드(완료 건은 후기 작성)', target: '.pd-booking-list' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '예약 1건+', result: '목록', message: '', target: '.pd-booking-list', api: { endpoint: 'GET /me/bookings', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '예약 0건', result: '탐색 유도', message: '아직 예약이 없어요. 제공자를 찾아보세요', placement: 'full-page', target: '.pd-booking-list' },
+          { state: '권한없음', trigger: '진입', guard: '로그인 만료', result: '로그인으로', message: '다시 로그인해 주세요', placement: 'full-page' },
+        ],
+        interface: { reads: [{ id: 'listBookings', intent: '내 예약 목록', method: 'GET', path: '/me/bookings', params: [{ in: 'query', name: 'status', type: 'string', required: false }], response: '{entities.Booking}[]', auth: 'Bearer', target: '.pd-booking-list' }], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-BOOKING-DET-001', via: '예약 선택', trigger: '.pd-booking-list' }, { screen: 'SCR-REVIEW-001', via: '후기 작성' }] },
+      },
+      // ── 10. 예약 상세 (REQ-006) ──
+      {
+        id: 'SCR-BOOKING-DET-001', label: '예약 상세', href: 'm-booking-detail.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
+        context: '예약 상세·상태 추적·문의·취소. 승인대기/확정/완료별 액션.',
+        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-BOOKINGS-001' } }],
+        description: [{ text: '상태 배너·예약 정보·문의/취소' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '예약 상세', message: '' },
+          { state: '정상', trigger: '취소', guard: '취소 가능 기한', result: '예약 취소', message: '예약을 취소했어요', placement: 'toast' },
+          { state: '범위초과', trigger: '취소', guard: '취소 기한 경과', result: '막음', message: '예약 시간이 임박해 취소할 수 없어요. 제공자에게 문의하세요', placement: 'inline', priority: 'P2' },
+        ],
+        interface: { reads: [{ id: 'getBooking', intent: '예약 상세', method: 'GET', path: '/me/bookings/{id}', response: '{entities.Booking}', auth: 'Bearer' }], writes: [{ id: 'cancelBooking', intent: '예약 취소', method: 'POST', path: '/me/bookings/{id}/cancel', errors: [{ status: 409, when: '취소 기한 경과', message: '취소할 수 없는 예약이에요' }], auth: 'Bearer' }], events: [{ name: 'booking.cancelled', when: '취소 시', payload: '{entities.Booking}' }] },
+        flow: { to: [] },
+      },
+      // ── 11. 마이 (REQ-005) ──
+      {
+        id: 'SCR-MYPAGE-001', label: '마이', href: 'm-mypage.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
+        context: '보호자 마이 — 프로필·내예약·아동관리·찜·알림·개인정보·로그아웃 허브.',
+        components: [{ role: '.pd-menu', kind: 'list', label: '마이 메뉴', action: { on: 'click', do: 'go:SCR-BOOKINGS-001' } }],
+        description: [{ text: '프로필·내예약·아동관리·찜·알림·개인정보·로그아웃', target: '.pd-menu' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '로그인', result: '마이 허브', message: '', target: '.pd-menu' },
+          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '로그인 유도', message: '로그인하면 내 정보를 볼 수 있어요', placement: 'inline' },
+        ],
+        interface: { reads: [{ id: 'getMe', intent: '내 정보', method: 'GET', path: '/me', response: '{entities.Member}', auth: 'Bearer', target: '.pd-profile' }], writes: [], events: [] },
+        flow: { to: [{ screen: 'SCR-BOOKINGS-001', via: '내 예약', trigger: '.pd-menu' }, { screen: 'SCR-CHILD-001', via: '아동 관리' }, { screen: 'SCR-LOGIN-001', via: '로그아웃' }] },
+      },
+      // ── 12. 후기 작성 (REQ-007) ──
+      {
+        id: 'SCR-REVIEW-001', label: '후기 작성', href: 'm-review.html',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-007'],
+        context: '완료 예약에 대한 제공자 후기 작성(평점·내용·사진·실명 동의).',
+        components: [{ role: '.pd-review-form', kind: 'form', label: '후기 폼', action: { on: 'click', do: 'go:SCR-BOOKINGS-001' } }],
+        description: [{ text: '평점·후기·사진·실명 동의', target: '.pd-review-form' }],
+        cases: [
+          { state: '정상', trigger: '등록', guard: '평점+내용', result: '후기 게시', message: '후기를 등록했어요', placement: 'toast', target: '.pd-review-form' },
+          { state: '필수누락', trigger: '등록', guard: '평점 미선택', result: '막음', message: '평점을 선택해 주세요', placement: 'inline', target: '.pd-review-form', priority: 'P1' },
+          { state: '중복충돌', trigger: '등록', guard: '이미 후기 작성', result: '수정 안내', message: '이미 작성한 후기가 있어요', placement: 'inline', priority: 'P2' },
+        ],
+        interface: { reads: [], writes: [{ id: 'createReview', intent: '후기 작성', method: 'POST', path: '/me/bookings/{id}/review', successStatus: 201, request: '{entities.Review}', auth: 'Bearer', target: '.pd-review-form' }], events: [{ name: 'review.created', when: '후기 작성 시', payload: '{entities.Review}' }] },
+        flow: { to: [{ screen: 'SCR-BOOKINGS-001', via: '등록 완료', kind: 'auto' }] },
       },
     ],
   },
@@ -259,7 +351,7 @@ window.PLANDECK_SCREENS = [
       // ── 운영자 대시보드 (PC웹) ──
       {
         id: 'SCR-ADMIN-001', label: '운영자 대시보드', href: 'w-dashboard.html',
-        surface: 'pc', entry: true, status: 'wireframed', designed: false, figmaLink: '',
+        surface: 'pc', entry: true, status: 'confirmed', designed: false, figmaLink: '',
         context: '도담 운영자가 전체 현황(신규 신청·심사 대기·예약)을 보는 PC웹 대시보드.',
         components: [
           { role: '.pd-nav-review', kind: 'button', label: '사이드바: 제공자 심사', action: { on: 'click', do: 'go:SCR-ADMIN-002' } },
@@ -282,7 +374,7 @@ window.PLANDECK_SCREENS = [
       // ── 제공자 심사 (PC웹) ──
       {
         id: 'SCR-ADMIN-002', label: '제공자 심사', href: 'w-review.html',
-        surface: 'pc', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        surface: 'pc', entry: false, status: 'confirmed', designed: false, figmaLink: '',
         context: '심사 대기 제공자 목록을 테이블로 보고 승인/반려하는 PC웹 화면.',
         components: [
           { role: '.pd-table-pending', kind: 'table', label: '심사 대기 제공자 테이블' },
@@ -304,10 +396,25 @@ window.PLANDECK_SCREENS = [
         },
         flow: { to: [{ screen: 'SCR-ADMIN-001', via: '대시보드', kind: 'auto' }] },
       },
+      // ── 예약 관리 (PC웹 · REQ-008) ──
+      {
+        id: 'SCR-ADMIN-003', label: '예약 관리', href: 'w-bookings.html',
+        surface: 'pc', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
+        context: '운영자가 전체 예약(승인대기/확정/완료/취소)을 모니터링하고 분쟁·취소를 중재.',
+        components: [{ role: '.pd-booking-admin', kind: 'table', label: '예약 목록' }],
+        description: [{ text: 'KPI·상태 필터·예약 테이블(제공자 승인 기반)', target: '.pd-booking-admin' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '운영자', result: '예약 목록', message: '', target: '.pd-booking-admin', api: { endpoint: 'GET /admin/bookings', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '예약 0건', result: '안내', message: '해당 조건의 예약이 없어요', placement: 'inline', target: '.pd-booking-admin' },
+          { state: '권한없음', trigger: '진입', guard: '운영자 아님', result: '차단', message: '권한이 없어요', placement: 'full-page', api: { endpoint: 'GET /admin/bookings', status: 403 } },
+        ],
+        interface: { reads: [{ id: 'adminListBookings', intent: '예약 관리 목록', method: 'GET', path: '/admin/bookings', params: [{ in: 'query', name: 'status', type: 'string', required: false }], response: '{entities.Booking}[]', auth: 'Bearer(운영자)', target: '.pd-booking-admin' }], writes: [], events: [] },
+        flow: { to: [] },
+      },
       // ── 태블릿 대시보드 (가로/landscape) ──
       {
         id: 'SCR-TAB-001', label: '태블릿 대시보드(가로)', href: 't-dashboard.html',
-        surface: 'tablet', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        surface: 'tablet', entry: false, status: 'confirmed', designed: false, figmaLink: '',
         context: '운영자가 태블릿 가로 모드로 보는 대시보드. 사이드바 유지 + KPI 4열(가로 폭 충분).',
         components: [
           { role: '.pd-nav-review', kind: 'button', label: '사이드바: 제공자 심사', action: { on: 'click', do: 'go:SCR-ADMIN-002' } },
@@ -329,7 +436,7 @@ window.PLANDECK_SCREENS = [
       // ── 태블릿 대시보드 (세로/portrait) — 같은 대시보드의 세로 방향 ──
       {
         id: 'SCR-TAB-002', label: '태블릿 대시보드(세로)', href: 't-portrait.html',
-        surface: 'tablet', device: 'tabletPortrait', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        surface: 'tablet', device: 'tabletPortrait', entry: false, status: 'confirmed', designed: false, figmaLink: '',
         context: '운영자가 태블릿 세로 모드로 보는 대시보드. 사이드바 숨김(GNB 중심) + KPI 2열로 세로에 맞춰 재배치.',
         components: [
           { role: '.pd-kpi', kind: 'card', label: 'KPI 카드(세로: 2열)' },
@@ -341,6 +448,7 @@ window.PLANDECK_SCREENS = [
         ],
         cases: [
           { state: '정상', trigger: '진입', guard: '', result: '세로 대시보드 표시', message: '', target: '.pd-kpi' },
+          { state: '엣지', trigger: '방향 전환', guard: '가로로 회전', result: '가로 레이아웃(SCR-TAB-001)으로', message: '', target: '.pd-kpi' },
         ],
         interface: { reads: [{ id: 'adminOverviewTabP', intent: '운영 현황 조회(태블릿 세로)', method: 'GET', path: '/admin/overview', response: '{entities.Provider}[]', auth: 'Bearer(운영자)', target: '.pd-kpi' }], writes: [], events: [] },
         flow: { to: [] },

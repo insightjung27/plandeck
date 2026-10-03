@@ -35,9 +35,30 @@ window.PLANDECK_ENTITIES = {
     name: '예약', description: '생성된 예약(승인 대기형)',
     fields: [
       { name: 'id', type: 'string', format: 'uuid', required: true, example: 'bkg_abc123' },
-      { name: 'status', type: 'string', enum: ['requested', 'approved', 'rejected', 'canceled'], required: true, example: 'requested' },
+      { name: 'status', type: 'string', enum: ['requested', 'approved', 'rejected', 'completed', 'canceled'], required: true, example: 'requested', note: 'requested=승인대기, approved=확정, completed=완료' },
       { name: 'providerId', type: 'string', format: 'uuid', required: true },
+      { name: 'childId', type: 'string', format: 'uuid', required: true },
+      { name: 'slot', type: 'string', format: 'date-time', note: '확정 일정' },
       { name: 'createdAt', type: 'string', format: 'date-time', required: true },
+    ],
+  },
+  Review: {
+    name: '후기', description: '이용 완료 후 보호자가 작성한 제공자 후기',
+    fields: [
+      { name: 'id', type: 'string', format: 'uuid', required: true },
+      { name: 'bookingId', type: 'string', format: 'uuid', required: true },
+      { name: 'rating', type: 'integer', required: true, example: 5, note: '평점 1~5' },
+      { name: 'content', type: 'string', required: true, example: '아이 눈높이에 맞춰 지도해주셨어요' },
+      { name: 'realName', type: 'boolean', example: true, note: '실명 후기 동의' },
+    ],
+  },
+  Member: {
+    name: '보호자', description: '도담 보호자 계정',
+    fields: [
+      { name: 'id', type: 'string', format: 'uuid', required: true },
+      { name: 'email', type: 'string', format: 'email', required: true },
+      { name: 'name', type: 'string', example: '김보호' },
+      { name: 'childCount', type: 'integer', example: 1, note: '등록 아동 수' },
     ],
   },
 };
