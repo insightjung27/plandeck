@@ -33,13 +33,13 @@ window.PLANDECK_WORKSPACE = {
     {
       slug: 'hulmate',
       name: '훌메이트',
-      desc: '소규모 교회 화이트라벨 멀티테넌트 PWA — 교인앱·공개홈·관리자콘솔(은성 1호 파일럿)',
+      desc: '소규모 교회 화이트라벨 멀티테넌트 PWA — 4서피스 49화면 기획 완성(교인앱·공개홈·관리자콘솔·슈퍼관리자)',
       path: 'projects/hulmate/',
-      surfaces: ['교인앱', '공개홈', '관리자콘솔'],
+      surfaces: ['교인앱', '공개홈', '관리자콘솔', '슈퍼관리자'],
       owner: 'J',
-      version: '0.1.0',
+      version: '1.0.0',
       updatedAt: '2026-10-03',
-      tag: '파일럿',
+      tag: '완성 v1.0',
     },
     // /pd-init 이 새 프로젝트를 여기에 추가한다:
     // { slug:'...', name:'...', desc:'...', path:'projects/.../', surfaces:[...], owner:'...', version:'0.1.0', updatedAt:'YYYY-MM-DD' },

@@ -7,7 +7,7 @@ window.PLANDECK_SCREENS = [
       // ── 1. 교인앱 홈 ──
       {
         id: 'SCR-APP-001', label: '교인앱 홈', href: 'a-home.html',
-        surface: 'app', entry: true, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
+        surface: 'app', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
         context: '교인앱 첫 화면. 이번 주 설교·공지·바로가기. 교회별 브랜드(화이트라벨)로 표시.',
         components: [
           { role: '.pd-live', kind: 'banner', label: '주일 라이브 배너', action: { on: 'click', do: 'go:SCR-APP-002' } },
@@ -34,7 +34,7 @@ window.PLANDECK_SCREENS = [
       // ── 2. 설교 ──
       {
         id: 'SCR-APP-002', label: '설교', href: 'a-sermon.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
         context: '설교 목록·검색·재생. 유튜브 연동, 주일 라이브.',
         components: [
           { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
@@ -78,7 +78,7 @@ window.PLANDECK_SCREENS = [
       // ── 4. 마이/로그인 ──
       {
         id: 'SCR-APP-004', label: '마이', href: 'a-my.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
         context: '로그인/내 정보. 가입은 승인대기 흐름.',
         components: [
           { role: '.pd-login', kind: 'form', label: '로그인 폼' },
@@ -105,7 +105,7 @@ window.PLANDECK_SCREENS = [
       // ── 5. 커뮤니티(나눔터) ──
       {
         id: 'SCR-APP-005', label: '커뮤니티', href: 'a-community.html',
-        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-011'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
         context: '교인 간 나눔터(기도제목·간증·소그룹 게시). 작성·댓글.',
         components: [
           { role: '.pd-feed', kind: 'list', label: '게시 피드' },
@@ -126,7 +126,7 @@ window.PLANDECK_SCREENS = [
       // ── 6. 아나바다(중고나눔) ──
       {
         id: 'SCR-APP-006', label: '아나바다', href: 'a-market.html',
-        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-012'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
         context: '성도 간 중고 나눔(무료·나눔). 폐쇄몰·성도매장과 구분(성도 간 중고).',
         components: [
           { role: '.pd-item-grid', kind: 'list', label: '나눔 물품 그리드' },
@@ -146,7 +146,7 @@ window.PLANDECK_SCREENS = [
       // ── 7. 교회학교/교육 ──
       {
         id: 'SCR-APP-007', label: '교회학교', href: 'a-edu.html',
-        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-013'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-013'],
         context: '교회학교(부서별 공지·일정·자료). 유치/아동/중고등/청년.',
         components: [
           { role: '.pd-dept-tabs', kind: 'segment', label: '부서 탭' },
@@ -166,7 +166,7 @@ window.PLANDECK_SCREENS = [
       // ── 8. 주보 ──
       {
         id: 'SCR-APP-008', label: '주보', href: 'a-bulletin.html',
-        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-014'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-014'],
         context: '주간 주보 열람(예배 순서·광고·헌금·일정). 관리자 발행분.',
         components: [
           { role: '.pd-bulletin-view', kind: 'hero', label: '주보 본문' },
@@ -186,7 +186,7 @@ window.PLANDECK_SCREENS = [
       // ── 9. 공지 상세 ──
       {
         id: 'SCR-APP-009', label: '공지 상세', href: 'a-notice.html',
-        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-001'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
         context: '공지 상세 본문. 첨부·이미지·링크.',
         components: [
           { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
@@ -205,7 +205,7 @@ window.PLANDECK_SCREENS = [
       // ── 10. 성도 매장 ──
       {
         id: 'SCR-APP-010', label: '성도 매장', href: 'a-stores.html',
-        surface: 'app', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-012'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
         context: '성도 생업(가게) 홍보 디렉터리. 등록→관리자 승인→노출.',
         components: [
           { role: '.pd-store-list', kind: 'list', label: '성도 매장 목록' },
@@ -223,7 +223,7 @@ window.PLANDECK_SCREENS = [
       // ── 11. 설교 상세 ──
       {
         id: 'SCR-APP-011', label: '설교 상세', href: 'a-sermon-detail.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
         context: '설교 영상 재생·설교 노트·같은 시리즈. 목록(SCR-APP-002)·홈 설교카드에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-002' } }, { role: '.pd-player', kind: 'hero', label: '영상 플레이어' }],
         description: [{ text: '영상 플레이어 — 유튜브 재생', target: '.pd-player' }, { text: '설교 노트·같은 시리즈 목록' }],
@@ -234,7 +234,7 @@ window.PLANDECK_SCREENS = [
       // ── 12. 나눔 글 상세 ──
       {
         id: 'SCR-APP-012', label: '나눔 글', href: 'a-community-detail.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
         context: '커뮤니티 나눔 글 상세·댓글. 피드(SCR-APP-005)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-005' } }],
         description: [{ text: '본문·댓글·댓글 입력' }],
@@ -245,7 +245,7 @@ window.PLANDECK_SCREENS = [
       // ── 13. 글쓰기 ──
       {
         id: 'SCR-APP-013', label: '글쓰기', href: 'a-community-write.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
         context: '커뮤니티 나눔 글 작성(분류·제목·내용·익명). 게시 시 피드로.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-005' } }],
         description: [{ text: '분류·제목·내용·익명 옵션' }],
@@ -256,7 +256,7 @@ window.PLANDECK_SCREENS = [
       // ── 14. 나눔물품 상세 ──
       {
         id: 'SCR-APP-014', label: '나눔물품 상세', href: 'a-market-detail.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
         context: '아나바다 나눔 물품 상세·나눔자·채팅. 그리드(SCR-APP-006)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-006' } }],
         description: [{ text: '사진·상태·나눔자·채팅/찜' }],
@@ -267,7 +267,7 @@ window.PLANDECK_SCREENS = [
       // ── 15. 물품 등록 ──
       {
         id: 'SCR-APP-015', label: '물품 등록', href: 'a-market-register.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
         context: '아나바다 나눔 물품 등록(사진·물품명·상태·방식·설명).',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-006' } }],
         description: [{ text: '사진·물품명·상태·나눔 방식·설명' }],
@@ -278,29 +278,37 @@ window.PLANDECK_SCREENS = [
       // ── 16. 교회학교 공지 상세 ──
       {
         id: 'SCR-APP-016', label: '교회학교 공지', href: 'a-edu-detail.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-013'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-013'],
         context: '교회학교 부서 공지·일정 상세. 부서 목록(SCR-APP-007)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-007' } }],
         description: [{ text: '공지 본문·참가 신청' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '', result: '공지 표시', message: '' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '공지 표시', message: '' },
+          { state: '빈데이터', trigger: '진입', guard: '본문 없음', result: '준비중', message: '등록된 내용이 없어요', placement: 'inline' },
+          { state: '에러', trigger: '진입', guard: '삭제됨', result: '목록으로', message: '삭제된 공지예요', placement: 'full-page' },
+        ],
         interface: { reads: [{ id: 'getEdu', intent: '부서 공지', method: 'GET', path: '/app/education/{id}', auth: 'Bearer' }], writes: [], events: [] },
         flow: { to: [] },
       },
       // ── 17. 성도 매장 상세 ──
       {
         id: 'SCR-APP-017', label: '성도 매장 상세', href: 'a-store-detail.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
         context: '성도 매장 상세(주소·연락처·전화·길찾기). 목록(SCR-APP-010)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-010' } }],
         description: [{ text: '매장 소개·주소·연락처·전화/길찾기' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '승인됨', result: '매장 상세', message: '' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '승인됨', result: '매장 상세', message: '' },
+          { state: '빈데이터', trigger: '진입', guard: '승인 전', result: '노출 안 함', message: '승인 대기 중인 매장이에요', placement: 'inline' },
+          { state: '에러', trigger: '전화', guard: '번호 없음', result: '대체 안내', message: '연락처가 등록되지 않았어요', placement: 'toast' },
+        ],
         interface: { reads: [{ id: 'getStore', intent: '매장 상세', method: 'GET', path: '/app/stores/{id}', auth: 'Bearer' }], writes: [], events: [] },
         flow: { to: [] },
       },
       // ── 18. 회원가입 ──
       {
         id: 'SCR-APP-018', label: '회원가입', href: 'a-signup.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
         context: '교인앱 회원가입(가입 후 관리자 승인). 마이(SCR-APP-004)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-004' } }],
         description: [{ text: '이름·연락처·아이디·부서·동의' }],
@@ -311,18 +319,22 @@ window.PLANDECK_SCREENS = [
       // ── 19. 내 정보 수정 ──
       {
         id: 'SCR-APP-019', label: '내 정보 수정', href: 'a-profile-edit.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
         context: '내 프로필 수정(이름·연락처·부서·직분). 마이(SCR-APP-004)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-004' } }],
         description: [{ text: '프로필 사진·이름·연락처·부서·직분' }],
-        cases: [{ state: '정상', trigger: '저장', guard: '', result: '프로필 갱신', message: '저장됐어요', placement: 'toast' }],
+        cases: [
+          { state: '정상', trigger: '저장', guard: '', result: '프로필 갱신', message: '저장됐어요', placement: 'toast' },
+          { state: '필수누락', trigger: '저장', guard: '이름 공백', result: '막음', message: '이름을 입력해 주세요', placement: 'inline', priority: 'P1' },
+          { state: '형식오류', trigger: '저장', guard: '연락처 형식', result: '막음', message: '연락처 형식을 확인해 주세요', placement: 'inline', priority: 'P2' },
+        ],
         interface: { reads: [], writes: [{ id: 'updateProfile', intent: '프로필 수정', method: 'PUT', path: '/app/me', auth: 'Bearer' }], events: [] },
         flow: { to: [{ screen: 'SCR-APP-004', via: '저장', kind: 'auto' }] },
       },
       // ── 20. 알림 ──
       {
         id: 'SCR-APP-020', label: '알림', href: 'a-notifications.html',
-        surface: 'app', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
         context: '알림 목록(설교·공지·댓글). 홈 종 아이콘에서 진입. 항목 탭 시 해당 화면으로.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } }],
         description: [{ text: '설교·공지·댓글 알림 — 탭하면 해당 화면' }],
@@ -361,7 +373,7 @@ window.PLANDECK_SCREENS = [
       // ── 예배 안내 ──
       {
         id: 'SCR-SITE-002', label: '예배 안내', href: 's-worship.html',
-        surface: 'site', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
         context: '예배 시간·부서·오시는 길.',
         components: [
           { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SITE-001' } },
@@ -374,6 +386,8 @@ window.PLANDECK_SCREENS = [
         ],
         cases: [
           { state: '정상', trigger: '진입', guard: '', result: '시간표·지도', message: '', target: '.pd-worship-table', api: { endpoint: 'GET /site/worship', status: 200 } },
+          { state: '빈데이터', trigger: '진입', guard: '예배시간 미등록', result: '준비중', message: '예배 시간은 교회 확인 후 게재됩니다', placement: 'inline', target: '.pd-worship-table' },
+          { state: '정상', trigger: '주소 복사', guard: '', result: '클립보드', message: '주소를 복사했어요', placement: 'toast' },
         ],
         interface: { reads: [{ id: 'getWorship', intent: '예배 안내', method: 'GET', path: '/site/worship', params: [{ in: 'query', name: 'tenant', type: 'string', required: true }], response: '{entities.Church}', auth: 'None', target: '.pd-worship-table' }], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-SITE-005', via: '오시는 길', trigger: '.pd-map' }] },
@@ -381,7 +395,7 @@ window.PLANDECK_SCREENS = [
       // ── 교회 소개(비전·연혁) ──
       {
         id: 'SCR-SITE-003', label: '교회 소개', href: 's-about.html',
-        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-015'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
         context: '교회 비전·연혁·인사말. 미확보 콘텐츠는 "교회 확인 후 게재".',
         components: [
           { role: '.pd-vision', kind: 'card', label: '비전·인사말' },
@@ -401,7 +415,7 @@ window.PLANDECK_SCREENS = [
       // ── 섬기는 사람들(교역자) ──
       {
         id: 'SCR-SITE-004', label: '섬기는 사람들', href: 's-staff.html',
-        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-015'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
         context: '교역자·중직자 소개(사진·직분·담당).',
         components: [
           { role: '.pd-staff-list', kind: 'list', label: '교역자 카드 목록' },
@@ -419,7 +433,7 @@ window.PLANDECK_SCREENS = [
       // ── 오시는 길 ──
       {
         id: 'SCR-SITE-005', label: '오시는 길', href: 's-location.html',
-        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-006'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
         context: '주소·지도·대중교통·주차. 주소 복사.',
         components: [
           { role: '.pd-map-full', kind: 'hero', label: '지도' },
@@ -439,7 +453,7 @@ window.PLANDECK_SCREENS = [
       // ── 설교·찬양(공개) ──
       {
         id: 'SCR-SITE-006', label: '설교·찬양', href: 's-sermons.html',
-        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-005'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
         context: '공개 설교 목록(비로그인 열람). 시리즈·검색.',
         components: [
           { role: '.pd-public-sermons', kind: 'list', label: '공개 설교 목록' },
@@ -457,7 +471,7 @@ window.PLANDECK_SCREENS = [
       // ── 새가족 안내 ──
       {
         id: 'SCR-SITE-007', label: '새가족 안내', href: 's-newcomer.html',
-        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-016'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-016'],
         context: '처음 오신 분 안내(절차·등록·새가족 환영회). 개인정보 동의 기반 등록.',
         components: [
           { role: '.pd-steps', kind: 'list', label: '방문 절차' },
@@ -477,7 +491,7 @@ window.PLANDECK_SCREENS = [
       // ── 교회 소식/주보(공개) ──
       {
         id: 'SCR-SITE-008', label: '교회 소식', href: 's-news.html',
-        surface: 'site', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-015'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
         context: '교회 소식·공개 주보·행사 안내.',
         components: [
           { role: '.pd-news-list', kind: 'list', label: '소식 목록' },
@@ -495,22 +509,29 @@ window.PLANDECK_SCREENS = [
       // ── 공개 설교 상세 ──
       {
         id: 'SCR-SITE-009', label: '공개 설교 상세', href: 's-sermon-detail.html',
-        surface: 'site', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
         context: '공개 설교 영상 상세(비로그인 열람). 공개 설교 목록(SCR-SITE-006)·홈 말씀에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SITE-006' } }, { role: '.pd-player', kind: 'hero', label: '영상 플레이어' }],
         description: [{ text: '공개 영상 재생·본문·지난 설교' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '', result: '재생', message: '', target: '.pd-player' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '재생', message: '', target: '.pd-player' },
+          { state: '빈데이터', trigger: '진입', guard: '영상 없음', result: '준비중', message: '공개된 영상이 없어요', placement: 'inline', target: '.pd-player' },
+          { state: '에러', trigger: '재생', guard: '비공개/깨짐', result: '대체 안내', message: '영상을 재생할 수 없어요', placement: 'inline', target: '.pd-player' },
+        ],
         interface: { reads: [{ id: 'siteSermon', intent: '공개 설교 상세', method: 'GET', path: '/site/sermons/{id}', auth: 'None', target: '.pd-player' }], writes: [], events: [] },
         flow: { to: [] },
       },
       // ── 소식 상세 ──
       {
         id: 'SCR-SITE-010', label: '소식 상세', href: 's-news-detail.html',
-        surface: 'site', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
+        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
         context: '교회 소식·행사 상세. 소식 목록(SCR-SITE-008)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SITE-008' } }],
         description: [{ text: '소식 본문·이미지' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '', result: '소식 표시', message: '' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '', result: '소식 표시', message: '' },
+          { state: '에러', trigger: '진입', guard: '삭제됨', result: '목록으로', message: '삭제된 소식이에요', placement: 'full-page' },
+        ],
         interface: { reads: [{ id: 'siteNewsDetail', intent: '소식 상세', method: 'GET', path: '/site/news/{id}', auth: 'None' }], writes: [], events: [] },
         flow: { to: [] },
       },
@@ -522,7 +543,7 @@ window.PLANDECK_SCREENS = [
       // ── 관리자 대시보드 ──
       {
         id: 'SCR-ADM-001', label: '관리자 대시보드', href: 'c-dashboard.html',
-        surface: 'admin', entry: true, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-007'],
+        surface: 'admin', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-007'],
         context: '성도·출석·헌금 현황. 좌측 메뉴로 각 관리로.',
         components: [
           { role: '.pd-nav-members', kind: 'button', label: '사이드바: 성도관리', action: { on: 'click', do: 'go:SCR-ADM-002' } },
@@ -544,7 +565,7 @@ window.PLANDECK_SCREENS = [
       // ── 성도관리(교적) ──
       {
         id: 'SCR-ADM-002', label: '성도관리(교적)', href: 'c-members.html',
-        surface: 'admin', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
         context: '성도 카드 원장·가입 승인·검색. 민감정보 마스킹(PIPA).',
         components: [
           { role: '.pd-member-search', kind: 'button', label: '성도 검색/필터' },
@@ -568,7 +589,7 @@ window.PLANDECK_SCREENS = [
       // ── 출석 관리 ──
       {
         id: 'SCR-ADM-003', label: '출석 관리', href: 'c-attendance.html',
-        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-009'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-009'],
         context: '예배별 출석 체크·통계·장기결석 자동감지. QR/수기/온라인 인정.',
         components: [
           { role: '.pd-session-select', kind: 'segment', label: '예배 세션 선택' },
@@ -591,7 +612,7 @@ window.PLANDECK_SCREENS = [
       // ── 설교 관리 ──
       {
         id: 'SCR-ADM-004', label: '설교 관리', href: 'c-sermon.html',
-        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-002'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
         context: '설교 등록(유튜브 URL)·주일 라이브 토글·게시 관리.',
         components: [
           { role: '.pd-sermon-form', kind: 'form', label: '설교 등록 폼' },
@@ -613,7 +634,7 @@ window.PLANDECK_SCREENS = [
       // ── 공지·배너 관리 ──
       {
         id: 'SCR-ADM-005', label: '공지·배너 관리', href: 'c-notice.html',
-        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-001'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
         context: '공지·홈 배너 CRUD. 노출 기간·우선순위.',
         components: [
           { role: '.pd-notice-form', kind: 'form', label: '공지 작성' },
@@ -633,7 +654,7 @@ window.PLANDECK_SCREENS = [
       // ── 재정(헌금) 관리 ──
       {
         id: 'SCR-ADM-006', label: '재정 관리', href: 'c-finance.html',
-        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-010'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-010'],
         context: '헌금 집계·전자기부금영수증 발급·발급명세서. 횡령 못하는 회계(오픈뱅킹 대사·감사추적) 로드맵.',
         components: [
           { role: '.pd-finance-kpi', kind: 'card', label: '헌금 집계 KPI' },
@@ -656,7 +677,7 @@ window.PLANDECK_SCREENS = [
       // ── 홈페이지·화이트라벨 설정 ──
       {
         id: 'SCR-ADM-007', label: '홈페이지 설정', href: 'c-homepage.html',
-        surface: 'admin', entry: false, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-017'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-017'],
         context: '공개홈 템플릿(환영형/말씀형 등) 선택·브랜드(색·로고)·메뉴 설정. 화이트라벨 핵심.',
         components: [
           { role: '.pd-concept-picker', kind: 'list', label: '공개홈 템플릿 선택' },
@@ -678,7 +699,7 @@ window.PLANDECK_SCREENS = [
       // ── 성도 상세 ──
       {
         id: 'SCR-ADM-008', label: '성도 상세', href: 'c-member-detail.html',
-        surface: 'admin', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
         context: '성도 카드 상세(기본정보·출석·헌금 요약). 목록(SCR-ADM-002)에서 진입. 민감정보 열람 감사로그.',
         components: [{ role: '.pd-member-detail', kind: 'card', label: '성도 상세' }],
         description: [{ text: '기본정보·출석/헌금 요약·수정' }],
@@ -689,7 +710,7 @@ window.PLANDECK_SCREENS = [
       // ── 성도 등록/수정 ──
       {
         id: 'SCR-ADM-009', label: '성도 등록/수정', href: 'c-member-form.html',
-        surface: 'admin', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
         context: '성도 신규 등록·정보 수정(이름·직분·부서·연락처·동의). 목록 "+등록"·상세 "수정"에서 진입.',
         components: [{ role: '.pd-member-form', kind: 'form', label: '성도 폼' }],
         description: [{ text: '이름·직분·부서·연락처·등록일·동의' }],
@@ -700,7 +721,7 @@ window.PLANDECK_SCREENS = [
       // ── 설교 수정 ──
       {
         id: 'SCR-ADM-010', label: '설교 수정', href: 'c-sermon-edit.html',
-        surface: 'admin', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
         context: '설교 정보 수정(제목·설교자·URL·라이브·게시). 설교 관리(SCR-ADM-004) 목록에서 진입.',
         components: [{ role: '.pd-sermon-edit', kind: 'form', label: '설교 수정 폼' }],
         description: [{ text: '제목·설교자·유튜브 URL·라이브·게시' }],
@@ -711,12 +732,49 @@ window.PLANDECK_SCREENS = [
       // ── 헌금 상세 ──
       {
         id: 'SCR-ADM-011', label: '헌금 상세', href: 'c-finance-detail.html',
-        surface: 'admin', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-010'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-010'],
         context: '헌금 내역 상세·기부금영수증 발급. 재정(SCR-ADM-006) 내역에서 진입.',
         components: [{ role: '.pd-finance-detail', kind: 'card', label: '헌금 상세' }],
         description: [{ text: '헌금 상세·영수증 발급/재발급' }],
-        cases: [{ state: '정상', trigger: '발급', guard: '대상', result: '영수증 발급', message: '발급했어요', placement: 'toast' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '재정권한', result: '헌금 상세', message: '', target: '.pd-finance-detail' },
+          { state: '정상', trigger: '발급', guard: '대상', result: '영수증 발급', message: '발급했어요', placement: 'toast', target: '.pd-process' },
+          { state: '중복충돌', trigger: '발급', guard: '이미 발급', result: '재발급 확인', message: '이미 발급된 영수증이에요. 재발급할까요?', placement: 'inline', target: '.pd-process' },
+          { state: '권한없음', trigger: '진입', guard: '재정 권한 없음', result: '차단', message: '재정 열람 권한이 필요해요', placement: 'full-page' },
+        ],
         interface: { reads: [{ id: 'getFinanceItem', intent: '헌금 상세', method: 'GET', path: '/admin/finance/{id}', auth: 'Bearer(재정권한)' }], writes: [{ id: 'issueReceiptDetail', intent: '영수증 발급', method: 'POST', path: '/admin/receipts', successStatus: 201, auth: 'Bearer(재정권한)' }], events: [] },
+        flow: { to: [] },
+      },
+      // ── 문자·알림(문자지갑) · REQ-019 ──
+      {
+        id: 'SCR-ADM-012', label: '문자·알림(문자지갑)', href: 'c-messaging.html',
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-019'],
+        context: '문자/푸시 발송·문자지갑 잔액·예약발송·수신동의 관리. 수신거부 성도 자동 제외(PIPA 연동).',
+        components: [{ role: '.pd-msg-table', kind: 'table', label: '발송 내역' }, { role: '.pd-send', kind: 'button', label: '발송', action: { on: 'click', do: 'write:sendMessage' } }],
+        description: [{ text: '문자지갑 잔액·발송 내역·예약발송·수신동의율', target: '.pd-msg-table' }],
+        cases: [
+          { state: '정상', trigger: '발송', guard: '잔액 충분', result: '발송·내역 기록', message: '발송했어요', placement: 'toast', target: '.pd-send' },
+          { state: '빈데이터', trigger: '진입', guard: '발송 0건', result: '안내', message: '아직 발송 내역이 없어요', placement: 'inline', target: '.pd-msg-table' },
+          { state: '범위초과', trigger: '발송', guard: '잔액 부족', result: '막음', message: '문자 잔액이 부족해요. 충전 후 발송하세요', placement: 'inline', target: '.pd-send', priority: 'P1' },
+          { state: '권한없음', trigger: '발송', guard: '권한 부족', result: '차단', message: '발송 권한이 필요해요', placement: 'inline' },
+        ],
+        interface: { reads: [{ id: 'listMessages', intent: '발송 내역', method: 'GET', path: '/admin/messages', auth: 'Bearer(관리자)', target: '.pd-msg-table' }], writes: [{ id: 'sendMessage', intent: '문자/푸시 발송', method: 'POST', path: '/admin/messages', successStatus: 201, errors: [{ status: 402, when: '잔액 부족', message: '문자 잔액이 부족합니다' }], auth: 'Bearer(관리자)', target: '.pd-send' }], events: [{ name: 'message.sent', when: '발송 시', payload: '{count,channel}' }] },
+        flow: { to: [] },
+      },
+      // ── 개인정보 보호(PIPA) · REQ-020 ──
+      {
+        id: 'SCR-ADM-013', label: '개인정보 보호(PIPA)', href: 'c-privacy.html',
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-020'],
+        context: '개인정보 수집·이용 동의 원장, 권리요청(열람·정정·삭제·처리정지) 처리, 보관기간·파기, 처리방침. 감사추적.',
+        components: [{ role: '.pd-privacy-table', kind: 'table', label: '권리요청' }, { role: '.pd-process', kind: 'button', label: '권리요청 처리', action: { on: 'click', do: 'write:processRight' } }],
+        description: [{ text: '동의 원장·권리요청 처리·보관/파기·처리방침', target: '.pd-privacy-table' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '개인정보취급자', result: '동의율·요청 목록', message: '', target: '.pd-privacy-table' },
+          { state: '정상', trigger: '처리', guard: '본인확인', result: '권리요청 처리·기록', message: '처리했어요', placement: 'toast', target: '.pd-process' },
+          { state: '엣지', trigger: '자동', guard: '보관기간 만료', result: '파기 예정 표시', message: '', placement: 'inline' },
+          { state: '권한없음', trigger: '열람', guard: '개인정보 권한 없음', result: '차단', message: '개인정보 취급 권한이 필요해요', placement: 'full-page' },
+        ],
+        interface: { reads: [{ id: 'getPrivacy', intent: '동의·권리요청', method: 'GET', path: '/admin/privacy', auth: 'Bearer(개인정보취급자)', target: '.pd-privacy-table' }], writes: [{ id: 'processRight', intent: '권리요청 처리', method: 'POST', path: '/admin/privacy/requests/{id}', auth: 'Bearer(개인정보취급자)', target: '.pd-process' }], events: [{ name: 'privacy.right.processed', when: '처리 시', payload: '{type,memberId}' }] },
         flow: { to: [] },
       },
     ],
@@ -727,7 +785,7 @@ window.PLANDECK_SCREENS = [
       // ── 플랫폼 대시보드(테넌트 관리) ──
       {
         id: 'SCR-SUP-001', label: '테넌트(교회) 관리', href: 'x-tenants.html',
-        surface: 'super', entry: true, status: 'draft', designed: false, figmaLink: '', reqIds: ['REQ-018'],
+        surface: 'super', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
         context: '플랫폼 운영자: 교회(테넌트) 생성·구독·이단심사 게이트·커스텀 도메인. 데이터 주권·격리.',
         components: [
           { role: '.pd-tenant-table', kind: 'table', label: '교회(테넌트) 목록' },
@@ -750,7 +808,7 @@ window.PLANDECK_SCREENS = [
       // ── 교회 발행 ──
       {
         id: 'SCR-SUP-002', label: '교회 발행', href: 'x-tenant-new.html',
-        surface: 'super', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
         context: '신규 교회(테넌트) 발행 폼(교회명·slug·템플릿·이단심사). 30분 내 브랜드 앱 발행.',
         components: [{ role: '.pd-tenant-new-form', kind: 'form', label: '교회 발행 폼' }],
         description: [{ text: '교회명·slug·템플릿·담당자·이단심사' }],
@@ -761,18 +819,22 @@ window.PLANDECK_SCREENS = [
       // ── 테넌트 상세 ──
       {
         id: 'SCR-SUP-003', label: '테넌트 상세', href: 'x-tenant-detail.html',
-        surface: 'super', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
         context: '교회(테넌트) 상세(상태·구독·성도·도메인·심사이력). 목록·구독·도메인에서 진입.',
         components: [{ role: '.pd-tenant-detail', kind: 'card', label: '테넌트 상세' }],
         description: [{ text: '상태·구독·성도·도메인·심사이력·바로가기' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '상세 표시', message: '' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '상세 표시', message: '' },
+          { state: '권한없음', trigger: '진입', guard: '슈퍼관리자 아님', result: '차단', message: '플랫폼 운영자만 접근할 수 있어요', placement: 'full-page' },
+          { state: '빈데이터', trigger: '진입', guard: '구독/도메인 미설정', result: '설정 유도', message: '구독·도메인을 설정하면 반영돼요', placement: 'inline' },
+        ],
         interface: { reads: [{ id: 'getTenant', intent: '테넌트 상세', method: 'GET', path: '/super/tenants/{id}', response: '{entities.Church}', auth: 'Bearer(슈퍼)' }], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-SUP-004', via: '심사 이력' }, { screen: 'SCR-SUP-005', via: '구독 관리' }, { screen: 'SCR-SUP-006', via: '도메인' }] },
       },
       // ── 이단심사 게이트 ──
       {
         id: 'SCR-SUP-004', label: '이단심사 게이트', href: 'x-review-gate.html',
-        surface: 'super', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
         context: '교리 검증 게이트. 승인 전 공개홈·앱 노출 차단. 대기/완료 심사 관리.',
         components: [{ role: '.pd-review-list', kind: 'table', label: '심사 목록' }],
         description: [{ text: '심사 대기·완료, 검토 진입' }],
@@ -783,22 +845,30 @@ window.PLANDECK_SCREENS = [
       // ── 구독·과금 ──
       {
         id: 'SCR-SUP-005', label: '구독·과금', href: 'x-subscription.html',
-        surface: 'super', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
         context: '교회별 구독 현황·월 매출·연체 관리.',
         components: [{ role: '.pd-sub-table', kind: 'table', label: '구독 현황' }],
         description: [{ text: '월 매출·활성 구독·연체·교회별 플랜' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '구독 현황', message: '' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '구독 현황', message: '' },
+          { state: '빈데이터', trigger: '진입', guard: '구독 0건', result: '안내', message: '활성 구독이 없어요', placement: 'inline' },
+          { state: '엣지', trigger: '자동', guard: '결제 연체', result: '연체 표시', message: '', placement: 'inline' },
+        ],
         interface: { reads: [{ id: 'listSubscriptions', intent: '구독 현황', method: 'GET', path: '/super/subscriptions', auth: 'Bearer(슈퍼)' }], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-SUP-003', via: '교회', trigger: '.pd-sub-table' }] },
       },
       // ── 커스텀 도메인 ──
       {
         id: 'SCR-SUP-006', label: '커스텀 도메인', href: 'x-domains.html',
-        surface: 'super', entry: false, status: 'wireframed', designed: false, figmaLink: '', reqIds: ['REQ-017'],
+        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-017'],
         context: '교회별 독립 도메인 연결(화이트라벨). 기본 주소·커스텀 도메인·연결 상태.',
         components: [{ role: '.pd-domain-table', kind: 'table', label: '도메인 연결' }],
         description: [{ text: '기본 주소·커스텀 도메인·연결 상태' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '도메인 목록', message: '' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '도메인 목록', message: '' },
+          { state: '빈데이터', trigger: '진입', guard: '커스텀 도메인 미연결', result: '기본주소 사용', message: '아직 연결된 커스텀 도메인이 없어요', placement: 'inline' },
+          { state: '에러', trigger: '연결', guard: 'DNS 미확인', result: '대기', message: 'DNS 확인 중이에요. 잠시 후 반영됩니다', placement: 'inline' },
+        ],
         interface: { reads: [{ id: 'listDomains', intent: '도메인 목록', method: 'GET', path: '/super/domains', auth: 'Bearer(슈퍼)' }], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-SUP-003', via: '교회', trigger: '.pd-domain-table' }] },
       },
