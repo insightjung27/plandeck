@@ -1328,14 +1328,20 @@
     el.className = 'pd-appshell';
     var flows = window.PLANDECK_FLOWS || window.PDK_FLOWS || [];
     var byId = {}; flatPages().forEach(function (p) { byId[p.id] = p; });
+    // 채널(surface) 필터 — ?surface= 로 채널별 보기(공유 가능). 칩은 무JS 링크.
+    var sel = ''; try { sel = new URLSearchParams(location.search).get('surface') || ''; } catch (e) {}
+    var surfaces = []; flows.forEach(function (f) { if (f.surface && surfaces.indexOf(f.surface) < 0) surfaces.push(f.surface); });
+    var shown = sel ? flows.filter(function (f) { return f.surface === sel; }) : flows;
+    var chips = flows.length ? ('<div class="pd-chips pd-flow-filter"><a class="pd-chip' + (sel ? '' : ' is-active') + '" href="flows.html">전체 ' + flows.length + '</a>' +
+      surfaces.map(function (s) { var n = flows.filter(function (f) { return f.surface === s; }).length; return '<a class="pd-chip' + (sel === s ? ' is-active' : '') + '" href="flows.html?surface=' + encodeURIComponent(s) + '">' + esc(s) + ' ' + n + '</a>'; }).join('') + '</div>') : '';
     var head =
       '<h1 style="font-size:28px;font-weight:800;margin-bottom:6px">주요 플로우</h1>' +
-      '<div class="pd-prd-sub">제품의 핵심 여정을 플로우별로 모아 봅니다. 썸네일을 누르면 해당 화면이 열려요. (화면이 많아져도 플로우 단위로 정리됩니다)</div>';
+      '<div class="pd-prd-sub">제품의 핵심 여정을 플로우별로 모아 봅니다. 카드를 누르면 해당 화면이 열려요. 채널별로 필터할 수 있어요.</div>' + chips;
     if (!flows.length) {
       el.innerHTML = pageShell('flows', head + '<div class="pd-empty"><div class="pd-empty-icon">🧭</div><div class="pd-empty-title">등록된 플로우가 없습니다</div><div class="pd-empty-sub"><code>/pd-flow</code> 로 주요 플로우를 정의하세요.</div></div>');
       return;
     }
-    var blocks = flows.map(function (f) {
+    var blocks = shown.map(function (f) {
       var steps = (f.steps || []).map(function (s) { return typeof s === 'string' ? { screen: s } : s; });
       var strip = '';
       steps.forEach(function (st, i) {
