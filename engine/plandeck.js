@@ -112,7 +112,9 @@
     { key: 'workspace', href: '../../index.html', label: '⌂ 워크스페이스' },
     { key: 'overview',  href: 'index.html',        label: '개요' },
     { key: 'prd',       href: 'prd.html',           label: 'PRD' },
-    { key: 'flows',     href: 'flows.html',         label: '🧭 플로우' },
+    { key: 'ia',        href: 'ia.html',            label: '🗂 IA(정보구조)' },
+    { key: 'features',  href: 'features.html',      label: '⚙ 기능정의서' },
+    { key: 'flows',     href: 'flows.html',         label: '🧭 User Flow' },
     { key: 'spec',      href: 'spec.html',          label: '상세 기획서' },
     { key: 'handoff',   href: 'handoff.html',       label: '핸드오프' },
   ];
@@ -1009,6 +1011,58 @@
     } catch (e) {}
   }
 
+  // ═══ IA(정보구조) — config/screens.js 에서 화면 계층·연결·요구사항을 자동 생성 ═══
+  function renderIA() {
+    var el = document.getElementById('pd-ia-root'); if (!el) return;
+    var byId = {}; flatPages().forEach(function (p) { byId[p.id] = p; });
+    var totalScreens = flatPages().length;
+    var entryList = flatPages().filter(function (p) { return p.entry; });
+    var body = SCREENS.map(function (cat) {
+      var nodes = (cat.pages || []).map(function (p) {
+        var outs = ((p.flow && p.flow.to) || []).map(function (t) {
+          var tp = byId[t.screen];
+          return tp ? '<a class="pd-ia-edge" href="' + esc(tp.href) + '">' + esc(tp.label) + '</a>' : '<span class="pd-ia-edge pd-dim">' + esc(t.screen) + '</span>';
+        });
+        var reqs = (p.reqIds || []).map(function (r) { return '<span class="pd-req">' + esc(r) + '</span>'; }).join(' ');
+        return '<li class="pd-ia-node">' +
+          '<div class="pd-ia-node-head"><a class="pd-ia-screen" href="' + esc(p.href) + '">' + esc(p.label) + '</a>' +
+          '<span class="pd-dim pd-ia-id">' + esc(p.id) + '</span>' + (p.entry ? ' <span class="pd-tag">진입</span>' : '') +
+          (reqs ? ' <span class="pd-ia-reqs">' + reqs + '</span>' : '') + '</div>' +
+          (outs.length ? '<div class="pd-ia-edges"><span class="pd-ia-arrow">→</span> ' + outs.join(' ') + '</div>' : '') +
+          '</li>';
+      }).join('');
+      return '<section class="pd-ia-cat"><h2>' + esc(cat.category) + ' <span class="pd-dim">(' + (cat.pages || []).length + ')</span></h2><ul class="pd-ia-list">' + nodes + '</ul></section>';
+    }).join('');
+    var head = '<div class="pd-prd-head"><h1>정보 구조 (IA)</h1><div class="pd-prd-sub">서피스별 화면 계층 · 화면 간 연결(→) · 요구사항 매핑 — <b>' + totalScreens + '</b>개 화면. <code>config/screens.js</code> 에서 자동 생성됩니다.</div>' +
+      (entryList.length ? '<div class="pd-ia-entries">진입점: ' + entryList.map(function (p) { return '<a href="' + esc(p.href) + '">' + esc(p.label) + '</a>'; }).join(' · ') + '</div>' : '') + '</div>';
+    el.innerHTML = pageShell('ia', '<div class="pd-ia pd-prd">' + head + body + '</div>');
+  }
+
+  // ═══ 기능 정의서 — 화면 interface(조회·액션·이벤트)와 요구사항을 기능 목록으로 자동 생성 ═══
+  function renderFeatures() {
+    var el = document.getElementById('pd-features-root'); if (!el) return;
+    var feats = [];
+    flatPages().forEach(function (p) {
+      var itf = p.interface || {};
+      (itf.writes || []).forEach(function (w) { feats.push({ name: w.intent || w.id, screen: p, type: '액션', sub: (w.method || '') + ' ' + (w.path || '') }); });
+      (itf.reads || []).forEach(function (r) { feats.push({ name: r.intent || r.id, screen: p, type: '조회', sub: (r.method || '') + ' ' + (r.path || '') }); });
+      (itf.events || []).forEach(function (e) { feats.push({ name: e.name, screen: p, type: '이벤트', sub: e.when || '' }); });
+    });
+    var trs = feats.map(function (f, i) {
+      var cls = f.type === '액션' ? 'is-write' : f.type === '이벤트' ? 'is-event' : 'is-read';
+      return '<tr><td class="pd-mono">FUNC-' + ('00' + (i + 1)).slice(-3) + '</td><td>' + esc(f.name) + '</td>' +
+        '<td><a href="' + esc(f.screen.href) + '">' + esc(f.screen.label) + '</a></td>' +
+        '<td><span class="pd-feat-type ' + cls + '">' + esc(f.type) + '</span></td>' +
+        '<td class="pd-mono pd-dim">' + esc(f.sub) + '</td>' +
+        '<td>' + ((f.screen.reqIds || []).map(function (r) { return '<span class="pd-req">' + esc(r) + '</span>'; }).join(' ')) + '</td></tr>';
+    }).join('');
+    var nW = feats.filter(function (f) { return f.type === '액션'; }).length;
+    var nR = feats.filter(function (f) { return f.type === '조회'; }).length;
+    var nE = feats.filter(function (f) { return f.type === '이벤트'; }).length;
+    var head = '<div class="pd-prd-head"><h1>기능 정의서</h1><div class="pd-prd-sub">화면별 기능(조회·액션·이벤트)과 API·요구사항 매핑 — <b>' + feats.length + '</b>개 기능(액션 ' + nW + ' · 조회 ' + nR + ' · 이벤트 ' + nE + '). <code>config/screens.js</code> 의 interface 에서 자동 생성됩니다.</div></div>';
+    el.innerHTML = pageShell('features', '<div class="pd-prd">' + head + '<div class="pd-table-wrap"><table class="pd-table pd-feat-table"><thead><tr><th>기능ID</th><th>기능명</th><th>화면</th><th>유형</th><th>API/시점</th><th>요구사항</th></tr></thead><tbody>' + trs + '</tbody></table></div></div>');
+  }
+
   // ═══ 10. 검토 모드 (의사결정자) — sessionStorage 로 이동해도 유지 ═══
   function reviewGet() { try { return sessionStorage.getItem('pd-review') === '1'; } catch (e) { return false; } }
   function reviewSet(v) { try { if (v) sessionStorage.setItem('pd-review', '1'); else sessionStorage.removeItem('pd-review'); } catch (e) {} }
@@ -1165,6 +1219,8 @@
     if (document.getElementById('pd-handoff-root')) { return; }  // 핸드오프는 handoff.js가 렌더(여기선 셸 헬퍼만 노출)
     if (document.getElementById('pd-workspace-root')) { try { renderWorkspace(); } catch (e) {} return; }
     if (document.getElementById('pd-prd-root')) { try { renderPRD(); } catch (e) {} return; }
+    if (document.getElementById('pd-ia-root')) { try { renderIA(); } catch (e) {} return; }
+    if (document.getElementById('pd-features-root')) { try { renderFeatures(); } catch (e) {} return; }
     if (document.getElementById('pd-overview-root')) { try { renderOverview(); } catch (e) {} return; }
     if (document.getElementById('pd-spec-root')) { try { renderSpec(); } catch (e) {} return; }
     if (document.getElementById('pd-flows-root')) { try { renderFlows(); } catch (e) {} return; }

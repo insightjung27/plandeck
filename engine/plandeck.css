@@ -491,3 +491,28 @@
 .pd-changelog { font-size: 12.5px; }
 .pd-changelog li { margin-bottom: 4px; }
 .pd-changelog code { background: #eef2ff; color: var(--pd-primary); border-radius: 4px; padding: 0 5px; }
+
+/* ═══ IA(정보구조) 뷰 ═══ */
+.pd-ia-cat { margin-bottom: 26px; }
+.pd-ia-cat h2 { font-size: 16px; font-weight: 800; color: var(--pd-ink); margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--pd-line); }
+.pd-ia-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pd-ia-node { border: 1px solid var(--pd-line); border-radius: 10px; padding: 12px 14px; background: #fff; }
+.pd-ia-node-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pd-ia-screen { font-size: 14.5px; font-weight: 700; color: var(--pd-primary); text-decoration: none; }
+.pd-ia-screen:hover { text-decoration: underline; }
+.pd-ia-id { font-size: 11.5px; font-family: ui-monospace, Menlo, monospace; }
+.pd-ia-reqs { margin-left: auto; display: flex; gap: 4px; }
+.pd-ia-edges { margin-top: 8px; font-size: 12.5px; color: var(--pd-sub); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pd-ia-arrow { color: #9ca3af; font-weight: 700; }
+.pd-ia-edge { display: inline-block; background: var(--pd-soft); border-radius: 6px; padding: 2px 9px; font-size: 12px; color: var(--pd-ink); text-decoration: none; }
+.pd-ia-edge:hover { background: #e0e7ff; }
+.pd-ia-entries { margin-top: 10px; font-size: 13px; color: var(--pd-sub); }
+.pd-ia-entries a { color: var(--pd-primary); text-decoration: none; }
+
+/* ═══ 기능 정의서 ═══ */
+.pd-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+.pd-feat-table td { vertical-align: middle; }
+.pd-feat-type { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+.pd-feat-type.is-write { background: #fff1e6; color: #c2410c; }
+.pd-feat-type.is-read { background: #e0f2fe; color: #0369a1; }
+.pd-feat-type.is-event { background: #f3e8ff; color: #7e22ce; }
