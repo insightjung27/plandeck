@@ -13,13 +13,14 @@ window.PLANDECK_FLOWS = [
     ],
   },
   {
-    id: 'FLOW-RESPITE', name: '시간제 돌봄 매칭', surface: '부모앱',
-    desc: '조건·요금 → 검증 돌보미 매칭(비상연락·미성년위탁 동의) → 예약 요청',
+    id: 'FLOW-RESPITE', name: '시간제 돌봄 매칭·라이프사이클', surface: '부모앱',
+    desc: '조건·요금 → 검증 돌보미 매칭(비상연락·미성년위탁 동의) → 예약 요청 → 예약 상세(취소/완료)',
     steps: [
       { screen: 'SCR-PARENT-006' },
       { screen: 'SCR-PARENT-009' },
       { screen: 'SCR-PARENT-010' },
       { screen: 'SCR-PARENT-011' },
+      { screen: 'SCR-PARENT-047' },
     ],
   },
   {

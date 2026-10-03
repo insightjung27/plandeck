@@ -423,3 +423,22 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-step.is-active .pd-step-dot { border-color: var(--w-ink); color: var(--w-ink); }
 .pd-step-label { font-size: 11px; color: var(--w-sub); text-align: center; line-height: 1.2; }
 .pd-step.is-active .pd-step-label { color: var(--w-ink); font-weight: 700; }
+
+/* 비가역 쓰기 확인 패널(사유 필수) */
+.pd-confirm { border: 1px solid var(--w-line-2); border-radius: 12px; padding: 14px 16px; background: var(--w-fill); display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.pd-confirm-head { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--w-ink); }
+.pd-confirm-head svg { width: 18px; height: 18px; flex-shrink: 0; }
+.pd-confirm-msg { font-size: 13px; color: var(--w-sub); line-height: 1.45; }
+.pd-confirm-actions { display: flex; gap: 8px; }
+
+/* ─── 접근성(WCAG 2.1 AA) — focus-visible·모션축소·고대비 ─── */
+.pd-screen a:focus-visible, .pd-screen button:focus-visible, .pd-screen [role="switch"]:focus-visible,
+.pd-row:focus-visible, .pd-tab:focus-visible, .pd-chip:focus-visible, .pd-btn:focus-visible, .pd-tile:focus-visible, .pd-iconbtn:focus-visible {
+  outline: 2px solid var(--w-ink); outline-offset: 2px; border-radius: 4px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pd-screen *, .pd-screen *::before, .pd-screen *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@media (forced-colors: active) {
+  .pd-btn, .pd-chip, .pd-row, .pd-tile, .pd-confirm, .pd-toggle { border: 1px solid; }
+}

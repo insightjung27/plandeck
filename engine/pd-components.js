@@ -124,7 +124,7 @@
   function fieldChips(labelT, arr) { return '<div class="pd-field"><label class="pd-field-label">' + labelT + '</label>' + chips(arr) + '</div>'; }
   function textarea(labelT, ph) { return '<div class="pd-field"><label class="pd-field-label">' + labelT + '</label><div class="pd-textarea">' + (ph || '') + '</div></div>'; }
   function check(t, cls) { return '<label class="pd-check' + (cls ? ' ' + cls : '') + '"><span class="box"></span>' + t + '</label>'; }
-  function toggle(on) { return '<label class="pd-toggle' + (on ? ' is-on' : '') + '"><span></span></label>'; }
+  function toggle(on) { return '<label class="pd-toggle' + (on ? ' is-on' : '') + '" role="switch" aria-checked="' + (on ? 'true' : 'false') + '"><span></span></label>'; }
   function form(fields, cls) { return '<form class="pd-form' + (cls ? ' ' + cls : '') + '">' + fields.join('') + '</form>'; }
   function commentBar(ph, btnLabel) { return '<div class="pd-comment-bar"><div class="pd-input ph">' + (ph || '입력') + '</div>' + btnInline(btnLabel || '등록', 'primary') + '</div>'; }
 
@@ -148,6 +148,15 @@
   function signalCard(title, body, token) { return '<div class="pd-signal-card">' + ICON.sun + '<div class="pd-wf-title">' + title + '</div><div class="pd-wf-text">' + body + '</div>' + hero('square') + (token ? '<div class="pd-wf-label">' + token + '</div>' : '') + '</div>'; }
   // 플로팅 액션 버튼(FAB) — inner=내용, to=이동
   function fab(inner, to, cls) { return '<a class="pd-fab' + (cls ? ' ' + cls : '') + '" href="' + to + '"><span>' + inner + '</span></a>'; }
+  // 되돌릴 수 없는 작업의 '사유 입력 + 확인' 패널(승인/반려/지급/해결/정지/삭제 등 비가역 쓰기 전용)
+  function confirmReason(title, msg, reasonPh, confirmLabel, cancelLabel) {
+    return '<div class="pd-confirm" role="group" aria-label="처리 확인">' +
+      '<div class="pd-confirm-head">' + ICON.alert + '<span>' + title + '</span></div>' +
+      (msg ? '<div class="pd-confirm-msg">' + msg + '</div>' : '') +
+      '<div class="pd-field"><label class="pd-field-label">사유 (필수)</label><div class="pd-textarea">' + (reasonPh || '처리 사유를 입력하세요 — 감사 로그에 기록됩니다') + '</div></div>' +
+      '<div class="pd-confirm-actions">' + btnInline(confirmLabel || '확인', 'primary') + btnInline(cancelLabel || '취소', 'secondary') + '</div>' +
+    '</div>';
+  }
   // 진행 단계 표시(온보딩·심사 파이프라인). items=단계명[], current=현재 인덱스(0-base)
   function stepper(items, current) {
     return '<div class="pd-stepper">' + items.map(function (s, i) {
@@ -184,7 +193,7 @@
     btn: btn, btnInline: btnInline, ctaBar: ctaBar, callBtn: callBtn,
     row: row, list: list, tiles: tiles, feature: feature,
     field: field, fieldChips: fieldChips, textarea: textarea, check: check, toggle: toggle, form: form, commentBar: commentBar,
-    doneState: doneState, heroBlock: heroBlock, emptyState: emptyState, legalDoc: legalDoc, bubble: bubble, chatLog: chatLog, heroCard: heroCard, signalCard: signalCard, fab: fab, stepper: stepper, authCard: authCard,
+    doneState: doneState, heroBlock: heroBlock, emptyState: emptyState, legalDoc: legalDoc, bubble: bubble, chatLog: chatLog, heroCard: heroCard, signalCard: signalCard, fab: fab, stepper: stepper, authCard: authCard, confirmReason: confirmReason,
     gnb: gnb, sidebar: sidebar, pagehead: pagehead, kpi: kpi, wpanel: wpanel, table: table, badge: badge,
   };
 

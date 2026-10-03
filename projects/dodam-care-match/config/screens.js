@@ -600,6 +600,22 @@ window.PLANDECK_SCREENS = [
         interface: { reads: [{ id: 'getUser', intent: '공개 프로필', method: 'GET', path: '/app/u/{id}', response: '{ profile:{entities.Profile}, lists:{entities.StoreList}[] }', auth: 'Optional' }], writes: [{ id: 'follow', intent: '팔로우', method: 'POST', path: '/app/u/{id}/follow', auth: 'Bearer', target: '.pd-herocard' }], events: [] },
         flow: { to: [{ screen: 'SCR-PARENT-032', via: '모음' }] },
       },
+      {
+        id: 'SCR-PARENT-047', label: '돌봄 예약 상세', href: 'p-booking-detail.html',
+        surface: 'parent', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-P05'],
+        context: '시간제돌봄 예약 상태(요청→매칭→진행→완료)·취소(사유 필수 확인)·완료 확인. 돌봄 상태기계 전이 지점(부모측).',
+        components: [{ role: '.pd-stepper', kind: 'stepper', label: '예약 상태' }, { role: '.pd-confirm', kind: 'confirm', label: '취소(사유 필수)' }],
+        description: [{ text: '요청→매칭→진행→완료 타임라인', target: '.pd-stepper' }, { text: '예약 취소(사유 입력·확인)', target: '.pd-confirm' }],
+        cases: [
+          { state: '정상', trigger: '진입', guard: '로그인', result: '예약 상세', message: '', api: { endpoint: 'GET /app/respite-bookings/{id}', status: 200 } },
+          { state: '필수누락', trigger: '취소', guard: '사유 없음', result: '막음', message: '취소 사유를 입력해 주세요', placement: 'inline', target: '.pd-confirm', priority: 'P1' },
+          { state: '유효', trigger: '취소', guard: '사유 입력·확인', result: '예약 취소(cancelled)', message: '예약을 취소했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /app/respite-bookings/{id}/cancel', status: 200 } },
+          { state: '중복충돌', trigger: '취소', guard: '이미 진행/완료', result: '막음', message: '이미 진행 중이라 취소할 수 없어요', placement: 'inline', priority: 'P1' },
+          { state: '정상', trigger: '완료 확인', guard: 'in_progress→completed', result: '완료·후기 유도', message: '돌봄이 완료됐어요. 후기를 남겨보세요', placement: 'toast' },
+        ],
+        interface: { reads: [{ id: 'getBooking', intent: '예약 상세', method: 'GET', path: '/app/respite-bookings/{id}', response: '{entities.RespiteBooking}', auth: 'Bearer' }], writes: [{ id: 'cancelBooking', intent: '예약 취소', method: 'POST', path: '/app/respite-bookings/{id}/cancel', request: '{ reason:string(required) }', confirm: true, errors: [{ status: 409, when: '이미 진행/완료', message: '이미 진행 중이라 취소할 수 없어요' }], auth: 'Bearer', target: '.pd-confirm' }], events: [{ name: 'booking.cancelled', when: '취소', payload: '{ bookingId, reason }' }] },
+        flow: { to: [{ screen: 'SCR-PARENT-024', via: '완료 후 후기' }] },
+      },
     ],
   },
   {
@@ -751,9 +767,10 @@ window.PLANDECK_SCREENS = [
         cases: [
           { state: '정상', trigger: '진입', guard: '', result: '심사 현황', message: '', api: { endpoint: 'GET /partner/onboarding/status', status: 200 } },
           { state: '권한없음', trigger: '승인대기', guard: '미승인', result: '게이트', message: '심사가 완료되면 활동을 시작할 수 있어요', placement: 'inline' },
+          { state: '반려', trigger: '진입', guard: 'reviewStatus=rejected', result: '반려 사유·재신청 안내', message: '반려 사유를 확인하고 보완 후 재신청할 수 있어요', placement: 'inline', priority: 'P1' },
         ],
         interface: { reads: [{ id: 'getStatus', intent: '심사 현황', method: 'GET', path: '/partner/onboarding/status', response: '{entities.PartnerOnboarding}', auth: 'Bearer', target: '.pd-stepper' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-PTNR-001', via: '홈' }] },
+        flow: { to: [{ screen: 'SCR-PTNR-001', via: '홈' }, { screen: 'SCR-PTNR-003', via: '재신청' }] },
       },
       {
         id: 'SCR-PTNR-013', label: '일감', href: 'pt-jobs.html',
@@ -778,9 +795,10 @@ window.PLANDECK_SCREENS = [
           { state: '정상', trigger: '진입', guard: '', result: '마스킹된 상세', message: '', api: { endpoint: 'GET /partner/jobs/{id}', status: 200 } },
           { state: '중복충돌', trigger: '수락', guard: '이미 마감', result: '막음', message: '이미 다른 돌보미가 수락했어요', placement: 'inline', priority: 'P1' },
           { state: '유효', trigger: '수락', guard: 'requested 상태', result: '선점·정보 공개', message: '수락했어요. 아동·연락처가 공개됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /partner/jobs/{id}/accept', status: 200 } },
+          { state: '유효', trigger: '완료 처리', guard: '수락한 일감·돌봄 종료', result: '완료(completed)·정산 반영', message: '돌봄을 완료 처리했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /partner/jobs/{id}/complete', status: 200 } },
         ],
-        interface: { reads: [{ id: 'getJob', intent: '일감 상세', method: 'GET', path: '/partner/jobs/{id}', response: '{entities.RespiteBooking}(masked)', auth: 'Bearer' }], writes: [{ id: 'acceptJob', intent: '일감 수락', method: 'POST', path: '/partner/jobs/{id}/accept', idempotencyKey: true, errors: [{ status: 409, when: '이미 마감(선점 실패)', message: '이미 마감됐어요' }], auth: 'Bearer', target: '.pd-cta-bar' }], events: [{ name: 'job.accepted', when: '수락 시', payload: '{ bookingId, partnerId }' }] },
-        flow: { to: [{ screen: 'SCR-PTNR-013', via: '내 일정' }] },
+        interface: { reads: [{ id: 'getJob', intent: '일감 상세', method: 'GET', path: '/partner/jobs/{id}', response: '{entities.RespiteBooking}(masked)', auth: 'Bearer' }], writes: [{ id: 'acceptJob', intent: '일감 수락', method: 'POST', path: '/partner/jobs/{id}/accept', idempotencyKey: true, errors: [{ status: 409, when: '이미 마감(선점 실패)', message: '이미 마감됐어요' }], auth: 'Bearer', target: '.pd-cta-bar' }, { id: 'completeJob', intent: '돌봄 완료 처리', method: 'POST', path: '/partner/jobs/{id}/complete', idempotencyKey: true, response: '{entities.RespiteBooking}', auth: 'Bearer' }], events: [{ name: 'job.accepted', when: '수락 시', payload: '{ bookingId, partnerId }' }, { name: 'booking.completed', when: '완료 처리', payload: '{ bookingId }' }] },
+        flow: { to: [{ screen: 'SCR-PTNR-013', via: '내 일정' }, { screen: 'SCR-PTNR-015', via: '정산' }] },
       },
       {
         id: 'SCR-PTNR-015', label: '정산', href: 'pt-pay.html',
@@ -1086,7 +1104,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-004', label: '장소 제출·검수', href: 'ad-submissions.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A03'],
         context: '장소 제출(필드리포트→매장등록+활동비)·매장파트너 요청(claim/edit) 승인/반려(사유).',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '제출·요청 큐' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '제출·요청 큐' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '제출 큐·활동비·승인/반려', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'reviewer 권한', result: '큐', message: '', api: { endpoint: 'GET /admin/submissions', status: 200 } },
@@ -1100,7 +1118,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-005', label: '파트너 심사', href: 'ad-partners.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A02'],
         context: '돌보미·앰배서더 심사 — 성범죄/보험/안전교육 3게이트 증빙 확인→verified. 돌보미 승인은 3게이트 완료 필수. 승인/반려 사유·notify.',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '심사 대기(3게이트)' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '심사 대기(3게이트)' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '3게이트 상태·승인/반려', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'reviewer 권한', result: '심사 큐', message: '', api: { endpoint: 'GET /admin/partners', status: 200 } },
@@ -1128,7 +1146,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-007', label: '사용자 상세', href: 'ad-user-detail.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A05'],
         context: '종합 이력. 진입 시 열람 감사(logView)·자녀는 집계수만 노출(민감정보 보호).',
-        components: [{ role: '.pd-kpi', kind: 'kpi', label: '집계' }, { role: '.pd-wpanel', kind: 'panel', label: '예약·활동 이력' }],
+        components: [{ role: '.pd-kpi', kind: 'kpi', label: '집계' }, { role: '.pd-wpanel', kind: 'panel', label: '예약·활동 이력' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '자녀·예약·후기 집계수', target: '.pd-kpi' }, { text: '예약·운영 활동', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'support 권한', result: '상세·logView 기록', message: '', api: { endpoint: 'GET /admin/users/{id}', status: 200 } },
@@ -1141,7 +1159,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-008', label: '매장 인증 심사', href: 'ad-stores.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A04'],
         context: '6축 접근성 현장채점·확정등급·적합유형→승인(verified). 조건부/현장검수예정/반려. 고아 pending 매장 심사.',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '6축 현장채점' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '6축 현장채점' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '6축 채점·승인/조건부/반려', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'reviewer 권한', result: '심사 큐', message: '', api: { endpoint: 'GET /admin/stores', status: 200 } },
@@ -1178,7 +1196,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-011', label: '예약·매칭', href: 'ad-bookings.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A06'],
         context: '돌봄 예약 모니터링·개입(재매칭/미매칭/취소/되돌리기·사유). 자동매칭은 앱, 콘솔은 개입만.',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '예약 테이블' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '예약 테이블' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '상태 필터·개입', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'support', result: '예약 목록', message: '', api: { endpoint: 'GET /admin/bookings', status: 200 } },
@@ -1191,7 +1209,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-012', label: '정산·코인', href: 'ad-settlements.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A07'],
         context: '회차 배치(일괄확정/지급)·원천징수 3.3%·net 정합(불일치 차단)·코인 원장(클로백).',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '회차 정산·코인 원장' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '회차 정산·코인 원장' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: 'gross·원천징수·net·확정/지급', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'finance 권한', result: '정산', message: '', api: { endpoint: 'GET /admin/settlements', status: 200 } },
@@ -1205,7 +1223,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-013', label: '멤버십·결제', href: 'ad-memberships.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A14'],
         context: '멤버십·구독·결제(데모·실 PG 미연동). 강제해지·환불 사유 필수.',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '구독·결제' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '구독·결제' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '구독·결제·환불', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'finance 권한', result: '멤버십', message: '', api: { endpoint: 'GET /admin/memberships', status: 200 } },
@@ -1218,7 +1236,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-014', label: '안전 사건', href: 'ad-safety.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A08'],
         context: 'SOS/발작 등 분류→처리중→상신→해결(해결메모 필수). 신고자엔 상태만 통지·내부 조치메모 미노출.',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '사건 테이블' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '사건 테이블' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '상태·심각도·처리', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'moderator 권한', result: '사건 목록', message: '', api: { endpoint: 'GET /admin/safety', status: 200 } },
@@ -1232,7 +1250,7 @@ window.PLANDECK_SCREENS = [
         id: 'SCR-ADMIN-015', label: '신고·모더레이션', href: 'ad-moderation.html',
         surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-A09'],
         context: '신고 본문 확인→검토중/기각(메모)/조치완료(숨김·노출중단·정지·메모). self/admin 정지 차단.',
-        components: [{ role: '.pd-wpanel', kind: 'panel', label: '신고 큐' }],
+        components: [{ role: '.pd-wpanel', kind: 'panel', label: '신고 큐' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '신고 원문·조치', target: '.pd-wpanel' }],
         cases: [
           { state: '정상', trigger: '진입', guard: 'moderator 권한', result: '신고 큐', message: '', api: { endpoint: 'GET /admin/moderation', status: 200 } },
