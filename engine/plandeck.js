@@ -126,6 +126,7 @@
     { key: 'features',  href: 'features.html',      label: '⚙ 기능정의서' },
     { key: 'flows',     href: 'flows.html',         label: '🧭 User Flow' },
     { key: 'spec',      href: 'spec.html',          label: '상세 기획서' },
+    { key: 'components', href: 'components.html',    label: '🧩 컴포넌트' },
     { key: 'handoff',   href: 'handoff.html',       label: '핸드오프' },
   ];
   function navLinksHtml(active) {
@@ -1170,6 +1171,22 @@
     })();
   }
 
+  // ═══ 9.5 컴포넌트 라이브러리 뷰 (#pd-components-root) — 피그마 컴포넌트 패널 ═══
+  function renderComponents() {
+    var el = document.getElementById('pd-components-root'); if (!el) return;
+    var C = window.PD || window.PDK_COMPONENTS;
+    var head = '<div class="pd-prd-head"><h1>🧩 컴포넌트 라이브러리</h1><div class="pd-prd-sub">각 화면은 이 공통 컴포넌트를 <b>가져다 조립</b>합니다. 컴포넌트 하나를 고치면(<code>engine/pd-components.js</code> 마크업 · <code>engine/plandeck-ui.css</code> 스타일) 그 컴포넌트를 쓰는 <b>전 화면·전 프로젝트가 한꺼번에</b> 바뀝니다. 피그마 디자인 컴포넌트와 동일 구조입니다.</div></div>';
+    if (!C || !C.CATALOG) { el.innerHTML = pageShell('components', '<div class="pd-prd">' + head + '<div class="pd-empty"><div class="pd-empty-icon">🧩</div><div class="pd-empty-title">컴포넌트 라이브러리를 불러올 수 없습니다</div><div class="pd-empty-sub">이 페이지는 <code>engine/pd-components.js</code> 를 로드해야 합니다.</div></div></div>'); return; }
+    var groups = C.CATALOG.map(function (g) {
+      var items = g.items.map(function (it) {
+        var html = ''; try { html = it.preview(); } catch (e) { html = '<span class="pd-dim">미리보기 오류</span>'; }
+        return '<div class="pd-comp-item"><div class="pd-comp-head"><code class="pd-comp-name">' + esc(it.name) + '</code><span class="pd-comp-desc">' + esc(it.desc) + '</span></div><div class="pd-comp-preview"><div class="pd-screen">' + html + '</div></div></div>';
+      }).join('');
+      return '<section class="pd-comp-group"><h2>' + esc(g.group) + '</h2><div class="pd-comp-grid">' + items + '</div></section>';
+    }).join('');
+    el.innerHTML = pageShell('components', '<div class="pd-prd pd-catalog">' + head + groups + '</div>');
+  }
+
   // ═══ 10. 검토 모드 (의사결정자) — sessionStorage 로 이동해도 유지 ═══
   function reviewGet() { try { return sessionStorage.getItem('pd-review') === '1'; } catch (e) { return false; } }
   function reviewSet(v) { try { if (v) sessionStorage.setItem('pd-review', '1'); else sessionStorage.removeItem('pd-review'); } catch (e) {} }
@@ -1351,6 +1368,7 @@
     if (document.getElementById('pd-prd-root')) { try { renderPRD(); } catch (e) {} return; }
     if (document.getElementById('pd-ia-root')) { try { renderIA(); } catch (e) {} return; }
     if (document.getElementById('pd-features-root')) { try { renderFeatures(); } catch (e) {} return; }
+    if (document.getElementById('pd-components-root')) { try { renderComponents(); } catch (e) {} return; }
     if (document.getElementById('pd-overview-root')) { try { renderOverview(); } catch (e) {} return; }
     if (document.getElementById('pd-spec-root')) { try { renderSpec(); } catch (e) {} return; }
     if (document.getElementById('pd-flows-root')) { try { renderFlows(); } catch (e) {} return; }

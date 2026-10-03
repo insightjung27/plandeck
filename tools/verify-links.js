@@ -17,7 +17,7 @@ if (!proj) { console.error('사용법: node tools/verify-links.js <project>   (p
 const DIR = path.join(__dirname, '..', 'projects', proj) + path.sep;
 if (!fs.existsSync(DIR)) { console.error('프로젝트 폴더 없음: ' + DIR); process.exit(2); }
 
-const docs = new Set(['index.html', 'prd.html', 'spec.html', 'flows.html', 'handoff.html', 'ia.html', 'features.html']);
+const docs = new Set(['index.html', 'prd.html', 'spec.html', 'flows.html', 'handoff.html', 'ia.html', 'features.html', 'components.html']);
 const files = fs.readdirSync(DIR).filter(f => f.endsWith('.html'));
 const screens = files.filter(f => !docs.has(f));
 const existing = new Set(files);

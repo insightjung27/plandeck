@@ -568,3 +568,15 @@ button.pd-side-action { font-family: inherit; text-align: left; width: 100%; cur
   body { background: #fff !important; }
   a[href] { color: inherit; text-decoration: none; }
 }
+
+/* ─── 컴포넌트 라이브러리(카탈로그) 뷰 ─── */
+.pd-catalog .pd-comp-group { margin-bottom: 30px; }
+.pd-catalog .pd-comp-group > h2 { font-size: 15px; font-weight: 800; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; }
+.pd-comp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.pd-comp-item { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background: #fff; display: flex; flex-direction: column; }
+.pd-comp-head { padding: 10px 14px; border-bottom: 1px solid #f0f1f3; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.pd-comp-name { font-family: ui-monospace, Menlo, monospace; font-size: 12px; font-weight: 700; color: var(--pd-primary, #3182f6); background: #eff4ff; padding: 2px 7px; border-radius: 6px; }
+.pd-comp-desc { font-size: 12px; color: #6b7280; }
+.pd-comp-preview { padding: 16px; background: #f6f7f9; display: flex; justify-content: center; }
+.pd-comp-preview .pd-screen { width: 100%; max-width: 340px; height: auto !important; min-height: 0; overflow: visible; background: #fff; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.pd-comp-preview .pd-appbar, .pd-comp-preview .pd-tabbar { position: static; }

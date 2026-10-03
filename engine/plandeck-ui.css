@@ -372,3 +372,38 @@ a.pd-wpanel-sub { text-decoration: none; }
 /* ─── 설정 목록 ─── */
 .pd-settings .pd-row { cursor: pointer; }
 .pd-withdraw { color: var(--w-sub); }
+
+/* ─── 신규 공통 컴포넌트 (pd-components.js 대응) ─── */
+/* 완료/성공 상태 */
+.pd-done { text-align: center; padding: 26px 16px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pd-done .pd-hero-img.square { width: 72px; height: 72px; border-radius: 50%; }
+
+/* 하단 CTA 바 */
+.pd-cta-bar { display: flex; gap: 8px; padding: 12px 0 4px; }
+.pd-cta-bar .pd-btn { flex: 1; margin: 0; }
+
+/* 배너 변형 */
+.pd-banner.pd-accent { background: var(--w-ink); color: var(--w-white); border: none; }
+.pd-banner.pd-accent svg { color: var(--w-white); }
+.pd-banner.pd-soft { background: var(--w-fill); color: var(--w-sub); border: 1px solid var(--w-line); }
+.pd-banner.pd-warn { background: var(--w-white); color: var(--w-ink); border: 1px dashed var(--w-line-2); font-weight: 600; }
+
+/* 타일 2열 */
+.pd-tiles.cols-2 { grid-template-columns: 1fr 1fr; }
+
+/* 상담 채팅 */
+.pd-chatlog { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; }
+.pd-bubble { max-width: 78%; padding: 9px 13px; border-radius: 14px; font-size: 14px; line-height: 1.4; }
+.pd-bubble.in { align-self: flex-start; background: var(--w-fill); border: 1px solid var(--w-line); border-bottom-left-radius: 4px; }
+.pd-bubble.out { align-self: flex-end; background: var(--w-ink); color: var(--w-white); border-bottom-right-radius: 4px; }
+
+/* 전화/위험 버튼 */
+.pd-btn.danger { background: var(--w-ink); color: var(--w-white); border: 1px solid var(--w-ink); }
+.pd-call-btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* SOS FAB(부모앱 전 화면 긴급) */
+.pd-fab { position: absolute; right: 16px; bottom: 84px; width: 52px; height: 52px; border-radius: 50%; background: var(--w-ink); color: var(--w-white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; letter-spacing: .02em; z-index: 40; box-shadow: 0 4px 14px rgba(0,0,0,.22); text-decoration: none; }
+
+/* 시그널 카드 */
+.pd-signal-card { text-align: center; padding: 24px 16px; border: 1px solid var(--w-line); border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; background: var(--w-fill); }
+.pd-signal-card .pd-hero-img.square { width: 120px; height: 120px; }
