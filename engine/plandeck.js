@@ -1297,12 +1297,25 @@
       return '<li class="pd-step-item"><div class="pd-step-n">' + (i + 1) + '</div>' +
         '<div class="pd-step-body"><div class="pd-step-t">' + s[0] + '</div><div class="pd-step-d">' + s[1] + '</div></div></li>';
     }).join('');
+    var roleChips = [
+      ['🧭', '기획자', 'PRD→화면→프로토타입 저작(유일한 저작)'],
+      ['🎨', '디자이너', '상태까지 확인 → Figma 연결'],
+      ['💻', '개발자', 'API계약·핸드오프 수령 → IDE'],
+      ['🧪', 'QA', '수용기준·.feature 수령 → 러너'],
+      ['👁', '의사결정자', '검토모드로 프로토타입 결재'],
+    ].map(function (r) { return '<div class="pd-role-chip"><span class="pd-rc-ico">' + r[0] + '</span><div><div class="pd-rc-n">' + esc(r[1]) + '</div><div class="pd-rc-d">' + esc(r[2]) + '</div></div></div>'; }).join('');
+    var howto = '<section class="pd-howto">' +
+      '<div class="pd-howto-head"><span class="pd-howto-title">📖 PlanDeck 이렇게 씁니다</span>' +
+      '<a class="pd-guide-btn" href="guide.html">활용 가이드 자세히 보기 →</a></div>' +
+      '<div class="pd-howto-lead"><b>기획자가 주도</b>해 <b>클릭 가능한 화면설계서(프로토타입)</b>를 만들고, 디자이너·개발자·QA가 각자 필요한 정보를 한곳에서 확인하는 <b>기획 명세 SSOT</b>입니다. 탭·폼·별점·검색이 실제로 반응하고 눌러서 화면 이동까지 — 디자인·개발 전에 "실제 서비스가 어떻게 동작할지"를 그대로 시연·소통합니다. (Figma·IDE·테스트 러너를 대체하지 않음)</div>' +
+      '<div class="pd-role-chips">' + roleChips + '</div>' +
+      '</section>';
     var guide = '<section class="pd-newproj">' +
       '<div class="pd-newproj-head"><span class="pd-newproj-title">🚀 새 프로젝트 만들기</span>' +
       '<span class="pd-newproj-badge">약 3분 · 코딩 불필요</span></div>' +
       '<ol class="pd-steps">' + stepHtml + '</ol>' +
       '<div class="pd-newproj-foot">아래 <code>/pd-*</code> 는 <b>Claude Code</b> 커맨드입니다. Cursor·Antigravity·Orca 등 다른 도구에선 같은 내용을 <b>자연어로</b> 요청하세요(규칙은 <code>AGENTS.md</code>가 보장). · 막히면 <code>/pd</code> — 지금 뭘 할지 안내. · 브라우저로 보기: <b>start.command</b>(맥)/<b>start.bat</b>(윈도) 더블클릭 → 자동 오픈.' +
-      ' · 문서: <a href="docs/GUIDE.md">GUIDE</a> · <a href="docs/TEAM.md">TEAM</a> · <a href="docs/OPERATIONS.md">OPERATIONS</a></div>' +
+      ' · <b>활용 가이드:</b> <a href="guide.html">전체 가이드(역할별·최초설정)</a> · 문서: <a href="docs/GUIDE.md">GUIDE</a> · <a href="docs/TEAM.md">TEAM</a> · <a href="docs/OPERATIONS.md">OPERATIONS</a></div>' +
       '</section>';
 
     el.className = 'pd-ws';
@@ -1310,6 +1323,7 @@
       '<div class="pd-ws-head"><h1>' + esc(ws.org || 'PlanDeck') + ' 워크스페이스</h1>' +
       '<div class="pd-prd-sub">여러 기획 프로젝트를 한곳에서. 아래에서 프로젝트를 열거나, 새로 만드세요.</div></div>' +
       dupWarn +
+      howto +
       guide +
       '<div class="pd-ws-projects"><h2>내 프로젝트' + (projCount ? ' <span class="pd-dim">(' + projCount + ')</span>' : '') + '</h2>' +
       (projCount ? '<div class="pd-proj-grid">' + cards + '</div>'

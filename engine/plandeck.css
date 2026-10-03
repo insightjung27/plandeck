@@ -251,6 +251,18 @@
 .pd-step-d { font-size: 12.5px; color: var(--pd-sub); line-height: 1.6; }
 .pd-newproj-foot { margin-top: 18px; padding-top: 14px; border-top: 1px dashed #cdddf5; font-size: 12.5px; color: var(--pd-sub); line-height: 1.75; }
 .pd-newproj code, .pd-step-d code, .pd-step-t code, .pd-newproj-foot code { background: #eef2ff; color: var(--pd-primary); border-radius: 4px; padding: 1px 6px; font-size: 12px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+/* 워크스페이스 홈 — 활용 가이드(역할 요약 + 상세 링크) */
+.pd-howto { margin: 20px 0 10px; border: 1px solid #e3e6ea; background: #fff; border-radius: 16px; padding: 20px 24px; }
+.pd-howto-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.pd-howto-title { font-size: 17px; font-weight: 800; color: var(--pd-ink); }
+.pd-guide-btn { font-size: 13px; font-weight: 800; color: #fff; background: var(--pd-primary); border-radius: 22px; padding: 8px 16px; text-decoration: none; white-space: nowrap; }
+.pd-guide-btn:hover { filter: brightness(1.08); }
+.pd-howto-lead { font-size: 13.5px; color: var(--pd-sub); line-height: 1.65; margin-bottom: 14px; max-width: 780px; }
+.pd-role-chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 10px; }
+.pd-role-chip { display: flex; gap: 10px; align-items: flex-start; border: 1px solid #eceef1; background: #fafbfc; border-radius: 10px; padding: 11px 13px; }
+.pd-rc-ico { font-size: 18px; line-height: 1.25; flex-shrink: 0; }
+.pd-rc-n { font-size: 13.5px; font-weight: 800; color: var(--pd-ink); }
+.pd-rc-d { font-size: 12px; color: var(--pd-sub); line-height: 1.45; margin-top: 1px; }
 .pd-ws-projects h2 { font-size: 16px; font-weight: 800; color: var(--pd-primary); margin: 10px 0 14px; }
 .pd-chip-cta { background: var(--pd-primary) !important; color: #fff !important; font-weight: 700; padding: 8px 16px !important; border-radius: 10px !important; font-size: 13px !important; }
 .pd-chip-cta:hover { background: #2a6fe0 !important; }
