@@ -210,6 +210,13 @@
 .pd-banner.pd-live { color: var(--w-ink); font-weight: 600; }
 /* 히어로 캡션(공개홈 비전 문구 등) */
 .pd-hero-cap { text-align: center; font-style: italic; margin-top: 8px; }
+/* 클릭 가능한 블록(버튼 크롬 제거 — featured 미디어/카드 탭) */
+.pd-feature, .pd-tap { display: block; width: 100%; text-align: left; background: none; border: none; padding: 0; margin: 0; font: inherit; color: inherit; cursor: pointer; }
+.pd-feature > .pd-hero-img { margin-bottom: 10px; }
+/* 가로형 액션 타일(아이콘 + 라벨) — 바로가기 등. 세로 빈 박스 대신 */
+.pd-tile.wide { flex-direction: row; align-items: center; gap: 12px; border: 1px solid var(--w-line); border-radius: 8px; padding: 14px; }
+.pd-tile.wide .pd-tile-ic { width: 40px; height: 40px; aspect-ratio: auto; flex: none; }
+.pd-tile.wide .pd-tile-lbl { font-size: 14px; font-weight: 600; color: var(--w-ink); text-align: left; }
 
 /* 구 스켈레톤 호환(혹시 남아있으면 흑백 톤) */
 .pd-sk-box, .pd-sk-title, .pd-sk-line, .pd-sk-row, .pd-sk-hero, .pd-sk-input, .pd-sk-chip { background: var(--w-fill); border: 1px solid var(--w-line); }
