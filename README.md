@@ -29,8 +29,8 @@ PDK(화면설계서 엔진)의 검증된 코어 위에, PRD·경우의 수(예�
 ## 5분 퀵스타트
 
 1. 이 레포를 **`Use this template`** 으로 복제하거나 클론한다.
-2. 폴더에서 **Claude Code**를 실행한다.
-3. 커맨드를 순서대로 쓴다(질문에 답만 하면 됩니다):
+2. 폴더에서 **AI 코딩 도구**를 연다 — **Cursor · Antigravity · Orca · Claude Code · Aider 등 어디든**. 작업 규칙은 [`AGENTS.md`](AGENTS.md)(모든 도구 공용 SSOT)를 따릅니다. 작업 후 `node tools/verify-links.js <project>` 로 링크 무결성을 검증하세요.
+3. 아래 커맨드(Claude Code 전용)로, 또는 다른 도구에선 자연어로 같은 작업을 한다(규칙은 `AGENTS.md`가 보장):
 
 ```
 /pd-init        # 프로젝트 이름·서피스(모바일/PC웹/키오스크…)·전역규칙
