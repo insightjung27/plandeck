@@ -227,6 +227,12 @@ a.pd-row, a.pd-tile, a.pd-media, a.pd-tab, a.pd-feature, a.pd-sermon-card, a.pd-
 .pd-field-inline .pd-btn { flex: 1; }
 .pd-textarea { min-height: 96px; border: 1px solid var(--w-line); border-radius: 8px; padding: 11px 12px; color: var(--w-sub); font-size: 14px; background: var(--w-white); }
 
+/* 인라인 스타일 대체 공통 클래스 (컴포넌트 라이브러리 SSOT — style= 금지 준수) */
+.pd-wpanel-sub { font-size: 13px; font-weight: 400; color: var(--w-sub); }
+a.pd-wpanel-sub { text-decoration: none; }
+.pd-sidebar .nav-item .pd-badge { margin-left: auto; }
+.pd-empty-state .pd-row-icon { margin-left: auto; margin-right: auto; }
+
 /* 구 스켈레톤 호환(혹시 남아있으면 흑백 톤) */
 .pd-sk-box, .pd-sk-title, .pd-sk-line, .pd-sk-row, .pd-sk-hero, .pd-sk-input, .pd-sk-chip { background: var(--w-fill); border: 1px solid var(--w-line); }
 

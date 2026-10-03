@@ -15,9 +15,9 @@ window.PLANDECK_WORKSPACE = {
       path: 'projects/order-pay/',
       surfaces: ['모바일'],
       owner: 'PlanDeck',
-      version: '0.1.0',
-      updatedAt: '2026-10-02',
-      tag: '데모',
+      version: '1.0.0',
+      updatedAt: '2026-10-03',
+      tag: '데모 v1.0',
     },
     {
       slug: 'dodam-care-match',

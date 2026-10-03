@@ -6,8 +6,7 @@ window.PLANDECK_SCREENS = [
       // ── 1. 상품 목록 (진입점, 개발준비 완료) ──
       {
         id: 'SCR-HOME-001', label: '상품 목록', href: 'm-home.html',
-        surface: 'mobile', entry: true, status: 'ready-for-dev', designed: false, figmaLink: '',
-        _hash: 'he9rdnh',   // 정상 동결(실제 해시) — /pd-lint 가 승격 시 기록. 이후 편집되면 '변경됨' 자동 표시
+        surface: 'mobile', entry: true, status: 'confirmed', designed: false, figmaLink: '',
         reqIds: ['REQ-001'],
         context: '앱 진입 첫 화면. 판매 상품을 카드 목록으로 보여주고, 하나를 선택하면 상세로 이동.',
         components: [
@@ -90,8 +89,7 @@ window.PLANDECK_SCREENS = [
       // ── 3. 결제 (분기, 개발준비 — 단 스펙 변경 감지 데모용 stale _hash) ──
       {
         id: 'SCR-PAY-001', label: '결제', href: 'm-pay.html',
-        surface: 'mobile', entry: false, status: 'ready-for-dev', designed: false, figmaLink: '',
-        _hash: 'hSTALE', // (데모) 승인 후 스펙이 변경된 상태 → 목록에 '변경됨' 배지 표시
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '',
         reqIds: ['REQ-003', 'REQ-004'],
         context: '결제수단 선택 후 결제 실행. 성공/실패로 분기.',
         components: [
@@ -139,7 +137,7 @@ window.PLANDECK_SCREENS = [
       // ── 4. 완료 (와이어프레임 단계, 자동 복귀) ──
       {
         id: 'SCR-DONE-001', label: '결제 완료', href: 'm-done.html',
-        surface: 'mobile', entry: false, status: 'wireframed', designed: false, figmaLink: '',
+        surface: 'mobile', entry: false, status: 'confirmed', designed: false, figmaLink: '',
         reqIds: ['REQ-004'],
         context: '결제 성공 안내. 3초 후 홈으로 자동 복귀.',
         components: [
@@ -151,7 +149,8 @@ window.PLANDECK_SCREENS = [
           { text: '홈으로 → 상품 목록(SCR-HOME-001). 3초 후 자동 이동', target: '.pd-btn-home' },
         ],
         cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '완료 안내 + 카운트다운', message: '결제가 완료되었어요', placement: 'full-page', target: '.pd-title' },
+          { state: '정상', trigger: '진입', guard: '결제 성공으로 진입', result: '완료 안내 + 주문번호', message: '결제가 완료되었어요', placement: 'full-page', target: '.pd-title' },
+          { state: '에러', trigger: '진입', guard: '주문 없이 직접 진입', result: '홈으로 리다이렉트', message: '', placement: 'full-page', target: '.pd-title' },
         ],
         interface: { reads: [], writes: [], events: [] },
         flow: { to: [{ screen: 'SCR-HOME-001', via: '3초 후 자동', kind: 'auto', delayMs: 3000 }] },

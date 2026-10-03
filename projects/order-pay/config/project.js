@@ -1,9 +1,10 @@
 window.PLANDECK_PROJECT = {
   name: '간편결제 데모',
   description: '비회원도 3탭 안에 결제를 끝내는 모바일 간편결제 — PlanDeck 전체 기능 시연용 예제',
-  version: '0.1.0',
-  updatedAt: '2026-10-02',
+  version: '1.0.0',
+  updatedAt: '2026-10-03',
   changelog: [
+    { version: '1.0.0', date: '2026-10-03', note: '데모 완성 — 컴포넌트 라이브러리 재구축(인라인 스타일 0)·정적 href 클릭 가능·전 화면 confirmed·cases 보강. 요구사항 4/4.' },
     { version: '0.1.0', date: '2026-10-02', note: '초기 데모 — 간편결제 5화면(기능·예외·개발계약 포함)' },
   ],
   surfaces: [
