@@ -1,6 +1,6 @@
 # AGENTS.md — PlanDeck 작업 규칙 (AI 코딩 에이전트 공용)
 
-이 레포는 **AI가 붙은 어떤 코딩 도구로 열어도**(Cursor · Antigravity · Orca · Claude Code · Aider 등) 동일한 규칙으로 기획 작업을 할 수 있도록 설계됐다. 이 문서가 그 **작업 규칙 SSOT**다. (대부분의 AI 코딩 도구가 `AGENTS.md`를 자동 로드하며, Claude Code는 `CLAUDE.md`에서 이 문서를 가져온다.)
+이 레포는 **AI가 붙은 어떤 코딩 도구로 열어도**(Cursor · Antigravity · Orca · Claude Code · Aider 등) 동일한 규칙으로 기획 작업을 할 수 있도록 설계됐다. 이 문서가 그 **작업 규칙 SSOT**다. (대부분의 AI 코딩 도구가 `AGENTS.md`를 자동 로드하며, Claude Code는 `CLAUDE.md`에서, Cursor는 `.cursor/rules/plandeck.mdc`에서 이 문서를 가져온다.)
 
 ## PlanDeck이란
 빌드 없는(no-build) 정적 HTML 기획 협업 도구. `projects/<name>/config/*.js`(SSOT)를 고치면 엔진(`engine/*`)이 화면·문서를 자동 렌더한다. git이 동기화 버스, GitHub Pages가 공유 배포다.
