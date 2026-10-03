@@ -624,7 +624,7 @@ window.PLANDECK_SCREENS = [
       {
         id: 'SCR-PTNR-001', label: '파트너 홈', href: 'pt-home.html',
         surface: 'partner', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-T06', 'REQ-T10'],
-        context: '역할별 통합 대시보드(돌보미 기준 탭: 홈·일감·정산·마이). 오늘 일정·수익·역할별 바로가기·안전공지. 미승인자는 심사현황 게이트.',
+        context: '역할별 통합 대시보드. ★하단 탭바는 역할별로 분기 — 돌보미: 홈·일감·정산·마이 / 앰배서더: 홈·봉사·친화도후기·마이 / 매장: 홈·매장·마이. 와이어프레임은 돌보미 구성을 대표로 렌더, 역할 전환은 마이에서(데모). 미승인자는 심사현황 게이트.',
         components: [{ role: '.pd-herocard', kind: 'card', label: '프로필·역할' }, { role: '.pd-tiles', kind: 'tiles', label: '바로가기' }, { role: '.pd-list', kind: 'list', label: '다른 역할' }],
         description: [{ text: '역할·등급·승인 상태', target: '.pd-herocard' }, { text: '일감·정산·등급·SOP', target: '.pd-tiles' }],
         cases: [
@@ -1107,6 +1107,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '제출·요청 큐' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '제출 큐·활동비·승인/반려', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'reviewer 권한', result: '큐', message: '', api: { endpoint: 'GET /admin/submissions', status: 200 } },
           { state: '필수누락', trigger: '반려', guard: '사유 없음', result: '막음', message: '반려 사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
           { state: '유효', trigger: '승인', guard: '정상', result: '매장 등록(pending)·활동비 기록', message: '승인했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/submissions/{id}/approve', status: 200 } },
@@ -1121,12 +1122,13 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '심사 대기(3게이트)' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '3게이트 상태·승인/반려', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'reviewer 권한', result: '심사 큐', message: '', api: { endpoint: 'GET /admin/partners', status: 200 } },
           { state: '필수누락', trigger: '승인', guard: '돌보미·3게이트 미완', result: '막음', message: '성범죄경력·보험·교육 3게이트 verified 후 승인할 수 있어요', placement: 'inline', priority: 'P0' },
           { state: '필수누락', trigger: '반려', guard: '사유 없음', result: '막음', message: '반려 사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
           { state: '유효', trigger: '승인', guard: '3게이트 완료', result: '승인·notify', message: '승인했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/partners/{id}/approve', status: 200 } },
         ],
-        interface: { reads: [{ id: 'listPartners', intent: '파트너 심사', method: 'GET', path: '/admin/partners', response: '{entities.PartnerOnboarding}[]', auth: 'Bearer(reviewer)', target: '.pd-wpanel' }], writes: [{ id: 'approvePartner', intent: '파트너 승인', method: 'POST', path: '/admin/partners/{id}/approve', errors: [{ status: 422, when: '3게이트 미완', message: '게이트를 완료해 주세요' }], auth: 'Bearer(reviewer:write)', target: '.pd-wpanel' }, { id: 'rejectPartner', intent: '파트너 반려', method: 'POST', path: '/admin/partners/{id}/reject', request: '{ reason:string(required) }', auth: 'Bearer(reviewer:write)' }, { id: 'verifyGate', intent: '게이트 확인', method: 'POST', path: '/admin/partners/{id}/gate', request: '{ gate:string, ref:string, expiresAt:string }', auth: 'Bearer(reviewer:write)' }], events: [{ name: 'partner.approved', when: '승인', payload: '{entities.Partner}' }] },
+        interface: { reads: [{ id: 'listPartners', intent: '파트너 심사', method: 'GET', path: '/admin/partners', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.PartnerOnboarding}[]', auth: 'Bearer(reviewer)', target: '.pd-wpanel' }], writes: [{ id: 'approvePartner', intent: '파트너 승인', method: 'POST', path: '/admin/partners/{id}/approve', errors: [{ status: 422, when: '3게이트 미완', message: '게이트를 완료해 주세요' }], auth: 'Bearer(reviewer:write)', target: '.pd-wpanel' }, { id: 'rejectPartner', intent: '파트너 반려', method: 'POST', path: '/admin/partners/{id}/reject', request: '{ reason:string(required) }', auth: 'Bearer(reviewer:write)' }, { id: 'verifyGate', intent: '게이트 확인', method: 'POST', path: '/admin/partners/{id}/gate', request: '{ gate:string, ref:string, expiresAt:string }', auth: 'Bearer(reviewer:write)' }], events: [{ name: 'partner.approved', when: '승인', payload: '{entities.Partner}' }] },
         flow: { to: [] },
       },
       {
@@ -1136,6 +1138,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '사용자 테이블' }],
         description: [{ text: '역할 필터·검색·정지/복구', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'support 권한', result: '사용자 목록', message: '', api: { endpoint: 'GET /admin/users', status: 200 } },
           { state: '필수누락', trigger: '정지', guard: '사유 없음', result: '막음', message: '정지 사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
         ],
@@ -1149,6 +1152,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-kpi', kind: 'kpi', label: '집계' }, { role: '.pd-wpanel', kind: 'panel', label: '예약·활동 이력' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '자녀·예약·후기 집계수', target: '.pd-kpi' }, { text: '예약·운영 활동', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'support 권한', result: '상세·logView 기록', message: '', api: { endpoint: 'GET /admin/users/{id}', status: 200 } },
           { state: '유효', trigger: '정지/복구', guard: '사유', result: '상태 변경·감사', message: '처리했어요', placement: 'toast', priority: 'P0' },
         ],
@@ -1162,11 +1166,12 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '6축 현장채점' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '6축 채점·승인/조건부/반려', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'reviewer 권한', result: '심사 큐', message: '', api: { endpoint: 'GET /admin/stores', status: 200 } },
           { state: '필수누락', trigger: '반려', guard: '사유 없음', result: '막음', message: '반려 사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
           { state: '유효', trigger: '승인', guard: '현장채점 완료', result: '인증(verified)·앱 노출', message: '인증했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/stores/{id}/verify', status: 200 } },
         ],
-        interface: { reads: [{ id: 'listCertApps', intent: '매장 인증 심사', method: 'GET', path: '/admin/stores', response: '{entities.StoreCertApplication}[]', auth: 'Bearer(reviewer)', target: '.pd-wpanel' }], writes: [{ id: 'verifyStore', intent: '매장 인증', method: 'POST', path: '/admin/stores/{id}/verify', request: '{ grade:string, fieldScores:object }', auth: 'Bearer(reviewer:write)', target: '.pd-wpanel' }], events: [{ name: 'store.verified', when: '인증', payload: '{entities.Store}' }] },
+        interface: { reads: [{ id: 'listCertApps', intent: '매장 인증 심사', method: 'GET', path: '/admin/stores', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.StoreCertApplication}[]', auth: 'Bearer(reviewer)', target: '.pd-wpanel' }], writes: [{ id: 'verifyStore', intent: '매장 인증', method: 'POST', path: '/admin/stores/{id}/verify', request: '{ grade:string, fieldScores:object }', auth: 'Bearer(reviewer:write)', target: '.pd-wpanel' }], events: [{ name: 'store.verified', when: '인증', payload: '{entities.Store}' }] },
         flow: { to: [{ screen: 'SCR-ADMIN-009', via: '새 매장' }, { screen: 'SCR-ADMIN-010', via: '매장 상세' }] },
       },
       {
@@ -1175,7 +1180,8 @@ window.PLANDECK_SCREENS = [
         context: '운영자 직접 매장 등록(source=admin).',
         components: [{ role: '.pd-wpanel', kind: 'form', label: '매장 폼' }],
         description: [{ text: '이름·지역·업종·등급·적합유형', target: '.pd-wpanel' }],
-        cases: [{ state: '유효', trigger: '등록', guard: 'reviewer:write', result: '매장 생성', message: '등록했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/stores/new', status: 201 } }],
+        cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },{ state: '유효', trigger: '등록', guard: 'reviewer:write', result: '매장 생성', message: '등록했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/stores/new', status: 201 } }],
         interface: { reads: [], writes: [{ id: 'createStore', intent: '매장 등록', method: 'POST', path: '/admin/stores/new', request: '{entities.Store}', auth: 'Bearer(reviewer:write)', target: '.pd-wpanel' }], events: [] },
         flow: { to: [{ screen: 'SCR-ADMIN-010', via: '매장 상세' }] },
       },
@@ -1186,6 +1192,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-kpi', kind: 'kpi', label: '집계' }, { role: '.pd-wpanel', kind: 'panel', label: '6축·이력' }],
         description: [{ text: '후기·신청·신고 집계', target: '.pd-kpi' }, { text: '6축 접근성', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'reviewer', result: '매장 상세', message: '' },
           { state: '유효', trigger: '삭제', guard: '의존 행 존재', result: '소프트 정지', message: '연결 데이터가 있어 노출을 중단했어요(복구 가능)', placement: 'inline', priority: 'P1', api: { endpoint: 'DELETE /admin/stores/{id}', status: 200 } },
         ],
@@ -1199,6 +1206,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '예약 테이블' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '상태 필터·개입', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'support', result: '예약 목록', message: '', api: { endpoint: 'GET /admin/bookings', status: 200 } },
           { state: '필수누락', trigger: '취소/재매칭', guard: '사유 없음', result: '막음', message: '사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
         ],
@@ -1212,11 +1220,12 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '회차 정산·코인 원장' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: 'gross·원천징수·net·확정/지급', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'finance 권한', result: '정산', message: '', api: { endpoint: 'GET /admin/settlements', status: 200 } },
           { state: '에러', trigger: '확정/지급', guard: 'net≠gross−원천징수', result: '차단', message: '정산 금액 정합 오류 — 확정/지급이 차단됐어요', placement: 'inline', priority: 'P0' },
           { state: '유효', trigger: '지급', guard: '정합 OK', result: '지급·감사', message: '지급 처리했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/settlements/pay', status: 200 } },
         ],
-        interface: { reads: [{ id: 'listSettlements', intent: '정산', method: 'GET', path: '/admin/settlements', response: '{entities.Settlement}[]', auth: 'Bearer(finance)', target: '.pd-wpanel' }], writes: [{ id: 'confirmPay', intent: '회차 확정·지급', method: 'POST', path: '/admin/settlements/pay', idempotencyKey: true, errors: [{ status: 422, when: 'net 정합 오류', message: '정합 오류' }], auth: 'Bearer(finance:write)', target: '.pd-wpanel' }], events: [{ name: 'settlement.paid', when: '지급', payload: '{entities.Settlement}' }] },
+        interface: { reads: [{ id: 'listSettlements', intent: '정산', method: 'GET', path: '/admin/settlements', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.Settlement}[]', auth: 'Bearer(finance)', target: '.pd-wpanel' }], writes: [{ id: 'confirmPay', intent: '회차 확정·지급', method: 'POST', path: '/admin/settlements/pay', idempotencyKey: true, errors: [{ status: 422, when: 'net 정합 오류', message: '정합 오류' }], auth: 'Bearer(finance:write)', target: '.pd-wpanel' }], events: [{ name: 'settlement.paid', when: '지급', payload: '{entities.Settlement}' }] },
         flow: { to: [] },
       },
       {
@@ -1226,10 +1235,11 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '구독·결제' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '구독·결제·환불', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'finance 권한', result: '멤버십', message: '', api: { endpoint: 'GET /admin/memberships', status: 200 } },
           { state: '필수누락', trigger: '환불/강제해지', guard: '사유 없음', result: '막음', message: '사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
         ],
-        interface: { reads: [{ id: 'listMemberships', intent: '멤버십', method: 'GET', path: '/admin/memberships', response: '{entities.Membership}[]', auth: 'Bearer(finance)', target: '.pd-wpanel' }], writes: [{ id: 'refund', intent: '환불', method: 'POST', path: '/admin/payments/{id}/refund', request: '{ reason:string(required) }', auth: 'Bearer(finance:write)' }], events: [] },
+        interface: { reads: [{ id: 'listMemberships', intent: '멤버십', method: 'GET', path: '/admin/memberships', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.Membership}[]', auth: 'Bearer(finance)', target: '.pd-wpanel' }], writes: [{ id: 'refund', intent: '환불', method: 'POST', path: '/admin/payments/{id}/refund', request: '{ reason:string(required) }', auth: 'Bearer(finance:write)' }], events: [] },
         flow: { to: [] },
       },
       {
@@ -1239,11 +1249,12 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '사건 테이블' }, { role: '.pd-confirm', kind: 'confirm', label: '사유입력·확인(비가역)' }],
         description: [{ text: '상태·심각도·처리', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'moderator 권한', result: '사건 목록', message: '', api: { endpoint: 'GET /admin/safety', status: 200 } },
           { state: '필수누락', trigger: '해결', guard: '해결메모 없음', result: '막음', message: '해결 메모를 입력해 주세요', placement: 'inline', priority: 'P0' },
           { state: '유효', trigger: '해결', guard: '메모 작성', result: '해결·감사', message: '해결 처리했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/safety/{id}/resolve', status: 200 } },
         ],
-        interface: { reads: [{ id: 'listIncidents', intent: '안전 사건', method: 'GET', path: '/admin/safety', response: '{entities.SafetyIncident}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'resolveIncident', intent: '사건 처리', method: 'POST', path: '/admin/safety/{id}/resolve', request: '{ status:string, resolution:string(required) }', auth: 'Bearer(moderator:write)' }], events: [{ name: 'incident.resolved', when: '해결', payload: '{ incidentId, by }' }] },
+        interface: { reads: [{ id: 'listIncidents', intent: '안전 사건', method: 'GET', path: '/admin/safety', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.SafetyIncident}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'resolveIncident', intent: '사건 처리', method: 'POST', path: '/admin/safety/{id}/resolve', request: '{ status:string, resolution:string(required) }', auth: 'Bearer(moderator:write)' }], events: [{ name: 'incident.resolved', when: '해결', payload: '{ incidentId, by }' }] },
         flow: { to: [] },
       },
       {
@@ -1257,7 +1268,7 @@ window.PLANDECK_SCREENS = [
           { state: '필수누락', trigger: '조치/기각', guard: '메모 없음', result: '막음', message: '처리 메모를 입력해 주세요', placement: 'inline', priority: 'P1' },
           { state: '권한없음', trigger: '정지', guard: 'self/admin 대상', result: '막음', message: '관리자·본인은 정지할 수 없어요', placement: 'inline', priority: 'P1' },
         ],
-        interface: { reads: [{ id: 'listReports', intent: '신고', method: 'GET', path: '/admin/moderation', response: '{entities.Report}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'actionReport', intent: '신고 조치', method: 'POST', path: '/admin/moderation/{id}/action', request: '{ action:string, note:string(required) }', auth: 'Bearer(moderator:write)' }], events: [{ name: 'moderation.actioned', when: '조치', payload: '{ reportId, action, by }' }] },
+        interface: { reads: [{ id: 'listReports', intent: '신고', method: 'GET', path: '/admin/moderation', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.Report}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'actionReport', intent: '신고 조치', method: 'POST', path: '/admin/moderation/{id}/action', request: '{ action:string, note:string(required) }', auth: 'Bearer(moderator:write)' }], events: [{ name: 'moderation.actioned', when: '조치', payload: '{ reportId, action, by }' }] },
         flow: { to: [{ screen: 'SCR-ADMIN-007', via: '사용자' }] },
       },
       {
@@ -1267,10 +1278,11 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '콘텐츠 목록' }],
         description: [{ text: '이야기·경험담·커뮤니티', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'moderator 권한', result: '콘텐츠', message: '', api: { endpoint: 'GET /admin/content', status: 200 } },
           { state: '필수누락', trigger: '삭제', guard: '사유 없음', result: '막음', message: '삭제 사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
         ],
-        interface: { reads: [{ id: 'listContent', intent: '콘텐츠', method: 'GET', path: '/admin/content', response: '{entities.StoryArticle}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'publishContent', intent: '발행/보관', method: 'POST', path: '/admin/content/{id}/status', auth: 'Bearer(moderator:write)' }], events: [] },
+        interface: { reads: [{ id: 'listContent', intent: '콘텐츠', method: 'GET', path: '/admin/content', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.StoryArticle}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'publishContent', intent: '발행/보관', method: 'POST', path: '/admin/content/{id}/status', auth: 'Bearer(moderator:write)' }], events: [] },
         flow: { to: [{ screen: 'SCR-ADMIN-017', via: '수정' }] },
       },
       {
@@ -1279,7 +1291,8 @@ window.PLANDECK_SCREENS = [
         context: '본문 편집(변경 전/후 감사).',
         components: [{ role: '.pd-wpanel', kind: 'form', label: '본문 편집' }],
         description: [{ text: '영역·제목·본문', target: '.pd-wpanel' }],
-        cases: [{ state: '유효', trigger: '발행', guard: 'moderator:write', result: '발행·감사', message: '발행했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'PUT /admin/content/{id}', status: 200 } }],
+        cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },{ state: '유효', trigger: '발행', guard: 'moderator:write', result: '발행·감사', message: '발행했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'PUT /admin/content/{id}', status: 200 } }],
         interface: { reads: [{ id: 'getContent', intent: '콘텐츠', method: 'GET', path: '/admin/content/{id}', response: '{entities.StoryArticle}', auth: 'Bearer(moderator)' }], writes: [{ id: 'saveContent', intent: '저장·발행', method: 'PUT', path: '/admin/content/{id}', response: '{entities.StoryArticle}', auth: 'Bearer(moderator:write)', target: '.pd-wpanel' }], events: [] },
         flow: { to: [{ screen: 'SCR-ADMIN-016', via: '콘텐츠' }] },
       },
@@ -1290,10 +1303,11 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '템플릿' }],
         description: [{ text: 'license·상태·검증/발행', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'moderator 권한', result: '템플릿', message: '', api: { endpoint: 'GET /admin/self-checks', status: 200 } },
           { state: '필수누락', trigger: '발행', guard: 'license 미검증', result: '막음', message: 'license_verified 후 발행할 수 있어요', placement: 'inline', priority: 'P0' },
         ],
-        interface: { reads: [{ id: 'listTemplates', intent: '템플릿', method: 'GET', path: '/admin/self-checks', response: '{entities.SelfCheckTemplate}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'publishTemplate', intent: '검증·발행', method: 'POST', path: '/admin/self-checks/{id}/publish', errors: [{ status: 422, when: 'license 미검증', message: '검증이 필요해요' }], auth: 'Bearer(moderator:write)' }], events: [] },
+        interface: { reads: [{ id: 'listTemplates', intent: '템플릿', method: 'GET', path: '/admin/self-checks', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.SelfCheckTemplate}[]', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'publishTemplate', intent: '검증·발행', method: 'POST', path: '/admin/self-checks/{id}/publish', errors: [{ status: 422, when: 'license 미검증', message: '검증이 필요해요' }], auth: 'Bearer(moderator:write)' }], events: [] },
         flow: { to: [] },
       },
       {
@@ -1303,10 +1317,11 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '검수 대기' }],
         description: [{ text: '유형·내용·승인/숨김', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'reviewer 권한', result: '검수 큐', message: '', api: { endpoint: 'GET /admin/affinity', status: 200 } },
           { state: '필수누락', trigger: '숨김', guard: '사유 없음', result: '막음', message: '사유를 입력해 주세요', placement: 'inline', priority: 'P1' },
         ],
-        interface: { reads: [{ id: 'listAffinity', intent: '친화도 검수', method: 'GET', path: '/admin/affinity', response: '{entities.AffinityReview}[]', auth: 'Bearer(reviewer)', target: '.pd-wpanel' }], writes: [{ id: 'approveAffinity', intent: '승인/숨김', method: 'POST', path: '/admin/affinity/{id}/action', request: '{ action:string, reason:string }', auth: 'Bearer(reviewer:write)' }], events: [] },
+        interface: { reads: [{ id: 'listAffinity', intent: '친화도 검수', method: 'GET', path: '/admin/affinity', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.AffinityReview}[]', auth: 'Bearer(reviewer)', target: '.pd-wpanel' }], writes: [{ id: 'approveAffinity', intent: '승인/숨김', method: 'POST', path: '/admin/affinity/{id}/action', request: '{ action:string, reason:string }', auth: 'Bearer(reviewer:write)' }], events: [] },
         flow: { to: [] },
       },
       {
@@ -1316,10 +1331,11 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '지역 트리' }],
         description: [{ text: '지역 트리·활성 토글', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'support 권한', result: '지역 트리', message: '', api: { endpoint: 'GET /admin/regions', status: 200 } },
           { state: '유효', trigger: '비활성', guard: '', result: '비활성(보존)', message: '비활성 처리했어요', placement: 'toast', api: { endpoint: 'PATCH /admin/regions/{id}', status: 200 } },
         ],
-        interface: { reads: [{ id: 'listRegions', intent: '지역', method: 'GET', path: '/admin/regions', response: '{entities.Region}[]', auth: 'Bearer(support)', target: '.pd-wpanel' }], writes: [{ id: 'toggleRegion', intent: '활성 토글', method: 'PATCH', path: '/admin/regions/{id}', auth: 'Bearer(support:write)' }], events: [] },
+        interface: { reads: [{ id: 'listRegions', intent: '지역', method: 'GET', path: '/admin/regions', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.Region}[]', auth: 'Bearer(support)', target: '.pd-wpanel' }], writes: [{ id: 'toggleRegion', intent: '활성 토글', method: 'PATCH', path: '/admin/regions/{id}', auth: 'Bearer(support:write)' }], events: [] },
         flow: { to: [] },
       },
       {
@@ -1328,7 +1344,8 @@ window.PLANDECK_SCREENS = [
         context: '회차 개설·신청 관리(접수→연락→확정/취소).',
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '회차' }],
         description: [{ text: '회차·신청자·상태전이', target: '.pd-wpanel' }],
-        cases: [{ state: '정상', trigger: '진입', guard: 'moderator', result: '회차', message: '', api: { endpoint: 'GET /admin/dad-class', status: 200 } }],
+        cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },{ state: '정상', trigger: '진입', guard: 'moderator', result: '회차', message: '', api: { endpoint: 'GET /admin/dad-class', status: 200 } }],
         interface: { reads: [{ id: 'listClasses', intent: '회차', method: 'GET', path: '/admin/dad-class', response: '{ sessions:object[] }', auth: 'Bearer(moderator)', target: '.pd-wpanel' }], writes: [{ id: 'createClass', intent: '회차 개설', method: 'POST', path: '/admin/dad-class', auth: 'Bearer(moderator:write)' }], events: [] },
         flow: { to: [] },
       },
@@ -1352,6 +1369,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'form', label: '공지 작성' }],
         description: [{ text: '대상·제목·내용', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '필수누락', trigger: '발행', guard: '대상/제목 누락', result: '막음', message: '대상과 제목을 입력해 주세요', placement: 'inline', priority: 'P1' },
           { state: '유효', trigger: '발행', guard: '규모 확인', result: '팬아웃 발행', message: '공지를 발행했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/announcements', status: 201 } },
         ],
@@ -1365,6 +1383,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-wpanel', kind: 'panel', label: '감사 로그' }],
         description: [{ text: '시각·행위자·액션·대상·변경', target: '.pd-wpanel' }],
         cases: [
+          { state: '권한없음', trigger: '진입/처리', guard: '역할 권한 없음(RBAC·readonly 포함)', result: '막음', message: '이 작업 권한이 없어요', placement: 'inline', priority: 'P1' },
           { state: '정상', trigger: '진입', guard: 'support 권한', result: '로그', message: '', api: { endpoint: 'GET /admin/audit', status: 200 } },
           { state: '빈데이터', trigger: '필터', guard: '해당 로그 없음', result: '빈 상태', message: '조건에 맞는 기록이 없어요', placement: 'inline', target: '.pd-wpanel' },
         ],
@@ -1382,7 +1401,7 @@ window.PLANDECK_SCREENS = [
           { state: '정상', trigger: '진입', guard: 'superadmin', result: '관리자 목록', message: '', api: { endpoint: 'GET /admin/admins', status: 200 } },
           { state: '권한없음', trigger: '삭제/강등', guard: '자기·마지막 superadmin', result: '막음', message: '자신 또는 마지막 superadmin은 삭제·강등할 수 없어요', placement: 'inline', priority: 'P0' },
         ],
-        interface: { reads: [{ id: 'listAdmins', intent: '관리자', method: 'GET', path: '/admin/admins', response: '{entities.AdminUser}[]', auth: 'Bearer(superadmin)', target: '.pd-wpanel' }], writes: [{ id: 'upsertAdmin', intent: '관리자 등록·권한', method: 'POST', path: '/admin/admins', request: '{entities.AdminUser}', auth: 'Bearer(superadmin)', target: '.pd-wpanel' }], events: [{ name: 'admin.permission.changed', when: '권한 변경', payload: '{ adminId, menus }' }] },
+        interface: { reads: [{ id: 'listAdmins', intent: '관리자', method: 'GET', path: '/admin/admins', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], response: '{entities.AdminUser}[]', auth: 'Bearer(superadmin)', target: '.pd-wpanel' }], writes: [{ id: 'upsertAdmin', intent: '관리자 등록·권한', method: 'POST', path: '/admin/admins', request: '{entities.AdminUser}', auth: 'Bearer(superadmin)', target: '.pd-wpanel' }], events: [{ name: 'admin.permission.changed', when: '권한 변경', payload: '{ adminId, menus }' }] },
         flow: { to: [] },
       },
     ],

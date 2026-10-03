@@ -159,9 +159,10 @@
   }
   // 진행 단계 표시(온보딩·심사 파이프라인). items=단계명[], current=현재 인덱스(0-base)
   function stepper(items, current) {
+    var CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-11"/></svg>';
     return '<div class="pd-stepper">' + items.map(function (s, i) {
       var st = i < current ? ' is-done' : i === current ? ' is-active' : '';
-      return '<div class="pd-step' + st + '"><span class="pd-step-dot">' + (i < current ? '✓' : (i + 1)) + '</span><span class="pd-step-label">' + s + '</span></div>';
+      return '<div class="pd-step' + st + '"><span class="pd-step-dot">' + (i < current ? CHECK : (i + 1)) + '</span><span class="pd-step-label">' + s + '</span></div>';
     }).join('') + '</div>';
   }
 
