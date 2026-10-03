@@ -252,7 +252,18 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-field-inline-2 { display: flex; gap: 10px; }
 .pd-field-inline-2 .pd-field { flex: 1; }
 .pd-rating-input { display: flex; gap: 4px; color: var(--w-line-2); }
-.pd-rating-input svg { width: 32px; height: 32px; }
+.pd-rating-input svg { width: 32px; height: 32px; cursor: pointer; }
+/* 프로토타입 상호작용 — 별점 채움·검색바 편집(enhanceInteractions) */
+.pd-rating-input .is-filled, .pd-rating-input .is-filled path { color: var(--w-ink); fill: var(--w-ink); stroke: var(--w-ink); }
+.pd-sb-text { flex: 1 1 auto; outline: none; cursor: text; }
+.pd-sb-text:not(.ph) { color: var(--w-ink); }
+/* 아코디언(FAQ) — 질문 클릭 시 답변 펼침 */
+.pd-acc-item { border-bottom: 1px solid var(--w-line); }
+.pd-acc-q { cursor: pointer; }
+.pd-acc-q svg { transition: transform .15s; }
+.pd-acc-item.is-open .pd-acc-q svg { transform: rotate(90deg); }
+.pd-acc-a { display: none; padding: 0 14px 14px 14px; font-size: 14px; color: var(--w-sub); line-height: 1.55; }
+.pd-acc-item.is-open .pd-acc-a { display: block; }
 
 /* 구 스켈레톤 호환(혹시 남아있으면 흑백 톤) */
 .pd-sk-box, .pd-sk-title, .pd-sk-line, .pd-sk-row, .pd-sk-hero, .pd-sk-input, .pd-sk-chip { background: var(--w-fill); border: 1px solid var(--w-line); }

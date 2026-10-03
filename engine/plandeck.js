@@ -1421,6 +1421,48 @@
       });
       if (inp.classList.contains('pd-input')) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') e.preventDefault(); });
     });
+    // 별점(rating) — 별 클릭 시 해당 별까지 채움
+    screen.querySelectorAll('.pd-rating-input').forEach(function (rt) {
+      rt.addEventListener('click', function (e) {
+        var star = e.target; while (star && star.parentNode !== rt) star = star.parentNode;
+        if (!star) return;
+        var kids = [].slice.call(rt.children); var idx = kids.indexOf(star);
+        kids.forEach(function (s, i) { s.classList.toggle('is-filled', i <= idx); });
+      });
+    });
+    // 수량 스테퍼(±) — pd-qty-n 증감(최소 1)
+    screen.querySelectorAll('.pd-qty').forEach(function (q) {
+      q.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('.pd-qty-btn') : null;
+        if (!btn) return;
+        var btns = [].slice.call(q.querySelectorAll('.pd-qty-btn'));
+        var plus = btns.indexOf(btn) === btns.length - 1;
+        var numEl = q.querySelector('.pd-qty-n'); if (!numEl) return;
+        var n = parseInt((numEl.textContent || '1').replace(/[^0-9]/g, ''), 10) || 1;
+        numEl.textContent = plus ? n + 1 : Math.max(1, n - 1);
+      });
+    });
+    // 아코디언(FAQ 등) — 질문(.pd-acc-q) 클릭 시 답변 펼침/접힘
+    screen.querySelectorAll('.pd-acc-q').forEach(function (q) {
+      q.addEventListener('click', function (e) {
+        e.preventDefault();
+        var item = q.closest ? q.closest('.pd-acc-item') : q.parentNode;
+        if (item) item.classList.toggle('is-open');
+      });
+    });
+    // 검색바 — 텍스트 편집 가능(타이핑). 아이콘 유지한 채 플레이스홀더 텍스트만 span으로 감싸 편집.
+    screen.querySelectorAll('.pd-searchbar').forEach(function (sb) {
+      if (sb.querySelector('.pd-sb-text')) return;
+      var tn = null; [].forEach.call(sb.childNodes, function (n) { if (n.nodeType === 3 && n.textContent.trim()) tn = n; });
+      if (!tn) return;
+      var span = document.createElement('span');
+      span.className = 'pd-sb-text ph'; span.setAttribute('contenteditable', 'true'); span.setAttribute('role', 'textbox');
+      var ph = tn.textContent.trim(); span.setAttribute('data-ph', ph); span.textContent = ph;
+      tn.parentNode.replaceChild(span, tn);
+      span.addEventListener('focus', function () { if (span.classList.contains('ph')) { span.textContent = ''; span.classList.remove('ph'); } });
+      span.addEventListener('blur', function () { if (!(span.textContent || '').trim()) { span.textContent = span.getAttribute('data-ph'); span.classList.add('ph'); } });
+      span.addEventListener('keydown', function (e) { if (e.key === 'Enter') e.preventDefault(); });
+    });
   }
 
   // ═══ init ═══
