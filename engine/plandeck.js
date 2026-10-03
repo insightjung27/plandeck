@@ -134,6 +134,19 @@
       return '<a class="pd-nav-link" href="' + l.href + '">' + esc(l.label) + '</a>';
     }).join('');
   }
+  // 프로젝트 내 버전(브랜치) 스위처 — PROJECT.versions 가 2개 이상이면 드롭다운, 아니면 정적 배지(또는 생략)
+  function versionSwitcher(opts) {
+    opts = opts || {};
+    var vs = PROJECT.versions || [];
+    if (vs.length < 2) return (opts.fallbackBadge && PROJECT.version) ? '<span class="pd-side-ver">v' + esc(PROJECT.version) + '</span>' : '';
+    var cur = vs.filter(function (x) { return x.current; })[0] || vs[0];
+    var items = vs.map(function (x) {
+      return '<a class="pd-ver-dd-item' + (x.id === cur.id ? ' is-current' : '') + '" href="' + esc(x.path) + 'index.html">v' + esc(x.id) +
+        (x.label ? '<span class="pd-ver-dd-tag">' + esc(x.label) + '</span>' : '') + '</a>';
+    }).join('');
+    return '<details class="pd-ver-dd"><summary class="pd-ver-dd-cur">⎇ v' + esc(cur.id) + '</summary>' +
+      '<div class="pd-ver-dd-menu"><div class="pd-ver-dd-head">버전(브랜치)</div>' + items + '</div></details>';
+  }
   // 문서형 페이지 상단 고정 네비(.pd-prd-nav). extra = 페이지별 특화 액션(예: 인쇄·PRD.md 원본).
   function docNav(active, extra) {
     return '<nav class="pd-prd-nav">' + navLinksHtml(active) + (extra || '') + '</nav>';
@@ -185,7 +198,7 @@
     return '<aside class="pd-sidenav">' +
       '<a class="pd-side-brand" href="../../index.html" title="워크스페이스로">PlanDeck</a>' +
       '<div class="pd-side-proj">' + esc(PROJECT.name || '프로젝트') +
-        (PROJECT.version ? '<span class="pd-side-ver">v' + esc(PROJECT.version) + '</span>' : '') + '</div>' +
+        versionSwitcher({ fallbackBadge: true }) + '</div>' +
       '<nav class="pd-side-nav">' + sideNavLinks(active) + '</nav>' +
       (actionsHtml ? '<div class="pd-side-actions">' + actionsHtml + '</div>' : '') +
       '<a class="pd-side-ws" href="../../index.html">⌂ 워크스페이스</a>' +
@@ -199,7 +212,7 @@
     if (nav) {
       var bar = document.createElement('div');
       bar.className = 'pd-screen-topnav';
-      bar.innerHTML = '<span class="pd-topnav-caption">기획 문서로 이동</span><div class="pd-topnav-links">' + navLinksHtml('screen') + '</div>';
+      bar.innerHTML = '<span class="pd-topnav-caption">기획 문서로 이동</span><div class="pd-topnav-links">' + navLinksHtml('screen') + '</div>' + versionSwitcher();
       nav.insertBefore(bar, nav.firstChild);
     } else {  // page-nav가 없으면(엣지) 상단 중앙 플로팅으로 폴백
       var pill = document.createElement('nav');
