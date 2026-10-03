@@ -1,9 +1,10 @@
 window.PLANDECK_PROJECT = {
   name: '훌메이트',
   description: '소규모 교회용 화이트라벨 멀티테넌트 PWA — 한 코드베이스로 교회마다 독립 브랜드 앱(교인앱·공개홈·관리자콘솔). 은성교회 1호 파일럿.',
-  version: '1.1.3',
+  version: '1.1.4',
   updatedAt: '2026-10-03',
   changelog: [
+    { version: '1.1.4', date: '2026-10-03', note: '3차 재검수 조건부 해소(→통과) — M3 .pd-process 컴포넌트 고아(screens.js 선언 vs DOM 미존재·불변식4 SSOT↔DOM 불일치) 해소: c-privacy 승인/반려 버튼에 pd-process 훅 부여 + c-members .pd-member-table 타깃 슬리피지 정렬(wrap+table). H1~H5+M1·M3·M4 전수 닫힘·SSOT↔DOM 정합. 적대검수 3R 통과.' },
     { version: '1.1.3', date: '2026-10-03', note: '잔여 Medium M1·M3·M4 보강(적대검수 지적 전수 해소) — M1 가입 거부(reject) 배선(c-members 거부 버튼+confirmReason 사유·멱등·member.rejected·member.approve 권한) / M3 PIPA 권리요청 승인/반려 구분+confirm+멱등+에러카탈로그(삭제=비가역·법정보존 예외 422·pii.read) / M4 탈퇴 2단계 확인 UI(confirmReason 사유). confirm 6화면·이모지0·링크/flow/REQ 전수 유지. H1~H5+M1·M3·M4 모두 해소.' },
     { version: '1.1.2', date: '2026-10-03', note: '재검수 조건부 3건 해소(→통과) — (1)주민번호 가입-필수수집 제거→기부금영수증 발급요청 시점 수집(PIPA §24조의2·최소수집) (2)이모지 1건(a-community-detail 🙏) 제거(이모지 0) (3)탈퇴↔세무보존 상충 해소(기부금영수증 등 법정 보존 항목 파기 예외 명시, H2 정합). 적대검수 2R: H1~H5 end-to-end 닫힘 확인·회귀0. ★J-게이트=주민번호 처리 법무 확인.' },
     { version: '1.1.1', date: '2026-10-03', note: '적대검수 H1~H5 보강 — H1 대량발송 비가역계약(confirmReason 대상수·승인메모·멱등·confirm·야간423·옵트아웃 제외·예약취소) / H2 기부금영수증 취소(사유필수·감사·canceled) / H3 영수증 발급주체=교회(교인은 발급요청/다운로드·셀프발급 제거) / H4 PIPA 목적별 분리동의+만14세미만 법정대리인 분기 / H5 이단심사 반려(사유)·이의신청. confirmReason 공통 컴포넌트(SSOT) 재사용. 링크/flow/REQ 전수 유지·이모지 0.' },
