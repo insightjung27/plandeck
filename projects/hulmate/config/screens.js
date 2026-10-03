@@ -38,17 +38,17 @@ window.PLANDECK_SCREENS = [
         context: '설교 목록·검색·재생. 유튜브 연동, 주일 라이브.',
         components: [
           { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
-          { role: '.pd-player', kind: 'hero', label: '영상 플레이어' },
+          { role: '.pd-feature', kind: 'card', label: '최신 설교(탭하면 상세·재생)' },
           { role: '.pd-sermon-list', kind: 'list', label: '설교 목록' },
         ],
         description: [
-          { text: '영상 플레이어 — 유튜브 재생', target: '.pd-player' },
+          { text: '최신 설교 — 탭하면 상세·재생', target: '.pd-feature' },
           { text: '설교 목록 — 시리즈·날짜', target: '.pd-sermon-list' },
         ],
         cases: [
-          { state: '정상', trigger: '선택', guard: 'videoUrl 있음', result: '재생', message: '', target: '.pd-player', api: { endpoint: 'GET /app/sermons', status: 200 } },
+          { state: '정상', trigger: '선택', guard: 'videoUrl 있음', result: '상세·재생', message: '', target: '.pd-feature', api: { endpoint: 'GET /app/sermons', status: 200 } },
           { state: '빈데이터', trigger: '응답', guard: '0건', result: '준비중', message: '설교 영상 준비중이에요', placement: 'full-page' },
-          { state: '에러', trigger: '재생', guard: '비공개/깨짐', result: '대체 안내', message: '영상을 재생할 수 없어요', placement: 'inline', target: '.pd-player' },
+          { state: '에러', trigger: '선택', guard: '비공개/깨짐', result: '대체 안내', message: '영상을 재생할 수 없어요', placement: 'inline', target: '.pd-feature' },
         ],
         interface: { reads: [{ id: 'listSermons', intent: '설교 목록', method: 'GET', path: '/app/sermons', params: [{ in: 'query', name: 'series', type: 'string', required: false }], response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-list' }], writes: [], events: [] },
         flow: { to: [] },
