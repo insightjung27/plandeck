@@ -50,7 +50,7 @@ window.PLANDECK_WORKSPACE = {
       path: 'projects/hulmate/',
       surfaces: ['교인앱', '공개홈', '관리자콘솔', '슈퍼관리자'],
       owner: 'J',
-      version: '1.1.2',
+      version: '1.1.3',
       updatedAt: '2026-10-03',
       tag: '완성 v1.1',
     },
