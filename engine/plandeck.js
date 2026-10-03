@@ -34,6 +34,16 @@
     SCREENS.forEach(function (c) { (c.pages || []).forEach(function (p) { out.push(p); }); });
     return out;
   }
+  // ── Export 유틸 (CSV: 엑셀 한글 BOM / PDF: 인쇄) ──
+  function csvEscape(s) { s = String(s == null ? '' : s); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+  function downloadCSV(filename, rows) {
+    var csv = '﻿' + rows.map(function (r) { return r.map(csvEscape).join(','); }).join('\r\n');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+  }
+  function exportName(kind) { return ((PROJECT.name || 'project').replace(/\s+/g, '') ) + '_' + kind + '.csv'; }
   function currentKey() {
     if (window.PLANDECK_CURRENT) return window.PLANDECK_CURRENT;
     if (window.PDK_CURRENT) return window.PDK_CURRENT;
@@ -998,7 +1008,17 @@
       '<button class="pd-collapse-toggle" type="button">모두 접기</button></div>' +
       '<div class="pd-spec-toc">' + pages.map(function (p) { return '<a href="#spec-' + esc(p.id) + '">' + esc(p.label) + '</a>'; }).join('') + '</div>') : '';
     var content = head + toolbar + (pages.length ? body : '<div class="pd-empty"><div class="pd-empty-icon">📄</div><div class="pd-empty-title">아직 화면이 없습니다</div></div>');
-    el.innerHTML = pageShell('spec', content, '<a class="pd-side-action" href="#" onclick="document.querySelectorAll(\'.pd-spec-screen\').forEach(function(d){d.open=true});window.print();return false;">🖨 인쇄</a>', 'pd-prd-doc pd-spec-doc');
+    var specActions = '<button class="pd-side-action pd-dl" type="button">⬇ 엑셀(경우의수)</button>' +
+      '<a class="pd-side-action" href="#" onclick="document.querySelectorAll(\'.pd-spec-screen\').forEach(function(d){d.open=true});window.print();return false;">🖨 PDF로 저장</a>';
+    el.innerHTML = pageShell('spec', content, specActions, 'pd-prd-doc pd-spec-doc');
+    (function () {
+      var dl = el.querySelector('.pd-dl');
+      if (dl) dl.addEventListener('click', function () {
+        var rows = [['화면ID', '화면명', '상태(화면성격)', '트리거', '조건(guard)', '결과', '메시지', '위치', '우선순위']];
+        flatPages().forEach(function (p) { (p.cases || []).forEach(function (c) { rows.push([p.id, p.label, c.state, c.trigger, c.guard, c.result, c.message, c.placement, c.priority]); }); });
+        downloadCSV(exportName('화면설계서_경우의수'), rows);
+      });
+    })();
     try { wireDocFilter(el); } catch (e) {}
     try {
       var ct = el.querySelector('.pd-collapse-toggle');
@@ -1035,7 +1055,16 @@
     }).join('');
     var head = '<div class="pd-prd-head"><h1>정보 구조 (IA)</h1><div class="pd-prd-sub">서피스별 화면 계층 · 화면 간 연결(→) · 요구사항 매핑 — <b>' + totalScreens + '</b>개 화면. <code>config/screens.js</code> 에서 자동 생성됩니다.</div>' +
       (entryList.length ? '<div class="pd-ia-entries">진입점: ' + entryList.map(function (p) { return '<a href="' + esc(p.href) + '">' + esc(p.label) + '</a>'; }).join(' · ') + '</div>' : '') + '</div>';
-    el.innerHTML = pageShell('ia', '<div class="pd-ia pd-prd">' + head + body + '</div>');
+    var iaActions = '<button class="pd-side-action pd-dl" type="button">⬇ 엑셀(화면목록)</button><a class="pd-side-action" href="#" onclick="window.print();return false;">🖨 PDF로 저장</a>';
+    el.innerHTML = pageShell('ia', '<div class="pd-ia pd-prd">' + head + body + '</div>', iaActions);
+    (function () {
+      var dl = el.querySelector('.pd-dl');
+      if (dl) dl.addEventListener('click', function () {
+        var rows = [['화면ID', '화면명', '서피스', '진입', '요구사항', '연결(flow.to)', '설명']];
+        flatPages().forEach(function (p) { rows.push([p.id, p.label, p.surface || '', p.entry ? '진입' : '', (p.reqIds || []).join(' '), ((p.flow && p.flow.to) || []).map(function (t) { return t.screen; }).join(' '), p.context || '']); });
+        downloadCSV(exportName('화면목록_IA'), rows);
+      });
+    })();
   }
 
   // ═══ 기능 정의서 — 화면 interface(조회·액션·이벤트)와 요구사항을 기능 목록으로 자동 생성 ═══
@@ -1060,7 +1089,16 @@
     var nR = feats.filter(function (f) { return f.type === '조회'; }).length;
     var nE = feats.filter(function (f) { return f.type === '이벤트'; }).length;
     var head = '<div class="pd-prd-head"><h1>기능 정의서</h1><div class="pd-prd-sub">화면별 기능(조회·액션·이벤트)과 API·요구사항 매핑 — <b>' + feats.length + '</b>개 기능(액션 ' + nW + ' · 조회 ' + nR + ' · 이벤트 ' + nE + '). <code>config/screens.js</code> 의 interface 에서 자동 생성됩니다.</div></div>';
-    el.innerHTML = pageShell('features', '<div class="pd-prd">' + head + '<div class="pd-table-wrap"><table class="pd-table pd-feat-table"><thead><tr><th>기능ID</th><th>기능명</th><th>화면</th><th>유형</th><th>API/시점</th><th>요구사항</th></tr></thead><tbody>' + trs + '</tbody></table></div></div>');
+    var featActions = '<button class="pd-side-action pd-dl" type="button">⬇ 엑셀(CSV)</button><a class="pd-side-action" href="#" onclick="window.print();return false;">🖨 PDF로 저장</a>';
+    el.innerHTML = pageShell('features', '<div class="pd-prd">' + head + '<div class="pd-table-wrap"><table class="pd-table pd-feat-table"><thead><tr><th>기능ID</th><th>기능명</th><th>화면</th><th>유형</th><th>API/시점</th><th>요구사항</th></tr></thead><tbody>' + trs + '</tbody></table></div></div>', featActions);
+    (function () {
+      var dl = el.querySelector('.pd-dl');
+      if (dl) dl.addEventListener('click', function () {
+        var rows = [['기능ID', '기능명', '화면', '화면ID', '유형', 'API/시점', '요구사항']];
+        feats.forEach(function (f, i) { rows.push(['FUNC-' + ('00' + (i + 1)).slice(-3), f.name, f.screen.label, f.screen.id, f.type, f.sub, (f.screen.reqIds || []).join(' ')]); });
+        downloadCSV(exportName('기능정의서'), rows);
+      });
+    })();
   }
 
   // ═══ 10. 검토 모드 (의사결정자) — sessionStorage 로 이동해도 유지 ═══

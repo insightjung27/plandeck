@@ -516,3 +516,18 @@
 .pd-feat-type.is-write { background: #fff1e6; color: #c2410c; }
 .pd-feat-type.is-read { background: #e0f2fe; color: #0369a1; }
 .pd-feat-type.is-event { background: #f3e8ff; color: #7e22ce; }
+
+/* export 버튼(일부가 <button>) — a.pd-side-action 과 동일 외형 */
+button.pd-side-action { font-family: inherit; text-align: left; width: 100%; cursor: pointer; }
+
+/* ═══ 인쇄(PDF로 저장) 최적화 — 사이드·네비 숨김, 본문 전폭, 화면 단위 페이지 분할 ═══ */
+@media print {
+  .pd-sidenav, .pd-side-actions, .pd-doc-filter, .pd-prd-nav, .pd-fab, .pd-dock { display: none !important; }
+  .pd-main { margin: 0 !important; }
+  .pd-doc { max-width: none !important; margin: 0 !important; padding: 0 !important; }
+  .pd-spec-screen, .pd-ia-node, .pd-prd-card, .pd-role-card, .pd-step-item { break-inside: avoid; page-break-inside: avoid; }
+  .pd-table thead { display: table-header-group; }
+  .pd-table tr { break-inside: avoid; }
+  body { background: #fff !important; }
+  a[href] { color: inherit; text-decoration: none; }
+}
