@@ -1158,70 +1158,10 @@
   }
 
   // ═══ init ═══
-  // ═══ AI 편집 패널 — 로컬 편집 서버(/api/*)가 있을 때만 표시(GitHub Pages 공유본에선 자동 숨김) ═══
-  function currentProjectSlug() {
-    var m = location.pathname.match(/\/projects\/([^/]+)\//);
-    return m ? m[1] : ((PROJECT && (PROJECT.slug || PROJECT.name)) || '');
-  }
-  function injectAiPanel() {
-    if (window.__pdAiInjected) return; window.__pdAiInjected = true;
-    fetch('/api/health').then(function (r) { return r.ok ? r.json() : null; }).then(function (h) {
-      if (h && h.ok) buildAiPanel();
-    }).catch(function () { /* Pages 등 로컬 서버 아님 — 읽기 전용, 패널 생략 */ });
-  }
-  function buildAiPanel() {
-    var page = (window.PLANDECK_CURRENT || '').split('/').pop() || '';
-    var proj = currentProjectSlug();
-    var fab = document.createElement('button');
-    fab.className = 'pd-ai-fab'; fab.type = 'button'; fab.title = 'AI에게 요청 (로컬 편집)';
-    fab.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9z"/><path d="M5 16l.9 2.1L8 19l-2.1.9L5 22l-.9-2.1L2 19l2.1-.9z"/></svg>';
-    var panel = document.createElement('div');
-    panel.className = 'pd-ai-panel is-hidden';
-    panel.innerHTML =
-      '<div class="pd-ai-head"><span>✦ AI에게 요청</span><button class="pd-ai-close" type="button" aria-label="닫기">×</button></div>' +
-      '<div class="pd-ai-ctx">' + (proj ? ('프로젝트 <b>' + esc(proj) + '</b>') : '워크스페이스') + (page ? (' · 화면 <b>' + esc(page) + '</b>') : '') + '</div>' +
-      '<textarea class="pd-ai-input" placeholder="예) 이 화면에 FAQ 섹션 추가 · 설교 상세에 좋아요 버튼 · 새 화면 \'봉사신청\' 생성 · 이 페이지 삭제"></textarea>' +
-      '<div class="pd-ai-actions"><button class="pd-ai-send pd-btn primary block" type="button">AI 실행</button></div>' +
-      '<div class="pd-ai-hint">로컬에서 AI가 파일을 수정 → git 저장·푸시 → 반영됩니다.</div>' +
-      '<div class="pd-ai-log"></div>';
-    document.body.appendChild(fab); document.body.appendChild(panel);
-    fab.addEventListener('click', function () { panel.classList.toggle('is-hidden'); var ta = panel.querySelector('.pd-ai-input'); if (!panel.classList.contains('is-hidden') && ta) ta.focus(); });
-    panel.querySelector('.pd-ai-close').addEventListener('click', function () { panel.classList.add('is-hidden'); });
-    var input = panel.querySelector('.pd-ai-input');
-    var sendBtn = panel.querySelector('.pd-ai-send');
-    var logEl = panel.querySelector('.pd-ai-log');
-    function addLog(t, cls) { var d = document.createElement('div'); d.className = 'pd-ai-logline' + (cls ? ' ' + cls : ''); d.textContent = t; logEl.appendChild(d); logEl.scrollTop = logEl.scrollHeight; }
-    var lastLen = 0;
-    function pollJob(jid) {
-      fetch('/api/job/' + jid).then(function (r) { return r.json(); }).then(function (j) {
-        if (j.log && j.log.length > lastLen) { for (var i = lastLen; i < j.log.length; i++) addLog(j.log[i]); lastLen = j.log.length; }
-        if (j.status === 'done') {
-          addLog('✅ 완료' + (j.commit ? (' · ' + j.commit) : ''), 'ok');
-          sendBtn.disabled = false; sendBtn.textContent = 'AI 실행';
-          var rl = document.createElement('button'); rl.className = 'pd-btn secondary block'; rl.type = 'button'; rl.textContent = '새로고침해서 보기';
-          rl.addEventListener('click', function () { location.reload(); }); logEl.appendChild(rl); return;
-        }
-        if (j.status === 'error') { addLog('❌ 오류: ' + (j.error || ''), 'err'); sendBtn.disabled = false; sendBtn.textContent = 'AI 실행'; return; }
-        setTimeout(function () { pollJob(jid); }, 1500);
-      }).catch(function () { setTimeout(function () { pollJob(jid); }, 2000); });
-    }
-    sendBtn.addEventListener('click', function () {
-      var instruction = input.value.trim();
-      if (!instruction) { input.focus(); return; }
-      sendBtn.disabled = true; sendBtn.textContent = '실행 중…'; logEl.innerHTML = ''; lastLen = 0;
-      addLog('요청 전송…');
-      fetch('/api/ai-edit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ project: proj, page: page, instruction: instruction, action: 'edit' }) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) { if (!d.ok) { addLog('오류: ' + (d.error || '실패'), 'err'); sendBtn.disabled = false; sendBtn.textContent = 'AI 실행'; return; } addLog('작업 시작 (' + d.jobId + ')'); pollJob(d.jobId); })
-        .catch(function (e) { addLog('연결 실패: ' + e, 'err'); sendBtn.disabled = false; sendBtn.textContent = 'AI 실행'; });
-    });
-  }
-
   function init() {
     var bare = false;
     try { bare = new URLSearchParams(location.search).get('bare') === '1'; } catch (e) {}
     if (bare) document.body.classList.add('pd-bare');
-    if (!bare) { try { injectAiPanel(); } catch (e) {} }
     if (document.getElementById('pd-handoff-root')) { return; }  // 핸드오프는 handoff.js가 렌더(여기선 셸 헬퍼만 노출)
     if (document.getElementById('pd-workspace-root')) { try { renderWorkspace(); } catch (e) {} return; }
     if (document.getElementById('pd-prd-root')) { try { renderPRD(); } catch (e) {} return; }
