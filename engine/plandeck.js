@@ -1059,6 +1059,7 @@
       if (!target || !target.href) return;
       var el = screen.querySelector(c.role);
       if (!el) return;
+      if (el.tagName === 'A' && el.getAttribute('href')) return; // 정적 href 우선 — 런타임 덮어쓰기 방지(v2 클릭 프로토타입)
       el.style.cursor = 'pointer';
       el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); location.href = target.href; });
     });
