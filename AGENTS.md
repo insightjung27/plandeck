@@ -31,6 +31,7 @@
 - `docs/figma-integration-design.md` — Figma 2-트랙(기본 와이어, 옵션 승격)
 - `.claude/commands/pd-*.md` — 기획 파이프라인 커맨드(Claude Code 전용; 다른 도구는 이 문서의 규칙을 따르면 동일 결과)
 - `tools/verify-links.js` — 링크 무결성 검증 게이트
+- `docs/컴포넌트_관리.md` — 공통 컴포넌트 생성·변형·신규·거버넌스(공용 SSOT 2파일·modifier 규칙·verify-components)
 
 ## 완료 전 체크리스트
 - [ ] 와이어프레임 컴포넌트만 사용(인라인 스타일 0)
@@ -40,4 +41,5 @@
 - [ ] **기능명 한글 일관성** — 기능 정의서 기능명이 영문 코드가 아닌 한글인가. 액션/조회=`intent`(한글) 필수, 이벤트=`when`/`intent`(한글)+`name`(dot-code) (`node tools/verify-naming.js <project>`)
 - [ ] 엔진 변경 시 additive(삭제 0)
 - [ ] **CSS 충돌 0** — 컴포넌트 추가 시 기존 베이스 클래스를 덮어쓰지 않았는가 (`node tools/verify-css.js`). 새 컴포넌트는 고유 클래스명 또는 `.parent .child` 스코프. 충돌=렌더 깨짐(.pd-step 회귀 유형).
+- [ ] **즉석 컴포넌트 0** — 공용 라이브러리에 없는 ad-hoc 컴포넌트를 쓰지 않았는가 (`node tools/verify-components.js <project>`). 정의0+미등록 pd-* 요소는 공용 컴포넌트로 만들거나 HOOK_REGISTRY에 의도적으로 등록. 변형=base 덮어쓰기 금지·modifier 추가. 컴포넌트 생성·관리 규칙 = `docs/컴포넌트_관리.md`.
 - [ ] **렌더 검증** (`node tools/verify-render.js <project>`) — 전 화면 pd-screen+스크롤컨테이너 보유·인라인스타일0·빈본문0. 내용 긴 화면은 목업 안에서 왜곡(압축) 없이 스크롤되는가(스크롤 컨테이너 .pd-app-body/.pd-content의 flex 자식은 flex-shrink로 눌리면 안 됨 = 압축 회귀 유형).
