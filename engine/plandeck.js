@@ -834,24 +834,49 @@
     if (!arr || !arr.length) return '<span class="pd-dim">—</span>';
     return '<ul>' + arr.map(function (x) { return '<li>' + (map ? map(x) : esc(x)) + '</li>'; }).join('') + '</ul>';
   }
+  // 임의 값(문자열/배열/객체/객체배열)을 사람이 읽을 수 있는 HTML로 재귀 렌더
+  function renderVal(v) {
+    if (v == null) return '';
+    if (typeof v !== 'object') return esc(v);
+    if (Array.isArray(v)) {
+      if (!v.length) return '';
+      return '<ul>' + v.map(function (x) { return '<li>' + renderVal(x) + '</li>'; }).join('') + '</ul>';
+    }
+    // 평범한 객체 → 'key 값 · key 값' (예: {who,can} → 'who member · can ...')
+    return Object.keys(v).map(function (k) { return '<b>' + esc(k) + '</b> ' + renderVal(v[k]); }).join(' · ');
+  }
+  // 객체(key→value)를 'key — value' 목록으로 렌더(NFR·RBAC·개인정보·규제 등 상세 블록용).
+  // 값이 스칼라면 인라인, 배열·객체면 중첩 렌더(공유 엔진 — 프로젝트별 풍부한 형태 호환, [object Object] 방지)
+  function kvUl(obj) {
+    if (!obj) return '';
+    var keys = Object.keys(obj);
+    if (!keys.length) return '';
+    return '<ul>' + keys.map(function (k) {
+      var val = obj[k];
+      var body = (val && typeof val === 'object') ? renderVal(val) : esc(val);
+      return '<li><b>' + esc(k) + '</b> — ' + body + '</li>';
+    }).join('') + '</ul>';
+  }
 
   // PRD 요구사항 ↔ 화면 추적(Traceability) — PRD 기반 진행 + 부족분(미충족/미연결) 자동 검출
   function prdTraceability() {
     var d = window.PLANDECK_PRD || {};
     var reqs = d.requirements || [];
     var pages = flatPages();
-    var byReq = {}; reqs.forEach(function (r) { byReq[r.reqId] = []; });
+    // 스키마 호환: 신(id/title/surface) · 구(reqId/text/surfaces) 둘 다 지원
+    var reqId = function (r) { return r && (r.reqId || r.id); };
+    var byReq = {}; reqs.forEach(function (r) { byReq[reqId(r)] = []; });
     var orphans = [];
     pages.forEach(function (p) {
       var ids = p.reqIds || [];
       if (!ids.length) { orphans.push(p); return; }
       ids.forEach(function (rid) { if (!byReq[rid]) byReq[rid] = []; byReq[rid].push(p); });
     });
-    var reqSet = {}; reqs.forEach(function (r) { reqSet[r.reqId] = 1; });
+    var reqSet = {}; reqs.forEach(function (r) { reqSet[reqId(r)] = 1; });
     var ghost = {};
     pages.forEach(function (p) { (p.reqIds || []).forEach(function (rid) { if (!reqSet[rid]) (ghost[rid] = ghost[rid] || []).push(p); }); });
-    var covered = reqs.filter(function (r) { return (byReq[r.reqId] || []).length; });
-    var uncovered = reqs.filter(function (r) { return !(byReq[r.reqId] || []).length; });
+    var covered = reqs.filter(function (r) { return (byReq[reqId(r)] || []).length; });
+    var uncovered = reqs.filter(function (r) { return !(byReq[reqId(r)] || []).length; });
     return { reqs: reqs, byReq: byReq, covered: covered, uncovered: uncovered, orphans: orphans, ghost: ghost,
       pct: reqs.length ? Math.round(covered.length / reqs.length * 100) : 0, version: d.version || PROJECT.version || '0.1.0' };
   }
@@ -864,22 +889,40 @@
       '<div class="pd-banner" style="margin-bottom:16px">이 화면은 <b>docs/PRD.md</b>(정본)를 렌더한 것입니다. 수정은 PRD.md를 고치거나 <code>/pd-prd</code>로 — 버전을 올리며 갱신돼요.</div>' +
       '<h1>' + esc(PROJECT.name || '제품요구정의서(PRD)') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '') + '</div>' +
+      (d.northStar ? sec('북극성(North Star)', '<p>' + esc(d.northStar) + '</p>') : '') +
       sec('① 배경', '<p>' + esc(d.background) + '</p>') +
       sec('② 목표', ul(d.goals)) +
-      sec('③ 사용자', ul(d.users, function (u) { return u.role ? ('<b>' + esc(u.role) + '</b> — ' + esc(u.jobStory || '')) : esc(u); })) +
-      sec('④ 범위', '<b>포함</b>' + ul(d.scope) + '<b>제외(Out of Scope)</b>' + ul(d.outOfScope)) +
+      sec('③ 사용자', ul(d.users, function (u) {
+        if (!u || !u.role) return esc(u);
+        var desc = u.jobStory || u.need || '';           // 호환: jobStory(구) · need(신)
+        return '<b>' + esc(u.role) + '</b>' + (desc ? ' — ' + esc(desc) : '') +
+          (u.channel ? ' <span class="pd-dim">· ' + esc(u.channel) + '</span>' : '');
+      })) +
+      sec('④ 범위', (function () {
+        // 호환: scope 배열+outOfScope(구) · scope{includes,excludes}(신)
+        var inc = Array.isArray(d.scope) ? d.scope : ((d.scope && d.scope.includes) || []);
+        var exc = d.outOfScope || (d.scope && d.scope.excludes) || [];
+        return '<b>포함</b>' + ul(inc) + '<b>제외(Out of Scope)</b>' + ul(exc);
+      })()) +
       sec('⑤ 성공지표', ul(d.successMetrics, function (m) { return m.metric ? (esc(m.metric) + ' — <b>' + esc(m.target || '') + '</b>') : esc(m); })) +
       sec('⑥ 제약·가정·의존성', '<b>제약</b>' + ul(d.constraints) + '<b>가정</b>' + ul(d.assumptions) + '<b>의존성</b>' + ul(d.dependencies)) +
-      sec('⑦ 릴리스', ul(d.releases, function (r) { return r.name ? ('<b>' + esc(r.name) + '</b> — ' + esc((r.scope || []).join(', ')) + (r.when ? ' (' + esc(r.when) + ')' : '')) : esc(r); })) +
+      sec('⑦ 릴리스', ul(d.releases, function (r) {
+        if (!r || typeof r !== 'object') return esc(r);
+        var nm = r.name || r.phase || '', items = r.scope || r.items || [];   // 호환: name/scope(구) · phase/items(신)
+        if (!nm) return esc(r);
+        return '<b>' + esc(nm) + '</b> — ' + esc((items || []).join(', ')) + (r.when ? ' (' + esc(r.when) + ')' : '');
+      })) +
       (function () {
         var t = prdTraceability();
         if (!t.reqs.length) return sec('⑧ 요구사항 추적(PRD ↔ 화면)', '<div class="pd-banner">PRD에 <code>requirements[]</code>가 아직 없습니다. <code>/pd-prd</code>로 요구사항을 정의하면 화면과 자동으로 추적·커버리지 검사됩니다.</div>');
         var rows = t.reqs.map(function (r) {
-          var scr = t.byReq[r.reqId] || [];
+          var _id = r.reqId || r.id, _text = r.text || r.title || '',   // 호환: reqId/text/surfaces(구) · id/title/surface(신)
+            _surf = r.surfaces || (r.surface ? [r.surface] : []);
+          var scr = t.byReq[_id] || [];
           var sh = scr.length ? scr.map(function (p) { return '<a href="' + esc(p.href) + '">' + esc(p.label) + '</a>'; }).join(', ')
             : '<span class="pd-trace-gap">⚠ 화면 없음 — 보강 필요</span>';
-          return '<tr' + (scr.length ? '' : ' class="is-gap"') + '><td><code>' + esc(r.reqId) + '</code></td><td>' + esc(r.text) + '</td>' +
-            '<td>' + ((r.surfaces || []).join(', ') || '<span class="pd-dim">—</span>') + '</td><td>' + sh + '</td></tr>';
+          return '<tr' + (scr.length ? '' : ' class="is-gap"') + '><td><code>' + esc(_id) + '</code></td><td>' + esc(_text) + '</td>' +
+            '<td>' + ((_surf || []).join(', ') || '<span class="pd-dim">—</span>') + '</td><td>' + sh + '</td></tr>';
         }).join('');
         var gaps = '';
         if (t.uncovered.length) gaps += '<div class="pd-trace-note is-warn">⚠ 화면이 없는 요구사항 ' + t.uncovered.length + '건 — <code>/pd-scaffold</code> 또는 <code>/pd-screen</code>으로 화면을 만들어 보강하세요.</div>';
@@ -891,6 +934,42 @@
           '<div class="pd-bar" style="margin:8px 0 14px"><div class="pd-bar-fill" style="width:' + t.pct + '%"></div></div>' +
           '<div class="pd-table-wrap"><table class="pd-table"><thead><tr><th>요구사항</th><th>내용</th><th>서피스</th><th>연결된 화면</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
           (gaps ? '<div class="pd-trace-gaps">' + gaps + '</div>' : '<div class="pd-trace-note is-ok">✓ 모든 요구사항이 화면으로 연결되어 있습니다.</div>'));
+      })() +
+      // ⑨~⑫ 는 해당 필드가 PRD에 있을 때만 렌더(없는 프로젝트는 영향 없음 = 무회귀)
+      (d.workflows && d.workflows.length ? sec('⑨ 핵심 워크플로', ul(d.workflows, function (w) {
+        if (!w || typeof w !== 'object') return esc(w);           // 신: 문자열 워크플로
+        var nm = w.name || w.title || '';                          // 구: {name, steps[]}
+        var steps = (w.steps || []).map(function (s) {
+          return typeof s === 'string' ? s : (s && s.screen ? (s.screen + (s.via ? '(' + s.via + ')' : '')) : '');
+        }).filter(Boolean);
+        return (nm ? '<b>' + esc(nm) + '</b>' : '') + (steps.length ? ' — ' + esc(steps.join(' → ')) : '');
+      })) : '') +
+      (function () {
+        var a = d.alternatives, out = '';
+        if (a) {
+          var html = '';
+          if (a.competitors && a.competitors.length) html += '<b>경쟁·대안</b>' + ul(a.competitors, function (c) {
+            if (!c || typeof c !== 'object') return esc(c);
+            var nm = c.name || '';
+            // name 외 모든 필드(limit 신 / cost·gap hulmate 등)를 빠짐없이 노출
+            var rest = Object.keys(c).filter(function (k) { return k !== 'name'; })
+              .map(function (k) { return esc(c[k]); }).filter(Boolean).join(' · ');
+            return (nm ? '<b>' + esc(nm) + '</b>' : '') + (rest ? ' — ' + rest : '');
+          });
+          var dv = function (x) { return Array.isArray(x) ? x.map(esc).join(' · ') : esc(x); };   // 배열·문자열 호환
+          if (a.differentiation) html += '<p><b>차별화</b> — ' + dv(a.differentiation) + '</p>';
+          if (a.wtp) html += '<p><b>지불의사(WTP)</b> — ' + dv(a.wtp) + '</p>';
+          if (a.risk) html += '<p><b>리스크</b> — ' + dv(a.risk) + '</p>';
+          if (html) out += sec('⑩ 경쟁·차별화', html);
+        }
+        var detail = '';
+        if (d.nfr && Object.keys(d.nfr).length) detail += '<b>비기능 요구(NFR)</b>' + kvUl(d.nfr);
+        if (d.rbac && Object.keys(d.rbac).length) detail += '<b>권한(RBAC)</b>' + kvUl(d.rbac);
+        if (d.privacy && Object.keys(d.privacy).length) detail += '<b>개인정보</b>' + kvUl(d.privacy);
+        if (d.regulation && Object.keys(d.regulation).length) detail += '<b>규제 준수</b>' + kvUl(d.regulation);
+        if (detail) out += sec('⑪ 정책·규제·권한·비기능', detail);
+        if (d.resolvedDecisions && d.resolvedDecisions.length) out += sec('⑫ 확정된 결정', ul(d.resolvedDecisions));
+        return out;
       })() +
       (d.openQuestions && d.openQuestions.length ? sec('⚠️ 미결 질문', ul(d.openQuestions)) : '');
     el.innerHTML = pageShell('prd', body, '<a class="pd-side-action" href="docs/PRD.md">📄 PRD.md 원본</a>');
