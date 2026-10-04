@@ -490,3 +490,16 @@ a.pd-wpanel-sub { text-decoration: none; }
    app-body/content 레이아웃은 app-body가 flex:1로 정확히 채워 pd-screen이 넘치지 않으므로 이 규칙은 무해(회귀 0).
    (.pd-auth 의 flex-shrink:0 은 위 베이스 규칙에 병합) */
 .pd-screen { overflow-y: auto; }
+
+/* ══ 승격 공용 컴포넌트 (2026-10-04) — 여러 프로젝트에서 반복되던 ad-hoc 패턴을 정식 정의 ══
+   (기존 렌더 보존 + 누적 결함 교정. 자식 요소는 각자 정의된 컴포넌트가 스타일을 담당) */
+/* 히어로: 이미지(.pd-hero-img) + 캡션 수직 묶음(로그인·홈 상단) */
+.pd-hero { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+/* 페이지 헤더 우측 액션 버튼 그룹 — 우측 정렬 + 버튼 간격 */
+.pd-pagehead-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+/* 탭 전환 패널 컨테이너(내부 .pd-tabpanel 을 is-active 로 토글) */
+.pd-tabpanels { display: block; }
+/* KPI 통계 섹션 래퍼 — 카드 그리드는 .pd-cardgrid 담당(충돌 금지), 여기선 섹션 간격만 */
+.pd-kpi { margin-bottom: 14px; }
+/* 검색바(.pd-searchbar)를 감싸는 클릭 링크 — 링크 기본 스타일(밑줄·파란색) 제거 */
+.pd-search { display: block; text-decoration: none; color: inherit; }

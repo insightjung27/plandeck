@@ -25,8 +25,8 @@ const defined = new Set();
 // ── 의도된 스타일 없는 앵커/래퍼 레지스트리(= '관리되는' 예외 목록) ──
 // 여기 없는 '정의0' pd-* 클래스가 나오면 게이트가 막는다. 추가는 '의도적 등록'이어야 한다.
 const HOOK_REGISTRY = new Set([
-  // ★공용 승격 후보(2개 이상 프로젝트에서 반복) — 전용 컴포넌트로 올리는 것을 권장
-  'pd-hero', 'pd-pagehead-actions', 'pd-tabpanels', 'pd-kpi', 'pd-search',
+  // (pd-hero·pd-pagehead-actions·pd-tabpanels·pd-kpi·pd-search 는 2026-10-04 정식 공용 컴포넌트로
+  //  승격 → plandeck-ui.css 에 정의됨. 더 이상 예외 앵커가 아니므로 레지스트리에서 제거.)
   // 화면별 시맨틱 앵커(단일 프로젝트·스타일 불필요한 그룹/JS 훅)
   'pd-bulletin-view', 'pd-dept-tabs', 'pd-finance-kpi', 'pd-item-grid', 'pd-kinds',
   'pd-map', 'pd-map-full', 'pd-notice-body', 'pd-player', 'pd-session-select',
