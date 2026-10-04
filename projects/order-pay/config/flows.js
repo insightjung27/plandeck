@@ -1,7 +1,7 @@
 /* 주요 플로우 (User Flow) — flows.html 필름스트립. 단일 채널(모바일 커머스) 6개. PRD 워크플로 연동. */
 window.PLANDECK_FLOWS = [
   {
-    id: 'FLOW-PAY', name: 'W1. 구매·결제', surface: '모바일',
+    id: 'FLOW-PAY', name: '구매·결제', surface: '모바일',
     desc: '상품을 골라 장바구니·주문서·배송지를 거쳐 결제 완료 — 핵심 전환 여정',
     steps: [
       { screen: 'SCR-HOME-001' },
@@ -33,7 +33,7 @@ window.PLANDECK_FLOWS = [
     ],
   },
   {
-    id: 'FLOW-ORDER', name: 'W2. 주문 관리·환불', surface: '모바일',
+    id: 'FLOW-ORDER', name: '주문 관리·환불', surface: '모바일',
     desc: '주문 내역에서 배송 조회 → 주문 상세 → 취소/환불',
     steps: [
       { screen: 'SCR-ORDERS-001' },
@@ -51,7 +51,7 @@ window.PLANDECK_FLOWS = [
     ],
   },
   {
-    id: 'FLOW-MY', name: 'W3. 마이·설정·고객센터', surface: '모바일',
+    id: 'FLOW-MY', name: '마이·설정·고객센터', surface: '모바일',
     desc: '마이에서 결제수단·배송지·쿠폰을 관리하고 고객센터 문의',
     steps: [
       { screen: 'SCR-MYPAGE-001' },

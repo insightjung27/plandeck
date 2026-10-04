@@ -31,7 +31,29 @@ pages.forEach(p => {
     }
   });
 });
+// config/flows.js(필름스트립 User Flow) 검증 — 각 step.screen 이 screens.js 화면 ID로 실존하는지 + flow id 유일성
+// (지금까지 어떤 게이트도 flows.js 를 읽지 않던 사각지대를 닫는다)
+let flowIssues = [];
+const flowsPath = DIR + 'config/flows.js';
+if (fs.existsSync(flowsPath)) {
+  const fsb = { window: {} };
+  try {
+    vm.runInNewContext(fs.readFileSync(flowsPath, 'utf8'), fsb, { timeout: 3000 });
+    const flows = fsb.window.PLANDECK_FLOWS || [];
+    const seenFlow = {};
+    flows.forEach(f => {
+      if (seenFlow[f.id]) flowIssues.push('중복 flow id: ' + f.id);
+      seenFlow[f.id] = 1;
+      (f.steps || []).forEach(s => {
+        if (s.screen && !byId[s.screen]) flowIssues.push(f.id + ' step → 존재하지 않는 화면 ID: ' + s.screen);
+      });
+    });
+  } catch (e) { flowIssues.push('flows.js 로드 실패: ' + e.message); }
+}
+
 console.log('=== flow↔실제 href 정합 (' + proj + ') ===');
 console.log('불일치: ' + mism.length + (mism.length ? '' : ' ✅'));
 mism.forEach(x => console.log('  ⚠ ' + x));
-process.exit(mism.length ? 1 : 0);
+console.log('flows.js 화면참조: ' + (flowIssues.length ? flowIssues.length + '건 ⚠' : '유효 ✅'));
+flowIssues.forEach(x => console.log('  ⚠ ' + x));
+process.exit((mism.length + flowIssues.length) ? 1 : 0);

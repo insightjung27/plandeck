@@ -308,7 +308,7 @@ window.PLANDECK_SCREENS = [
       // ── 18. 회원가입 ──
       {
         id: 'SCR-APP-018', label: '회원가입', href: 'a-signup.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004', 'REQ-026'],
         context: '교인앱 회원가입(가입 후 관리자 승인). 마이(SCR-APP-004)에서 진입.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-004' } }],
         description: [{ text: '이름·연락처·아이디·부서·동의' }],
@@ -334,7 +334,7 @@ window.PLANDECK_SCREENS = [
       // ── 20. 알림 ──
       {
         id: 'SCR-APP-020', label: '알림', href: 'a-notifications.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
+        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001', 'REQ-019'],
         context: '알림 목록(설교·공지·댓글). 홈 종 아이콘에서 진입. 항목 탭 시 해당 화면으로.',
         components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } }],
         description: [{ text: '설교·공지·댓글 알림 — 탭하면 해당 화면' }],
@@ -350,7 +350,7 @@ window.PLANDECK_SCREENS = [
       // ── 공개 환영형 홈 ──
       {
         id: 'SCR-SITE-001', label: '공개 환영형 홈', href: 's-home.html',
-        surface: 'site', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
+        surface: 'site', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005', 'REQ-028'],
         context: '방문자용 공개 홈(환영형). 히어로·말씀·예배안내·방문 허브.',
         components: [
           { role: '.pd-hero', kind: 'hero', label: '히어로(교회 이미지·비전)' },
@@ -565,7 +565,7 @@ window.PLANDECK_SCREENS = [
       // ── 성도관리(교적) ──
       {
         id: 'SCR-ADM-002', label: '성도관리(교적)', href: 'c-members.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
+        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008', 'REQ-030'],
         context: '성도 카드 원장·가입 승인·검색. 민감정보 마스킹(PIPA).',
         components: [
           { role: '.pd-member-search', kind: 'button', label: '성도 검색/필터' },

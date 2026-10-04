@@ -20,7 +20,7 @@ window.PLANDECK_SCREENS = [
           { state: '에러', trigger: '진입', guard: '서버 오류', result: '재시도', message: '상품을 불러오지 못했어요', placement: 'inline', api: { endpoint: 'GET /products', status: 500 } },
         ],
         interface: { reads: [{ id: 'listProducts', intent: '상품 목록', method: 'GET', path: '/products', params: [{ in: 'query', name: 'category', type: 'string', required: false }], response: '{entities.Product}[]', auth: 'None', target: '.pd-list' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-DETAIL-001', via: '상품 선택', trigger: '.pd-list' }, { screen: 'SCR-SEARCH-001', via: '검색', trigger: '.pd-search' }, { screen: 'SCR-CART-001', via: '장바구니' }] },
+        flow: { to: [{ screen: 'SCR-DETAIL-001', via: '상품 선택', trigger: '.pd-list' }, { screen: 'SCR-SEARCH-001', via: '검색', trigger: '.pd-search' }, { screen: 'SCR-CART-001', via: '장바구니' }, { screen: 'SCR-ORDERS-001', via: '주문(탭)' }, { screen: 'SCR-MYPAGE-001', via: '마이(탭)' }] },
       },
       {
         id: 'SCR-SEARCH-001', label: '검색', href: 'm-search.html',
@@ -110,7 +110,7 @@ window.PLANDECK_SCREENS = [
           { state: '필수누락', trigger: '결제하기', guard: '동의 미체크', result: '막음', message: '결제 동의가 필요해요', placement: 'inline', target: '.pd-btn-confirm', priority: 'P1' },
           { state: '엣지', trigger: '결제하기', guard: '네트워크 끊김', result: '멱등키 재시도', message: '연결이 불안정해요. 다시 시도해 주세요', placement: 'toast' },
         ],
-        interface: { reads: [], writes: [{ id: 'createOrder', intent: '주문 생성·결제', method: 'POST', path: '/orders', successStatus: 201, request: '{entities.Order}', response: '{entities.Order}', errors: [{ status: 402, when: '승인 거절', message: '결제가 거절됐어요' }], auth: 'Guest', idempotency: 'Idempotency-Key', target: '.pd-btn-confirm' }], events: [{ name: 'order.created', when: '결제 성공', payload: '{entities.Order}' }] },
+        interface: { reads: [], writes: [{ id: 'createOrder', intent: '주문 생성·결제', method: 'POST', path: '/orders', successStatus: 201, request: '{entities.OrderDraft}', response: '{entities.Order}', errors: [{ status: 402, when: '승인 거절', message: '결제가 거절됐어요' }], auth: 'Guest', idempotency: 'Idempotency-Key', target: '.pd-btn-confirm' }], events: [{ name: 'order.created', when: '결제 성공', payload: '{entities.Order}' }] },
         flow: { to: [{ screen: 'SCR-DONE-001', via: '성공', branch: '결제 성공 여부', onCall: 'createOrder' }, { screen: 'SCR-FAIL-001', via: '실패', branch: '결제 성공 여부' }] },
       },
       {

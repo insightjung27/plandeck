@@ -886,7 +886,7 @@
     var sec = function (t, html) { return '<div class="pd-prd-sec"><h2>' + t + '</h2>' + html + '</div>'; };
     el.className = 'pd-appshell';
     var body =
-      '<div class="pd-banner" style="margin-bottom:16px">이 화면은 <b>docs/PRD.md</b>(정본)를 렌더한 것입니다. 수정은 PRD.md를 고치거나 <code>/pd-prd</code>로 — 버전을 올리며 갱신돼요.</div>' +
+      '<div class="pd-banner" style="margin-bottom:16px">이 화면은 <b>config/prd.js</b>(정본 <b>docs/PRD.md</b>의 렌더 미러)를 렌더합니다. 수정은 <b>docs/PRD.md</b>를 고친 뒤 <code>/pd-prd</code>로 동기화하세요(둘을 항상 같은 버전·내용으로 유지).</div>' +
       '<h1>' + esc(PROJECT.name || '제품요구정의서(PRD)') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '') + '</div>' +
       (d.northStar ? sec('북극성(North Star)', '<p>' + esc(d.northStar) + '</p>') : '') +
@@ -967,9 +967,30 @@
         if (d.rbac && Object.keys(d.rbac).length) detail += '<b>권한(RBAC)</b>' + kvUl(d.rbac);
         if (d.privacy && Object.keys(d.privacy).length) detail += '<b>개인정보</b>' + kvUl(d.privacy);
         if (d.regulation && Object.keys(d.regulation).length) detail += '<b>규제 준수</b>' + kvUl(d.regulation);
+        if (d.tenancy && Object.keys(d.tenancy).length) detail += '<b>멀티테넌트 격리</b>' + kvUl(d.tenancy);
         if (detail) out += sec('⑪ 정책·규제·권한·비기능', detail);
         if (d.resolvedDecisions && d.resolvedDecisions.length) out += sec('⑫ 확정된 결정', ul(d.resolvedDecisions));
+        if (d.jGate && d.jGate.length) out += sec('⚠️ 결재 게이트(규제·결제·대외발송 — 기획자 결재 필수)', ul(d.jGate));
         return out;
+      })() +
+      // ⑬ 안전망 — 렌더러에 전용 섹션이 없는 PRD 데이터라도 '조용히 숨기지 않고' 모두 노출.
+      // (기획자가 새 필드를 추가해도 화면에서 사라지지 않게 함 = 빈 섹션/누락 재발 방지)
+      (function () {
+        var known = { version: 1, northStar: 1, background: 1, goals: 1, users: 1, scope: 1, outOfScope: 1,
+          successMetrics: 1, constraints: 1, assumptions: 1, dependencies: 1, releases: 1, requirements: 1,
+          workflows: 1, alternatives: 1, nfr: 1, rbac: 1, privacy: 1, regulation: 1, tenancy: 1,
+          resolvedDecisions: 1, jGate: 1, openQuestions: 1 };
+        var extra = Object.keys(d).filter(function (k) {
+          if (known[k]) return false;
+          var v = d[k];
+          return v && (Array.isArray(v) ? v.length : (typeof v === 'object' ? Object.keys(v).length : String(v).trim()));
+        });
+        if (!extra.length) return '';
+        var html = extra.map(function (k) {
+          var v = d[k];
+          return '<div class="pd-trace-note"><b>' + esc(k) + '</b> — ' + ((v && typeof v === 'object') ? renderVal(v) : esc(v)) + '</div>';
+        }).join('');
+        return sec('⑬ 기타 정의 <span class="pd-dim">(렌더러 미등록 필드 — 전용 섹션 보강 권장)</span>', html);
       })() +
       (d.openQuestions && d.openQuestions.length ? sec('⚠️ 미결 질문', ul(d.openQuestions)) : '');
     el.innerHTML = pageShell('prd', body, '<a class="pd-side-action" href="docs/PRD.md">📄 PRD.md 원본</a>');
@@ -1135,7 +1156,8 @@
       }).join('');
       var itf = p.interface || {};
       var ops = (itf.writes || []).map(function (o) { return '<li>✍️ <code>' + esc(o.method || 'POST') + ' ' + esc(o.path || '') + '</code> — ' + esc(o.intent || '') + '</li>'; })
-        .concat((itf.reads || []).map(function (o) { return '<li>📖 <code>' + esc(o.method || 'GET') + ' ' + esc(o.path || '') + '</code> — ' + esc(o.intent || '') + '</li>'; })).join('');
+        .concat((itf.reads || []).map(function (o) { return '<li>📖 <code>' + esc(o.method || 'GET') + ' ' + esc(o.path || '') + '</code> — ' + esc(o.intent || '') + '</li>'; }))
+        .concat((itf.events || []).map(function (e) { return '<li>⚡ <code>' + esc(e.name || '') + '</code> — ' + esc(e.when || '') + '</li>'; })).join('');
       var flow = ((p.flow && p.flow.to) || []).map(function (t) {
         return '<li>' + (t.via ? '[' + esc(t.via) + '] ' : '') + '→ ' + esc(t.screen) + (t.branch ? ' <span class="pd-dim">(' + esc(t.branch) + ')</span>' : '') + '</li>';
       }).join('');
