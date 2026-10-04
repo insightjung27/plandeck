@@ -27,10 +27,10 @@ const defined = new Set();
 const HOOK_REGISTRY = new Set([
   // (pd-hero·pd-pagehead-actions·pd-tabpanels·pd-kpi·pd-search 는 2026-10-04 정식 공용 컴포넌트로
   //  승격 → plandeck-ui.css 에 정의됨. 더 이상 예외 앵커가 아니므로 레지스트리에서 제거.)
-  // 화면별 시맨틱 앵커(단일 프로젝트·스타일 불필요한 그룹/JS 훅)
+  // (pd-map·pd-map-full·pd-player·pd-notice-body 는 2026-10-04 정식 공용 컴포넌트로 승격 → plandeck-ui.css 정의.)
+  // 화면별 시맨틱 앵커(단일 프로젝트·스타일 불필요한 그룹/JS 훅. 나머지 7종은 이미 공용 컴포넌트 위 래퍼 — tabs/kpi/chips/table/mediagrid)
   'pd-bulletin-view', 'pd-dept-tabs', 'pd-finance-kpi', 'pd-item-grid', 'pd-kinds',
-  'pd-map', 'pd-map-full', 'pd-notice-body', 'pd-player', 'pd-session-select',
-  'pd-vision', 'pd-week-nav', 'pd-worship-table',
+  'pd-session-select', 'pd-vision', 'pd-week-nav', 'pd-worship-table',
 ]);
 
 const sb = { window: {} };

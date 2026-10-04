@@ -717,7 +717,7 @@
     if (!r) return '<span class="pd-dim">—</span>';
     if (!r.name) return esc(r.raw);
     var e = r.entity, fields = (e.fields || []).map(function (f) {
-      return '<div class="pd-field"><code>' + esc(f.name) + '</code> <span class="pd-type">' + esc(f.type) +
+      return '<div class="pd-entity-field"><code>' + esc(f.name) + '</code> <span class="pd-type">' + esc(f.type) +
         (f.format ? ':' + esc(f.format) : '') + '</span>' + (f.required ? ' <span class="pd-req">필수</span>' : '') +
         (f.enum ? ' <span class="pd-dim">[' + esc(f.enum.join(', ')) + ']</span>' : '') + '</div>';
     }).join('');

@@ -122,8 +122,8 @@
 .pd-status { font-weight: 800; color: #b91c1c; }
 .pd-entity { font-size: 12px; }
 .pd-entity summary { cursor: pointer; font-weight: 600; color: var(--pd-primary); }
-.pd-field { font-size: 11.5px; color: #475569; padding: 2px 0 2px 12px; }
-.pd-field code { font-weight: 700; color: var(--pd-ink); }
+.pd-entity-field { font-size: 11.5px; color: #475569; padding: 2px 0 2px 12px; }
+.pd-entity-field code { font-weight: 700; color: var(--pd-ink); }
 .pd-type { color: #0ea5e9; font-size: 11px; }
 
 /* ── 공통 empty ── */

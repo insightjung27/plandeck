@@ -503,3 +503,19 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-kpi { margin-bottom: 14px; }
 /* 검색바(.pd-searchbar)를 감싸는 클릭 링크 — 링크 기본 스타일(밑줄·파란색) 제거 */
 .pd-search { display: block; text-decoration: none; color: inherit; }
+
+/* 액션 카드 + 하단 액션바 — 목록 항목(주문·예약 등)의 정보 행과 액션 버튼을 분리.
+   행 링크(.pd-row) 안에 버튼 앵커를 중첩하지 않도록(= 중첩 앵커 레이아웃 깨짐 방지) 버튼은 .pd-card-actions 로 분리.
+   카드 간 간격은 부모(.pd-tabpanel/.pd-content flex gap)가 담당. */
+.pd-action-card { background: var(--w-white); border: 1px solid var(--w-line); border-radius: 8px; overflow: hidden; }
+.pd-card-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--w-line); }
+
+/* ══ 승격 공용 컴포넌트 2차 (2026-10-04): 지도·미디어플레이어·글 본문 ══ */
+/* 지도: 장소/배송 위치(내부 .pd-hero-img = 지도 영역). .pd-map-full = 넓은 지도 */
+.pd-map, .pd-map-full { display: block; border-radius: 8px; overflow: hidden; }
+/* 미디어 플레이어: 영상·음성(내부 .pd-hero-img = 썸네일) + 중앙 재생버튼 오버레이 */
+.pd-player { position: relative; display: block; border-radius: 8px; overflow: hidden; }
+.pd-player::before { content: ""; position: absolute; top: 50%; left: 50%; width: 54px; height: 54px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(0, 0, 0, .5); z-index: 1; }
+.pd-player::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-40%, -50%); border-style: solid; border-width: 10px 0 10px 16px; border-color: transparent transparent transparent #fff; z-index: 2; }
+/* 글/공지 본문: 제목·메타·구분선·내용의 아티클 본문(가독 행간) */
+.pd-notice-body { line-height: 1.6; }
