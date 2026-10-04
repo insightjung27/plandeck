@@ -36,6 +36,8 @@
 - [ ] 와이어프레임 컴포넌트만 사용(인라인 스타일 0)
 - [ ] 모든 인터랙션에 href 연결, 깨진 링크 0, 막다른 화면 0 (`node tools/verify-links.js <project>`)
 - [ ] screens.js ↔ 화면 HTML 정합, flow.to 참조 ID 유효 (`node tools/verify-roles.js <project>`)
+- [ ] **flow·flows.js 정합** — flow.to 실제 링크 일치 + config/flows.js 스텝 화면참조 실존 (`node tools/verify-flow.js <project>`)
+- [ ] **기능명 한글 일관성** — 기능 정의서 기능명이 영문 코드가 아닌 한글인가. 액션/조회=`intent`(한글) 필수, 이벤트=`when`/`intent`(한글)+`name`(dot-code) (`node tools/verify-naming.js <project>`)
 - [ ] 엔진 변경 시 additive(삭제 0)
 - [ ] **CSS 충돌 0** — 컴포넌트 추가 시 기존 베이스 클래스를 덮어쓰지 않았는가 (`node tools/verify-css.js`). 새 컴포넌트는 고유 클래스명 또는 `.parent .child` 스코프. 충돌=렌더 깨짐(.pd-step 회귀 유형).
 - [ ] **렌더 검증** (`node tools/verify-render.js <project>`) — 전 화면 pd-screen+스크롤컨테이너 보유·인라인스타일0·빈본문0. 내용 긴 화면은 목업 안에서 왜곡(압축) 없이 스크롤되는가(스크롤 컨테이너 .pd-app-body/.pd-content의 flex 자식은 flex-shrink로 눌리면 안 됨 = 압축 회귀 유형).

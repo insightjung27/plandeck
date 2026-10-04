@@ -103,9 +103,29 @@ prd.html      ← PRD 탭 화면. 섹션 ①~⑫ 를 자동으로 그린다.
 
 ```bash
 node -c engine/plandeck.js                      # (엔진을 건드렸을 때만) 문법 체크
-node tools/verify-render.js <project>           # 전 화면 렌더 위험 0
-node tools/verify-links.js  <project>           # 깨진 링크·막다른 화면 0
-node tools/verify-roles.js  <project>           # screens.js ↔ 화면 정합
+node tools/verify-render.js  <project>          # 전 화면 렌더 위험 0
+node tools/verify-links.js   <project>          # 깨진 링크·막다른 화면 0
+node tools/verify-roles.js   <project>          # screens.js ↔ 화면 정합
+node tools/verify-flow.js    <project>          # flow·flows.js 화면참조 정합
+node tools/verify-naming.js  <project>          # 기능명 한글 일관성(8절)
 ```
 
 미리보기로 `prd.html`을 열어 ①~⑫가 **눈으로 채워졌는지** 최종 확인한다.
+
+---
+
+## 8. 기능명 표기 규약 — "기능명은 항상 한글" (일관성)
+
+기능 정의서(`features.html`)의 **기능명 열은 사람이 읽는 이름이므로 반드시 한글**이다(약어 혼용 가능: "SOP(표준운영지침) 조회"처럼 한글을 함께). **개발 식별자(코드)는 "API/시점" 열**에 둔다 — 한 열에 코드, 한 열에 한글로 역할을 분리한다.
+
+| 유형 | 기능명(한글) ← 이 필드 | API/시점(코드) ← 이 필드 |
+|---|---|---|
+| 액션/조회 | `interface.writes[].intent` / `reads[].intent` | `method` + `path` (예: `POST /orders`) |
+| 이벤트 | `interface.events[].when`(발생 시점·한글) 또는 `intent` | `events[].name`(dot-code 예: `order.created`) |
+
+**규칙**
+- 액션/조회에는 **`intent`(한글)를 반드시** 넣는다. 없으면 영문 `id`(`createOrder` 등)가 기능명으로 노출돼 깨진다.
+- 이벤트의 `name`은 **dot-code(영문 식별자)로 통일**하고(`주어.동사` 과거형 권장: `order.created`), 한글 설명은 **`when`**(또는 `intent`)에 넣는다.
+- 순수 약어(SOP·FAQ·PG 등)만으로 기능명을 두지 말고 **한글을 함께** 쓴다("자주 묻는 질문(FAQ)").
+
+**자동 검사**: `node tools/verify-naming.js <project>` 가 렌더될 기능명에 **한글이 없으면 차단**한다. 이 게이트가 통과해야 일관성이 보장된다(기획자가 매번 눈으로 확인할 필요 없음).

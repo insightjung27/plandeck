@@ -1042,7 +1042,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-call-btn', kind: 'button', label: '119 전화' }, { role: '.pd-list', kind: 'list', label: '상황별 대응' }],
         description: [{ text: '119 즉시 전화', target: '.pd-call-btn' }, { text: '상황별 절차', target: '.pd-list' }],
         cases: [{ state: '정상', trigger: '진입', guard: '', result: 'SOP', message: '', target: '.pd-list' }],
-        interface: { reads: [{ id: 'getSop', intent: 'SOP', method: 'GET', path: '/partner/sop/{id}', response: '{ steps:object[] }', auth: 'Bearer', target: '.pd-list' }], writes: [], events: [] },
+        interface: { reads: [{ id: 'getSop', intent: 'SOP(표준운영지침) 조회', method: 'GET', path: '/partner/sop/{id}', response: '{ steps:object[] }', auth: 'Bearer', target: '.pd-list' }], writes: [], events: [] },
         flow: { to: [] },
       },
       {

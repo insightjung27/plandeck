@@ -278,7 +278,7 @@ window.PLANDECK_SCREENS = [
         components: [{ role: '.pd-faq-list', kind: 'list', label: 'FAQ 목록' }],
         description: [{ text: 'FAQ·1:1 문의·전화 상담' }],
         cases: [{ state: '정상', trigger: '진입', guard: '', result: 'FAQ·문의 채널', message: '', target: '.pd-faq-list' }],
-        interface: { reads: [{ id: 'listFaq', intent: 'FAQ', method: 'GET', path: '/support/faq', auth: 'None', target: '.pd-faq-list' }], writes: [], events: [] },
+        interface: { reads: [{ id: 'listFaq', intent: '자주 묻는 질문(FAQ) 조회', method: 'GET', path: '/support/faq', auth: 'None', target: '.pd-faq-list' }], writes: [], events: [] },
         flow: { to: [] },
       },
     ],

@@ -1247,7 +1247,11 @@
       var itf = p.interface || {};
       (itf.writes || []).forEach(function (w) { feats.push({ name: w.intent || w.id, screen: p, type: '액션', sub: (w.method || '') + ' ' + (w.path || '') }); });
       (itf.reads || []).forEach(function (r) { feats.push({ name: r.intent || r.id, screen: p, type: '조회', sub: (r.method || '') + ' ' + (r.path || '') }); });
-      (itf.events || []).forEach(function (e) { feats.push({ name: e.name, screen: p, type: '이벤트', sub: e.when || '' }); });
+      (itf.events || []).forEach(function (e) {
+        // 일관성: 기능명은 한글(intent>when), 이벤트 dot-코드는 'API/시점' 열에(액션의 API path와 동일 위치)
+        var ko = e.intent || e.when || e.name;
+        feats.push({ name: ko, screen: p, type: '이벤트', sub: (e.name && e.name !== ko) ? e.name : (e.when || '') });
+      });
     });
     var trs = feats.map(function (f, i) {
       var cls = f.type === '액션' ? 'is-write' : f.type === '이벤트' ? 'is-event' : 'is-read';
