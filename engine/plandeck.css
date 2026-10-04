@@ -88,7 +88,7 @@
 
 /* ── 표 (cases) ── */
 .pd-table-wrap { overflow-x: auto; margin-bottom: 12px; }
-.pd-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.pd-table { width: 100%; border-collapse: collapse; font-size: 12.5px; } /* dup-ok: 문서표 폰트(와이어 .pd-table와 0.5px 차·저영향) */
 .pd-table th { text-align: left; font-weight: 700; color: var(--pd-sub); padding: 6px 8px; border-bottom: 2px solid var(--pd-line); white-space: nowrap; }
 .pd-table td { padding: 8px; border-bottom: 1px solid #f1f3f5; vertical-align: top; color: #374151; line-height: 1.45; }
 .pd-case-row { cursor: pointer; }
@@ -186,7 +186,7 @@
 .pd-floating-nav { left: 50%; right: auto; transform: translateX(-50%); }
 /* 좌측 패널의 '현재 화면 정보(타이틀·ID·Figma)'는 목업 상단(.pd-topbar)으로 이동 → 여기선 숨김.
    좌측 상단 = 전체 메뉴(글로벌 네비) + 전체 화면 목록 전용(정보 위계 정리). */
-.page-nav-head { display: none; }
+.page-nav-head { display: none; } /* dup-ok: 리뷰모드에서 숨김(common.css 기반 override) */
 
 /* 화면 목록 밀도 축소(목록이 많아질 때 대비 — 더 작은 폰트·조밀) */
 .page-nav .page-nav-scroll { padding: 10px 10px; gap: 10px; }
@@ -343,8 +343,8 @@
    동일한 상단 위치에서 시작(중앙정렬 시 짧은 화면이 아래로 내려가던 문제 해결).
    scale 기준점도 상단으로 두어 축소해도 상단선이 고정된다.
    padding-top은 상단 바(.pd-topbar: 검토 모드·화면정보)와 겹치지 않도록 그 아래로. */
-.device-stage { align-items: flex-start; padding-top: 72px; }
-.device-mockup { transform-origin: top center; }
+.device-stage { align-items: flex-start; padding-top: 72px; } /* dup-ok: 리뷰모드 스테이지 리파인(common.css 기반 가산) */
+.device-mockup { transform-origin: top center; } /* dup-ok: 리뷰모드 스케일 기준점 */
 
 /* 우측 DESCRIPTION 패널 내용 폰트 축소(더 조밀하게) */
 .page-detail .page-detail-list { gap: 6px; }
@@ -353,7 +353,7 @@
 .page-detail .page-detail-item-text { font-size: 12px; line-height: 1.45; }
 
 /* ═══ Flow Diagram 패널 — 저장 버튼 + 코너 리사이즈 ═══ */
-.page-flow { min-width: 240px; min-height: 160px; }
+.page-flow { min-width: 240px; min-height: 160px; } /* dup-ok: 플로우 노드 최소크기(common.css 기반 가산) */
 .pd-flow-save {
   height: 26px; padding: 0 10px; margin-right: 4px; border-radius: 7px;
   border: 1px solid #e5e7eb; background: #f3f4f6; color: #9ca3af;
@@ -411,7 +411,8 @@
 .page-nav.is-hidden { display: none; }
 .pd-nav-toggle-btn.is-off { opacity: .5; }
 .pd-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.pd-chip { font-size: 12px; font-weight: 600; color: #475569; background: var(--pd-soft); border-radius: 8px; padding: 4px 10px; }
+/* 문서용 칩(overview/workspace/flows 필터) — 와이어프레임 pill 칩(.pd-chips .pd-chip)과 충돌 방지 위해 doc 컨테이너로 스코프 */
+.pd-chip-row .pd-chip, .pd-flow-filter .pd-chip { font-size: 12px; font-weight: 600; color: #475569; background: var(--pd-soft); border-radius: 8px; padding: 4px 10px; }
 
 /* ═══ 상세 기획서(spec.html) ═══ */
 .pd-spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin: 10px 0; }
@@ -460,7 +461,7 @@
 .pd-review-mode .device-stage { padding-top: 112px; }
 
 /* ═══ 충실도(Fidelity): 디자인 이미지 / 프로토타입 임베드 렌더 + 토글 ═══ */
-.device-screen { position: relative; }
+.device-screen { position: relative; } /* dup-ok: 리뷰 오버레이 앵커(common.css 기반 가산) */
 .pd-figma-img-wrap { position: absolute; inset: 0; z-index: 30; overflow: hidden; }
 .pd-figma-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .pd-figma-proto { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 30; display: block; background: #fff; }

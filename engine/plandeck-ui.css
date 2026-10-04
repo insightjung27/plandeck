@@ -489,7 +489,7 @@ a.pd-wpanel-sub { text-decoration: none; }
 /* 스크롤 안전망 — app-body/content 없는 레이아웃(로그인 등 .pd-auth)도 내용이 길면 프레임이 잘리지 않고 스크롤.
    app-body/content 레이아웃은 app-body가 flex:1로 정확히 채워 pd-screen이 넘치지 않으므로 이 규칙은 무해(회귀 0).
    (.pd-auth 의 flex-shrink:0 은 위 베이스 규칙에 병합) */
-.pd-screen { overflow-y: auto; }
+.pd-screen { overflow-y: auto; } /* dup-ok: 스크롤 안전망(plandeck.css 본 정의에 속성 비충돌 가산) */
 
 /* ══ 승격 공용 컴포넌트 (2026-10-04) — 여러 프로젝트에서 반복되던 ad-hoc 패턴을 정식 정의 ══
    (기존 렌더 보존 + 누적 결함 교정. 자식 요소는 각자 정의된 컴포넌트가 스타일을 담당) */
