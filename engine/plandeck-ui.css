@@ -461,6 +461,8 @@ a.pd-wpanel-sub { text-decoration: none; }
 .pd-stepper .pd-step.is-active .pd-step-dot { border-color: var(--w-ink); color: var(--w-ink); }
 .pd-stepper .pd-step-label { font-size: 11px; color: var(--w-sub); text-align: center; line-height: 1.2; }
 .pd-stepper .pd-step.is-active .pd-step-label { color: var(--w-ink); font-weight: 700; }
+/* 클릭 가능한 스테퍼 단계(각 STEP → 자기 화면). anchor 기본 밑줄·링크색 제거(스코프 한정·additive) */
+.pd-stepper a.pd-step { text-decoration: none; color: inherit; cursor: pointer; }
 
 /* 비가역 쓰기 확인 패널(사유 필수) */
 .pd-confirm { border: 1px solid var(--w-line-2); border-radius: 12px; padding: 14px 16px; background: var(--w-fill); display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
