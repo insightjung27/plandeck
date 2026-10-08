@@ -4,8 +4,8 @@ window.PLANDECK_FLOWS = [
   // ── 종단 연결(개설 퍼널) ──
   {
     id: 'FLOW-ONBOARD', name: '대표사이트 방문→교회 개설 신청', surface: '대표사이트',
-    desc: '[종단 1~2] 대표사이트에서 상품·가격 확인 → 회원가입·교회정보·요금제 선택 → 개설 신청(슈퍼 승인 대기)',
-    steps: [{ screen: 'SCR-LND-001' }, { screen: 'SCR-LND-003', via: 'WEB 상품' }, { screen: 'SCR-LND-005', via: '가격 안내' }, { screen: 'SCR-LND-009', via: '교회 개설 신청' }, { screen: 'SCR-SUP-004', via: '슈퍼 승인 대기' }],
+    desc: '[종단 1~2] 대표사이트에서 상품·가격 확인 → 회원가입 → 교회정보·요금제 선택 → 개설 신청 → 접수완료·상태 확인',
+    steps: [{ screen: 'SCR-LND-001' }, { screen: 'SCR-LND-005', via: '가격 안내' }, { screen: 'SCR-LND-013', via: '회원가입' }, { screen: 'SCR-LND-009', via: '교회 개설 신청' }, { screen: 'SCR-LND-011', via: '접수완료·상태' }],
   },
   {
     id: 'FLOW-PROVISION', name: '개설 승인→Tenant 자동 프로비저닝', surface: '슈퍼관리자',
@@ -14,13 +14,13 @@ window.PLANDECK_FLOWS = [
   },
   {
     id: 'FLOW-WIZARD', name: '관리자 최초 Wizard→서비스 오픈', surface: '교회 관리자',
-    desc: '[종단 5~6] 관리자 로그인 → 개설 설정 Wizard 8STEP(교회명·로고·색·이미지·정보·예배시간·확인·OPEN) → 대시보드(status=활성)',
-    steps: [{ screen: 'SCR-ADM-001' }, { screen: 'SCR-ADM-002', via: '개설 Wizard 8STEP' }, { screen: 'SCR-ADM-003', via: 'OPEN·대시보드' }],
+    desc: '[종단 5~6] 관리자 로그인 → 개설 설정 Wizard 8STEP(교회명·로고·색·이미지·정보·예배시간·확인·OPEN) → 오픈 완료(공개홈 URL·다음 할 일) → 대시보드',
+    steps: [{ screen: 'SCR-ADM-001' }, { screen: 'SCR-ADM-002', via: '개설 Wizard 8STEP' }, { screen: 'SCR-ADM-019', via: '서비스 오픈 완료' }, { screen: 'SCR-ADM-003', via: '대시보드' }],
   },
   {
     id: 'FLOW-MEMBER-JOIN', name: '교인 진입→가입(교회검색 없음)', surface: '교인 Web·PWA',
-    desc: '[종단 7] 교회 URL/PWA 진입 → Tenant 자동 확정 → 로그인/회원가입 → church_id 자동 바인딩(승인대기) → 교인 홈',
-    steps: [{ screen: 'SCR-APP-009' }, { screen: 'SCR-APP-008', via: '회원가입(church_id 자동)' }, { screen: 'SCR-APP-001', via: '교인 홈' }],
+    desc: '[종단 7] 교회 URL/PWA 진입 → 로그인/회원가입(church_id 자동) → 가입 접수완료·승인 대기 → (승인 후) 교인 홈',
+    steps: [{ screen: 'SCR-APP-009' }, { screen: 'SCR-APP-008', via: '회원가입(church_id 자동)' }, { screen: 'SCR-APP-014', via: '가입 접수완료·승인 대기' }, { screen: 'SCR-APP-001', via: '승인 후 교인 홈' }],
   },
   {
     id: 'FLOW-PWA-INSTALL', name: 'PWA 홈 설치(교회 전용 앱처럼)', surface: '교회 Web·PWA',
@@ -65,6 +65,17 @@ window.PLANDECK_FLOWS = [
     id: 'FLOW-SUPER-OPS', name: '슈퍼관리자 통합 운영', surface: '슈퍼관리자',
     desc: '전체 교회 관리 → 테넌트 상세(ChannelConfig) → 요금제·결제 → 서비스 콘솔 → 운영 로그',
     steps: [{ screen: 'SCR-SUP-003' }, { screen: 'SCR-SUP-005', via: '테넌트 상세' }, { screen: 'SCR-SUP-006', via: '요금제·결제' }, { screen: 'SCR-SUP-008', via: '서비스 콘솔' }, { screen: 'SCR-SUP-009', via: '운영 로그' }],
+  },
+  // ── 재입장·에러 복구(페르소나 적대검토 반영) ──
+  {
+    id: 'FLOW-APP-RESET', name: '교인 비밀번호 재설정', surface: '교인 Web·PWA',
+    desc: '로그인 → 비밀번호 재설정·아이디 찾기(본인 인증→재설정→완료) → 로그인 복귀',
+    steps: [{ screen: 'SCR-APP-009' }, { screen: 'SCR-APP-013', via: '비밀번호 찾기' }, { screen: 'SCR-APP-009', via: '재설정 완료·로그인' }],
+  },
+  {
+    id: 'FLOW-PWA-OFFLINE', name: 'PWA 설치·오프라인 복구', surface: '교회 Web·PWA',
+    desc: '공개홈 → 홈 화면 설치 안내 → (오프라인/오류 시) 공용 안내 화면 → 재시도·홈 복귀',
+    steps: [{ screen: 'SCR-SITE-001' }, { screen: 'SCR-SITE-007', via: '설치 안내' }, { screen: 'SCR-SITE-009', via: '오프라인/오류 안내' }],
   },
 ];
 window.PDK_FLOWS = window.PLANDECK_FLOWS;

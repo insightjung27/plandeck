@@ -1928,15 +1928,6 @@ window.PLANDECK_SCREENS = [
             "role": ".pd-pricerow",
             "kind": "table",
             "label": "요금제 선택 — WEB 상품 / WEB+APP(차기), 이용료 미확정"
-          },
-          {
-            "role": ".pd-cta",
-            "kind": "button",
-            "label": "개설 신청 제출 — 슈퍼 승인 대기",
-            "action": {
-              "on": "click",
-              "do": "go:SCR-SUP-004"
-            }
           }
         ],
         "description": [
@@ -1957,7 +1948,6 @@ window.PLANDECK_SCREENS = [
             "text": "요금제 선택 — WEB 상품 / WEB+APP(차기), 이용료는 미확정이며 구체 금액은 교회 확인 후 안내. 가격 자세히 보기(SCR-LND-005)"
           },
           {
-            "target": ".pd-cta",
             "text": "제출하면 개설 신청(OnboardingApplication)이 생성되어 슈퍼 운영자 검토 큐로 접수(SCR-SUP-004). 제출 전 확인 모달이 뜨고, 재클릭해도 중복 생성되지 않음(멱등)"
           }
         ],
@@ -1991,7 +1981,6 @@ window.PLANDECK_SCREENS = [
             "result": "개설 신청 접수·슈퍼 승인 대기 안내",
             "message": "신청이 접수됐어요. 슈퍼 운영자 승인을 기다려주세요",
             "placement": "full-page",
-            "target": ".pd-cta",
             "api": {
               "endpoint": "POST /onboarding/applications",
               "status": 201
@@ -2030,7 +2019,6 @@ window.PLANDECK_SCREENS = [
             "result": "접수 실패·입력값 보존 후 재시도 유도",
             "message": "지금 신청 접수가 원활하지 않아요. 잠시 후 다시 시도해주세요",
             "placement": "banner",
-            "target": ".pd-cta",
             "api": {
               "endpoint": "POST /onboarding/applications",
               "status": 500
@@ -2043,7 +2031,6 @@ window.PLANDECK_SCREENS = [
             "result": "제출 차단·로그인 유도(SCR-LND-008)",
             "message": "로그인이 필요해요. 로그인하면 이 계정이 교회 관리자 계정으로 연결돼요",
             "placement": "modal",
-            "target": ".pd-cta",
             "api": {
               "endpoint": "POST /onboarding/applications",
               "status": 401
@@ -2056,7 +2043,6 @@ window.PLANDECK_SCREENS = [
             "result": "중복 생성 없이 기존 신청 상태 재노출(멱등)",
             "message": "이미 접수된 신청이에요",
             "placement": "toast",
-            "target": ".pd-cta",
             "api": {
               "endpoint": "POST /onboarding/applications",
               "status": 409
@@ -2094,8 +2080,7 @@ window.PLANDECK_SCREENS = [
             "guard": "입력검증 — 개설 신청 동의 미체크",
             "result": "제출 차단·동의 체크 요구",
             "message": "입력 내용과 요금제를 확인하고 개설 신청 동의에 체크해주세요",
-            "placement": "inline",
-            "target": ".pd-cta"
+            "placement": "inline"
           }
         ],
         "interface": {
@@ -2143,7 +2128,6 @@ window.PLANDECK_SCREENS = [
               "auth": "Bearer(로그인 신청자)",
               "idempotent": "Idempotency-Key 헤더 — 재클릭 시 신규 생성 없이 기존 신청 반환",
               "confirm": "제출 전 확인 모달 필수",
-              "target": ".pd-cta",
               "errors": [
                 {
                   "status": 401,
@@ -2474,6 +2458,1174 @@ window.PLANDECK_SCREENS = [
               "screen": "SCR-LND-001",
               "via": "접수 후 홈 복귀",
               "trigger": ".pd-cta"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-LND-011",
+        "label": "개설 신청 접수완료·상태",
+        "href": "l-apply-done.html",
+        "surface": "landing",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-002"
+        ],
+        "context": "개설 신청 접수완료·상태(접수→검토중→승인/반려). 접수번호·교회명·요금제·예상 소요·문의처.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비 — 훌메이트 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청(현재 플로우 활성)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-done",
+            "kind": "card",
+            "label": "접수 완료 히어로 — 체크 아이콘 + '개설 신청이 접수됐어요' + 이메일 통지 안내"
+          },
+          {
+            "role": ".pd-stepper",
+            "kind": "stepper",
+            "label": "진행 상태 — 접수됨(완료)·검토중(현재)·승인완료 3단계"
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "현재 상태 배너 — 검토중 · 슈퍼 운영자가 신청 내용을 확인하고 있어요"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "table",
+            "label": "접수 정보 — 접수번호 HM-2026-0147·교회명 ○○교회·요금제 WEB 상품(월 이용료 미확정)·신청일시·예상 검토 소요 영업일 1~2일·결과 안내 이메일"
+          },
+          {
+            "role": ".pd-card",
+            "kind": "card",
+            "label": "승인완료 분기 — 교회 전용 Tenant 자동 생성·설정 Wizard(8단계) 시작",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-002"
+            }
+          },
+          {
+            "role": ".pd-card",
+            "kind": "card",
+            "label": "반려 분기 — 사유 확인 후 보완하여 다시 신청(멱등)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "하단 CTA — 홈으로 돌아가기·문의하기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          }
+        ],
+        "description": [
+          {
+            "target": ".pd-done",
+            "text": "접수 완료 확인 히어로 — 제출 직후 '개설 신청이 접수됐어요'로 완결감을 주고, 승인 결과는 담당자 이메일로 통지됨을 안내. 이 화면은 공개 랜딩의 상태 열람 종단(접수→검토→승인/반려)"
+          },
+          {
+            "target": ".pd-stepper",
+            "text": "진행 상태 스테퍼 — 접수됨(완료)·검토중(현재)·승인완료 3단계. 기본 노출 상태는 '검토중'이며, 승인완료로 전이되면 3단계가 완료 처리됨"
+          },
+          {
+            "target": ".pd-wpanel",
+            "text": "접수 정보 요약 — 접수번호(문의 시 사용)·교회명 ○○교회·요금제 WEB 상품(월 이용료 미확정)·신청일시·예상 검토 소요(영업일 기준 1~2일)·결과 안내 이메일. 금액은 시장 검증 후 확정으로 현재 미확정"
+          },
+          {
+            "target": ".pd-card",
+            "text": "검토 결과 2분기 안내 — 승인완료 시 교회 전용 Tenant 자동 생성(church_id 자동) 후 설정 Wizard로 시작(SCR-ADM-002), 반려 시 사유 확인 후 보완하여 재신청(SCR-LND-009·멱등)"
+          },
+          {
+            "target": ".pd-cta",
+            "text": "하단 복귀·문의 — 홈으로 돌아가기(SCR-LND-001)와 문의하기. 담당자 연락처는 교회 확인 후 게재(정직성), 문의는 support@hurmate.kr 메일"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "제출 직후 진입",
+            "guard": "방금 접수된 신청(status=신청)",
+            "result": "접수 완료 히어로·접수번호·스테퍼(접수됨 완료, 검토중 활성) 노출",
+            "message": "개설 신청이 접수됐어요. 슈퍼 운영자 검토 후 결과를 담당자 이메일로 알려드려요",
+            "placement": "full-page",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "로딩",
+            "trigger": "상태 영역 진입·새로고침",
+            "guard": "최신 접수 상태 조회 중",
+            "result": "접수 정보·스테퍼 자리 유지하며 상태 불러오는 중 표시",
+            "message": "접수 상태를 불러오고 있어요",
+            "placement": "inline",
+            "target": ".pd-stepper",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "상태 조회 성공",
+            "guard": "status=검토(검토중)",
+            "result": "검토중 배너·접수 정보·2분기 안내 정상 노출",
+            "message": "현재 슈퍼 운영자가 신청 내용을 검토하고 있어요(검토중)",
+            "placement": "banner",
+            "target": ".pd-banner",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "요금제 정보 표시",
+            "guard": "요금 금액 미확정(시장검증 전)",
+            "result": "요금제 구조(WEB 상품)는 노출되나 월 이용료는 '미확정' 배지",
+            "message": "이용료는 교회 확인 후 안내드려요(현재 미확정)",
+            "placement": "inline",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "상태 조회",
+            "guard": "서버 오류(5xx) 또는 네트워크 불안정",
+            "result": "최신 상태 반영 실패·접수번호는 유지하고 재시도 유도",
+            "message": "지금 접수 상태를 불러오지 못했어요. 잠시 후 다시 시도해주세요",
+            "placement": "banner",
+            "target": ".pd-banner",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "접수 상태 열람",
+            "guard": "미로그인 또는 본인 신청이 아닌 계정(공개 랜딩)",
+            "result": "상태 상세는 가리고 로그인 유도·본인 신청만 열람 안내",
+            "message": "로그인하면 내가 신청한 개설 건의 진행 상태를 볼 수 있어요",
+            "placement": "modal",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 401
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "검토 결과 전이 감지",
+            "guard": "status=개설(승인완료) 또는 반려로 전이",
+            "result": "승인완료=스테퍼 3단계 완료+설정 Wizard CTA 활성(SCR-ADM-002), 반려=반려 사유 안내+보완 재신청 CTA(SCR-LND-009)",
+            "message": "승인됐어요 — 설정 Wizard로 교회 개설을 시작하세요 / 반려됐어요 — 사유를 확인하고 보완해 다시 신청해주세요",
+            "placement": "banner",
+            "target": ".pd-card",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "접수완료 화면 재진입·접수번호 중복 확인",
+            "guard": "이미 접수된 동일 신청(멱등 키 동일)",
+            "result": "중복 접수 없이 기존 접수 건의 상태를 그대로 재노출",
+            "message": "이미 접수된 신청이에요. 진행 상태를 확인해주세요",
+            "placement": "toast",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "GET /onboarding/applications/{id}",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "applicationStatus",
+              "intent": "개설 신청 접수·검토 상태 조회",
+              "method": "GET",
+              "path": "/onboarding/applications/{id}",
+              "params": "path: id(신청 UUID)",
+              "response": "'{entities.OnboardingApplication}' — { applicationNumber, churchName, plan, status('신청'|'검토'|'개설'|'활성'|'일시정지'|'해지'), appliedAt, approvedAt, rejectReason? }. 승인 시 Tenant·Church·Admin·Domain·ChannelConfig·PwaConfig 자동 생성으로 연결",
+              "auth": "Bearer(로그인 신청자 — 본인 신청만)",
+              "target": ".pd-wpanel",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미로그인 상태 열람",
+                  "message": "로그인하면 내가 신청한 개설 건의 진행 상태를 볼 수 있어요"
+                },
+                {
+                  "status": 403,
+                  "when": "본인 신청이 아닌 건 접근",
+                  "message": "본인이 신청한 개설 건만 확인할 수 있어요"
+                },
+                {
+                  "status": 404,
+                  "when": "접수번호에 해당하는 신청 없음",
+                  "message": "해당 접수 건을 찾을 수 없어요. 접수번호를 확인해주세요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "지금 접수 상태를 불러오지 못했어요. 잠시 후 다시 시도해주세요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "name": "onboarding.application.status.viewed",
+              "intent": "접수 상태 열람",
+              "when": "상태 조회 성공(200)",
+              "payload": "{ applicationId, applicationNumber, status }"
+            },
+            {
+              "name": "onboarding.application.approved",
+              "intent": "승인완료 전이 감지(설정 Wizard 진입 유도)",
+              "when": "status=개설(승인완료)로 전이",
+              "payload": "{ applicationId, tenantId, approvedAt }"
+            },
+            {
+              "name": "onboarding.application.rejected",
+              "intent": "반려 전이 감지(사유 안내·재신청 유도)",
+              "when": "status=반려로 전이",
+              "payload": "{ applicationId, rejectReason }"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-002",
+              "via": "승인완료 → 개설 설정 Wizard(8단계) 시작",
+              "trigger": ".pd-card"
+            },
+            {
+              "screen": "SCR-LND-001",
+              "via": "홈으로 돌아가기",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-LND-012",
+        "label": "비밀번호 재설정",
+        "href": "l-password-reset.html",
+        "surface": "landing",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-002"
+        ],
+        "context": "전역 계정 비밀번호 재설정(이메일→링크 발송→완료).",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비 — 훌메이트 로고·홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의·로그인(활성)·교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "비밀번호 재설정 요청 폼 — 가입 이메일 입력 후 재설정 링크 발송(계정 존재 여부 비노출)"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "input",
+            "label": "이메일 입력란 — '가입하신 이메일 주소'"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "재설정 링크 보내기 — 입력 이메일로 재설정 링크 발송 후 전송 완료 안내 노출",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-012"
+            }
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "전송 완료 안내 — '재설정 링크를 보냈어요. 메일함(스팸함 포함) 확인 · 링크 30분 유효'"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "메일을 받지 못하셨나요? 다시 보내기 — 재설정 링크 재발송(레이트리밋 적용)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-012"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그인으로 돌아가기 — 대표사이트 로그인(SCR-LND-008)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-008"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "상단 네비 — '훌메이트' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동하고, 우측 로그인은 현재 인증 영역이라 활성 표시",
+            "target": ".pd-gnb"
+          },
+          {
+            "text": "비밀번호 재설정 요청 폼 — 전역 계정(AppUser)의 가입 이메일을 입력해 재설정 링크를 발송. 계정 존재 여부는 응답으로 알려주지 않고(가입 여부 노출·열거 공격 방지) 동일한 전송 완료 안내만 노출",
+            "target": ".pd-form"
+          },
+          {
+            "text": "이메일 입력란('가입하신 이메일 주소') — 형식이 올바르지 않으면 입력란 아래에 '올바른 이메일 주소를 입력해주세요'를 인라인 표시",
+            "target": ".pd-field"
+          },
+          {
+            "text": "전송 완료 안내 배너 — 가입된 계정이 있으면 재설정 링크를 보냈다는 안내와 함께 메일함·스팸함 확인, 링크 30분 유효를 안내",
+            "target": ".pd-banner"
+          },
+          {
+            "text": "'재설정 링크 보내기'·'다시 보내기'(재발송, 레이트리밋 적용)·'로그인으로 돌아가기' 버튼 — 로그인으로 돌아가기는 대표사이트 로그인(SCR-LND-008)으로 이동",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "화면 진입",
+            "guard": "비로그인 상태",
+            "result": "이메일 입력 폼과 안내(계정 노출 방지·링크 30분 유효·소셜 가입 안내) 노출",
+            "message": "가입하신 이메일 주소를 입력하면 비밀번호 재설정 링크를 보내드려요",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "로딩",
+            "trigger": "제출(재설정 링크 보내기)",
+            "guard": "입력 유효·발송 처리 중",
+            "result": "버튼 비활성·스피너 표시, 중복 제출 차단",
+            "message": "재설정 링크를 보내고 있어요",
+            "placement": "inline",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /auth/password-reset/request",
+              "status": "처리 중"
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "제출(재설정 링크 보내기)",
+            "guard": "이메일 형식 유효(가입 여부와 무관하게 동일 처리)",
+            "result": "전송 완료 배너 노출 — 가입된 계정이 있으면 재설정 링크 발송(열거 방지로 동일 메시지), '다시 보내기'·'로그인으로 돌아가기' 노출",
+            "message": "입력하신 이메일로 가입된 계정이 있으면 재설정 링크를 보냈어요. 메일함(스팸함 포함)을 확인해주세요. 링크는 30분간 유효합니다",
+            "placement": "banner",
+            "target": ".pd-banner",
+            "api": {
+              "endpoint": "POST /auth/password-reset/request",
+              "status": 202
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "해당 없음",
+            "guard": "빈데이터: 해당 없음(재설정 요청 폼 — 조회·목록 화면이 아님)",
+            "result": "표시 없음",
+            "message": "",
+            "target": ".pd-form"
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(입력검증·필수누락)",
+            "guard": "이메일 미입력",
+            "result": "제출 차단·인라인 검증 오류",
+            "message": "이메일 주소를 입력해주세요",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "POST /auth/password-reset/request",
+              "status": 400
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(입력검증·형식오류 — 잘못된 이메일)",
+            "guard": "이메일 형식 불일치",
+            "result": "제출 차단·인라인 검증 오류",
+            "message": "올바른 이메일 주소를 입력해주세요",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "POST /auth/password-reset/request",
+              "status": 400
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(입력검증·범위경계)",
+            "guard": "이메일 길이 초과(254자 초과 등)",
+            "result": "제출 차단·인라인 검증 오류",
+            "message": "이메일 주소가 너무 길어요. 다시 확인해주세요",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "POST /auth/password-reset/request",
+              "status": 400
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(입력검증·중복충돌)",
+            "guard": "중복충돌: 해당 없음(재설정 요청은 신규 레코드 생성 충돌이 아님 — 동일 이메일 재요청은 멱등 접수되어 최신 링크만 유효, 이전 링크는 무효화)",
+            "result": "해당 없음",
+            "message": "",
+            "target": ".pd-form"
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(재설정 링크 보내기)",
+            "guard": "서버·메일 발송 오류",
+            "result": "토스트로 재시도 안내",
+            "message": "메일 발송에 실패했어요. 잠시 후 다시 시도해주세요",
+            "placement": "toast",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /auth/password-reset/request",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "화면 진입·제출",
+            "guard": "공개 화면이라 열람 자체는 인증 불필요(해당 없음). 소셜(카카오·네이버) 전용 계정은 비밀번호가 없어 재설정 대상이 아니나, 계정 특정 응답으로 노출하지 않고 일반 안내 문구로만 상시 표기(열거 방지)",
+            "result": "하단 안내 문구 상시 노출(계정별 분기 없음)",
+            "message": "카카오·네이버로 가입하셨다면 비밀번호가 없어요. 소셜 로그인으로 입장해 주세요",
+            "placement": "inline"
+          },
+          {
+            "state": "엣지",
+            "trigger": "다시 보내기 반복 클릭",
+            "guard": "재발송 레이트리밋 초과",
+            "result": "일시 제한·토스트 안내",
+            "message": "재발송 요청이 많아요. 잠시 후 다시 시도해주세요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /auth/password-reset/request",
+              "status": 429
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "메일의 재설정 링크 클릭(만료/사용됨 상태로 이 화면으로 되돌아옴)",
+            "guard": "재설정 토큰이 30분 경과로 만료되었거나 이미 사용됨",
+            "result": "안내 후 재요청 유도(이 화면에서 다시 발송)",
+            "message": "링크가 만료되었거나 이미 사용됐어요. 재설정 링크를 다시 받아주세요",
+            "placement": "banner",
+            "target": ".pd-banner",
+            "api": {
+              "endpoint": "GET /auth/password-reset/verify (링크 랜딩 단계)",
+              "status": 410
+            }
+          }
+        ],
+        "interface": {},
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-008",
+              "via": "재설정 안내 확인 후 로그인으로 돌아가기",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-LND-013",
+        "label": "회원가입",
+        "href": "l-signup.html",
+        "surface": "landing",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-002"
+        ],
+        "context": "전역 계정 회원가입(아이디). 소셜 외 경로. 개설 신청 관리자 계정 연결.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비 — 훌메이트 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "아이디(이메일) 가입 폼 — 이름·이메일·휴대전화·비밀번호·비밀번호 확인 (최소 수집·주민번호/생년/성별 미수집)"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "이메일 입력 — 중복·형식 검증 대상 필드"
+          },
+          {
+            "role": ".pd-check",
+            "kind": "form",
+            "label": "약관 동의 — [필수] 서비스 이용약관·[필수] 개인정보 수집·이용(이름·이메일·휴대전화)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "소셜 간편 가입 4사 — 카카오·네이버·구글·Apple / 이미 계정이 있나요? 로그인",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-008"
+            }
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "가입하고 교회 개설 신청 계속 — 생성 계정을 개설 신청 관리자 계정으로 연결",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          }
+        ],
+        "description": [
+          {
+            "target": ".pd-gnb",
+            "text": "상단 네비 — '훌메이트' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동하며, 현재 화면은 교회 개설 신청 흐름의 가입 단계라 '교회 개설 신청'이 활성 표시"
+          },
+          {
+            "target": ".pd-form",
+            "text": "아이디(이메일) 가입 폼 — 이름·이메일·휴대전화·비밀번호·비밀번호 확인. 전역 계정(AppUser)을 생성하며, 교회를 검색하는 과정은 없고 전용 주소 접속 시 소속 교회가 자동 지정됨(church_id 자동 매핑). 주민번호·생년·성별 등은 수집하지 않음(최소 수집)"
+          },
+          {
+            "target": ".pd-field",
+            "text": "이메일 입력란 — 중복·형식을 검증. 이미 가입된 이메일이면 '이미 가입된 이메일이에요', 형식 불일치면 '이메일 형식을 확인해주세요(name@example.com)'를 입력란 아래 인라인 표시. 비밀번호는 8자 이상이며 확인란과 일치해야 함"
+          },
+          {
+            "target": ".pd-check",
+            "text": "약관 동의 — [필수] 서비스 이용약관, [필수] 개인정보 수집·이용(이름·이메일·휴대전화)에 모두 동의해야 가입 가능. 동의 내역은 Consent로 최소 유지되며 '약관 전문 보기'로 전문 확인(s-terms.html)"
+          },
+          {
+            "target": ".pd-cta",
+            "text": "'가입하고 교회 개설 신청 계속' 실행 — 가입 성공 시 전역 계정이 생성되고, 이 계정이 교회 개설 신청(SCR-LND-009)의 관리자(신청자) 계정으로 연결됨. 이미 계정이 있으면 로그인(SCR-LND-008)으로 이동"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "화면 진입",
+            "guard": "비로그인 상태(공개 랜딩)",
+            "result": "이름·이메일·휴대전화·비밀번호·비밀번호 확인 폼, [필수] 약관 동의 2종, 소셜 4사 간편 가입, '이미 계정이 있나요? 로그인' 안내 노출",
+            "message": "전역 계정으로 가입하면 교회 개설 신청의 관리자 계정으로 연결돼요. 교회 검색 과정은 없어요",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "로딩",
+            "trigger": "제출(가입하기)",
+            "guard": "입력 유효·약관 동의 완료·계정 생성 처리 중",
+            "result": "가입 버튼 비활성·스피너 표시, 중복 제출 차단",
+            "message": "가입 계정을 만들고 있어요",
+            "placement": "inline",
+            "target": ".pd-cta",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": "처리 중"
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "제출(가입하기)",
+            "guard": "입력검증 통과(유효) + [필수] 약관 모두 동의",
+            "result": "전역 계정 생성·동의 기록 → 교회 개설 신청(SCR-LND-009)으로 이어지며 생성 계정이 관리자(신청자)로 연결",
+            "message": "가입이 완료됐어요. 이어서 교회 개설을 신청해주세요",
+            "placement": "full-page",
+            "target": ".pd-cta",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 201
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "해당 없음",
+            "guard": "빈데이터: 해당 없음(가입은 조회·목록 화면이 아니라 신규 계정 생성 화면)",
+            "result": "표시 없음",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(가입하기)",
+            "guard": "서버 오류(5xx)",
+            "result": "입력값 보존·배너로 재시도 유도",
+            "message": "지금 가입이 원활하지 않아요. 잠시 후 다시 시도해주세요",
+            "placement": "banner",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "화면 진입/제출",
+            "guard": "공개 가입 화면이라 열람·가입 자체는 인증 불필요 / 단, 이미 로그인된 계정이 재진입",
+            "result": "이미 로그인 상태면 교회 개설 신청(SCR-LND-009) 또는 내 교회로 유도",
+            "message": "이미 로그인되어 있어요. 교회 개설 신청을 이어서 진행할까요?",
+            "placement": "banner",
+            "target": ".pd-cta",
+            "api": {
+              "endpoint": "GET /me",
+              "status": 200
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "단시간 반복 가입 시도",
+            "guard": "가입·이메일 확인 요청 레이트리밋 초과",
+            "result": "일시 차단·토스트 안내",
+            "message": "요청이 많아요. 잠시 후 다시 시도해주세요",
+            "placement": "toast",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 429
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(입력검증·필수누락)",
+            "guard": "이름·이메일·휴대전화·비밀번호 중 미입력",
+            "result": "누락 필드 강조·제출 차단",
+            "message": "이름·이메일·휴대전화·비밀번호를 모두 입력해주세요",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 422
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "이메일/휴대전화 입력(입력검증·형식오류)",
+            "guard": "이메일 형식 불일치 또는 휴대전화 형식 오류",
+            "result": "해당 입력란 아래 인라인 오류",
+            "message": "이메일 형식을 확인해주세요(name@example.com) / 휴대전화 형식을 확인해주세요(010-0000-0000)",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 400
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "비밀번호 입력(입력검증·범위경계)",
+            "guard": "비밀번호 8자 미만 또는 비밀번호 확인란 불일치",
+            "result": "비밀번호 입력란 아래 인라인 오류·제출 차단",
+            "message": "비밀번호는 8자 이상이어야 하고 확인란과 같아야 해요",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 400
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "이메일 중복 확인/제출(입력검증·중복충돌)",
+            "guard": "이미 가입된 이메일(중복)",
+            "result": "이메일 입력란 인라인 오류·제출 차단·로그인 유도",
+            "message": "이미 가입된 이메일이에요. 로그인하시겠어요?",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "GET /auth/email-availability",
+              "status": 409
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출(입력검증·약관 미동의)",
+            "guard": "[필수] 서비스 이용약관 또는 개인정보 수집·이용 미체크",
+            "result": "제출 차단·필수 동의 체크 요구",
+            "message": "[필수] 약관에 모두 동의해야 가입할 수 있어요",
+            "placement": "inline",
+            "target": ".pd-check",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 422
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "입력검증(유효)",
+            "guard": "이름·이메일(중복 없음·형식 유효)·휴대전화(형식 유효)·비밀번호(8자+일치) 입력 + [필수] 약관 동의",
+            "result": "가입 버튼 활성·제출 가능 상태",
+            "message": "입력이 확인됐어요. 가입하고 교회 개설 신청을 이어갈 수 있어요",
+            "placement": "inline",
+            "target": ".pd-cta",
+            "api": {
+              "endpoint": "GET /auth/email-availability",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "sessionCheck",
+              "intent": "기존 로그인 세션 확인(이미 로그인 시 재진입 처리)",
+              "method": "GET",
+              "path": "/me",
+              "params": "-",
+              "response": "{ user, memberships:['{entities.Member}'] } — 세션 있으면 교회 개설 신청 또는 내 교회로 유도",
+              "auth": "none(공개)/Bearer(선택)",
+              "target": ".pd-cta",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "세션 없음(비로그인)",
+                  "message": "정상 — 가입 폼을 그대로 노출"
+                }
+              ]
+            },
+            {
+              "id": "emailAvailability",
+              "intent": "이메일 중복·형식 사용 가능 여부 확인",
+              "method": "GET",
+              "path": "/auth/email-availability?email={email}",
+              "params": "email(검증 대상 이메일)",
+              "response": "{ available: boolean } — '{entities.Member}'.email 유일성 검사",
+              "auth": "none(공개)",
+              "target": ".pd-field",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "이메일 형식 오류",
+                  "message": "이메일 형식을 확인해주세요(name@example.com)"
+                },
+                {
+                  "status": 409,
+                  "when": "이미 가입된 이메일",
+                  "message": "이미 가입된 이메일이에요. 로그인하시겠어요?"
+                },
+                {
+                  "status": 429,
+                  "when": "확인 요청 레이트리밋 초과",
+                  "message": "요청이 많아요. 잠시 후 다시 시도해주세요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "signup",
+              "intent": "전역 계정(AppUser) 회원가입 — 이름·이메일·휴대전화·비밀번호 + [필수] 약관 동의",
+              "method": "POST",
+              "path": "/auth/signup",
+              "request": "{ name, email, phone, password, consents:[{type:'terms', agreed:true}, {type:'privacy', agreed:true}] }",
+              "response": "{ accessToken(JWT·tenantId claim은 소속/개설 교회 바인딩 후 발급), user } → '{entities.Member}' 전역 계정 생성 + '{entities.Consent}' 동의 기록. 이후 교회 개설 신청(SCR-LND-009) 시 이 계정이 '{entities.OnboardingApplication}'.applicant(관리자)로 연결",
+              "auth": "none(공개)",
+              "idempotency": "불필요 — 계정 생성은 이메일 유일성(409)으로 중복 방지. 비가역 쓰기(개설 승인·Wizard OPEN·대량발송·요금제·상태 전이)만 Idempotency-Key+confirm 대상. confirm 없음",
+              "target": ".pd-cta",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "이메일·휴대전화 형식 오류 또는 비밀번호 8자 미만·확인 불일치",
+                  "message": "입력 형식을 확인해주세요(이메일 name@example.com / 비밀번호 8자 이상·확인 일치)"
+                },
+                {
+                  "status": 409,
+                  "when": "이미 가입된 이메일(중복)",
+                  "message": "이미 가입된 이메일이에요. 로그인하시겠어요?"
+                },
+                {
+                  "status": 422,
+                  "when": "필수값 누락 또는 [필수] 약관 미동의",
+                  "message": "이름·이메일·휴대전화·비밀번호와 [필수] 약관 동의를 확인해주세요"
+                },
+                {
+                  "status": 429,
+                  "when": "가입 시도 레이트리밋 초과",
+                  "message": "요청이 많아요. 잠시 후 다시 시도해주세요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "지금 가입이 원활하지 않아요. 잠시 후 다시 시도해주세요"
+                }
+              ]
+            },
+            {
+              "id": "socialSignup",
+              "intent": "소셜 간편 가입(카카오·네이버·구글·Apple) — 소셜 4사 외 아이디 가입과 병행 제공",
+              "method": "POST",
+              "path": "/auth/social/{provider}",
+              "request": "{ provider(kakao|naver|google|apple), authCode }",
+              "response": "{ accessToken(JWT), user } → '{entities.Member}' 전역 계정(신규 시 생성)",
+              "auth": "none(공개)",
+              "idempotency": "불필요 — 세션/계정 발급(비가역 쓰기 아님). confirm 없음",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "공급자 창 취소·인증 실패",
+                  "message": "소셜 가입이 취소되었어요. 다시 시도해주세요"
+                },
+                {
+                  "status": 409,
+                  "when": "해당 소셜이 다른 계정에 이미 연결됨",
+                  "message": "이미 다른 계정에 연결된 소셜 계정이에요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "지금 가입이 원활하지 않아요. 잠시 후 다시 시도해주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "auth.signup.success",
+              "intent": "회원가입 성공",
+              "when": "전역 계정 생성·동의 기록 완료(201)",
+              "payload": "{ userId, method(password|social) }"
+            },
+            {
+              "name": "auth.signup.failure",
+              "intent": "회원가입 실패",
+              "when": "형식오류·중복·필수누락·약관미동의·레이트리밋·서버오류로 가입 실패",
+              "payload": "{ reason(validation|duplicate_email|missing|consent_required|rate_limit|server) }"
+            },
+            {
+              "name": "auth.email.checked",
+              "intent": "이메일 중복 확인 완료",
+              "when": "이메일 사용 가능 여부 조회 완료",
+              "payload": "{ email, available }"
+            },
+            {
+              "name": "auth.consent.agreed",
+              "intent": "약관 동의 기록",
+              "when": "[필수] 서비스 이용약관·개인정보 수집·이용 동의 완료",
+              "payload": "{ terms:true, privacy:true }"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-009",
+              "via": "가입 완료 후 교회 개설 신청 계속(생성 계정을 관리자 계정으로 연결)",
+              "trigger": ".pd-cta"
+            },
+            {
+              "screen": "SCR-LND-008",
+              "via": "이미 계정이 있으면 로그인",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-LND-014",
+        "label": "안내(오류·오프라인)",
+        "href": "l-status.html",
+        "surface": "landing",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001"
+        ],
+        "context": "대표사이트 공용 에러/오프라인/404(재시도·홈·문의).",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 · 로그인 · 교회 개설 신청)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-empty-state",
+            "kind": "banner",
+            "label": "안내 상태 — 요청하신 페이지를 열 수 없어요 (없는 페이지 404·오프라인·서버 오류 500 공통 폴백)"
+          },
+          {
+            "role": ".pd-fallback-retry",
+            "kind": "button",
+            "label": "다시 시도",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-014"
+            }
+          },
+          {
+            "role": ".pd-fallback-home",
+            "kind": "button",
+            "label": "대표사이트 홈으로",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-fallback-contact",
+            "kind": "button",
+            "label": "문의하기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-010"
+            }
+          },
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "자주 찾는 안내 바로가기(기능 소개·가격 안내·도입 절차·자주 묻는 질문·도입 문의)"
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "404·오프라인·500 공통 안내 — 문제가 계속되면 문의로 알려 주세요"
+          }
+        ],
+        "description": [
+          {
+            "text": "상단 네비 — 랜딩 전역 메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)와 우측 로그인·교회 개설 신청으로 이동, 로고 클릭 시 대표사이트 홈(SCR-LND-001)으로 복귀한다. 오류·오프라인 화면이라도 네비는 유지되어 사용자가 어디서든 정상 경로로 빠져나갈 수 있다.",
+            "target": ".pd-gnb"
+          },
+          {
+            "text": "안내 상태 영역 — www.hurmate.kr 플랫폼 공용 폴백으로, 없는 페이지(404)·오프라인(네트워크 끊김)·서버 오류(500)를 하나의 화면에서 공통으로 안내한다. church_id·테넌트와 무관한 대표사이트(landing) 레벨 화면이며, 과장 없이 원인(주소 변경·삭제·연결 끊김·일시 서버 문제) 가능성을 정직하게 알린다.",
+            "target": ".pd-empty-state"
+          },
+          {
+            "text": "복구 경로 3종 — '다시 시도'(.pd-fallback-retry)는 원래 요청을 재시도(현재 화면 재진입), '대표사이트 홈으로'(.pd-fallback-home)는 홈(SCR-LND-001), '문의하기'(.pd-fallback-contact)는 문의(SCR-LND-010)로 보낸다. 막다른 화면을 만들지 않도록 재시도·안전 이동·사람 연결의 3경로를 항상 제공한다.",
+            "target": ".pd-fallback-retry"
+          },
+          {
+            "text": "자주 찾는 안내 — 기능 소개(SCR-LND-002)·가격 안내(SCR-LND-005)·도입 절차(SCR-LND-006)·자주 묻는 질문(SCR-LND-007)·도입 문의(SCR-LND-010)로 바로 이동하는 고정 바로가기. 404로 길을 잃은 방문자가 찾던 내용을 한 번에 다시 찾도록 돕는다. 요금은 '금액 미확정'으로 정직하게 표기한다.",
+            "target": ".pd-list"
+          },
+          {
+            "text": "하단 안내 배너 — 이 화면이 404·오프라인·500에서 공통으로 뜨는 폴백임을 밝히고, 문제가 계속되면 문의로 알려 달라고 안내한다(정직성). 봉인 기능(헌금·교적·출석·커뮤니티·영수증)은 노출하지 않는다.",
+            "target": ".pd-banner"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "없는 페이지(404)·오프라인·서버 오류(500)로 폴백 화면 진입",
+            "guard": "로그인 불필요(비인증 공개 안내 화면)",
+            "result": "안내 상태(요청하신 페이지를 열 수 없어요) + 복구 버튼 3종(다시 시도·대표사이트 홈으로·문의하기) + 자주 찾는 안내 바로가기 노출",
+            "message": "요청하신 페이지를 열 수 없어요. 주소가 바뀌었거나 삭제됐을 수 있고, 인터넷 연결이 끊겼거나 일시적인 서버 문제일 수 있어요.",
+            "placement": "full-page",
+            "target": ".pd-empty-state"
+          },
+          {
+            "state": "로딩",
+            "trigger": "'다시 시도' 클릭",
+            "guard": "연결·서버 상태 재확인 요청 진행 중(응답 대기)",
+            "result": "버튼 비활성화·중복 클릭 차단, 재시도 중 표시",
+            "message": "다시 연결하는 중이에요...",
+            "placement": "inline",
+            "target": ".pd-fallback-retry",
+            "api": {
+              "endpoint": "GET /public/health"
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "'다시 시도' 클릭(연결·서버 복구됨)",
+            "guard": "네트워크 연결·플랫폼 정상 응답(200)",
+            "result": "원래 요청 페이지를 다시 불러오거나, 복구 불가 시 대표사이트 홈(SCR-LND-001)으로 이동",
+            "message": "다시 연결됐어요. 요청하신 내용을 불러올게요",
+            "placement": "toast",
+            "target": ".pd-fallback-retry",
+            "api": {
+              "endpoint": "GET /public/health",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "N/A",
+            "guard": "빈데이터: 해당 없음 — 조회 목록이 없는 정적 안내 화면(자주 찾는 안내 바로가기는 항상 고정 노출, 표시할 가변 리스트 데이터 없음)",
+            "result": "해당 없음"
+          },
+          {
+            "state": "에러",
+            "trigger": "'다시 시도' 클릭했으나 여전히 실패",
+            "guard": "오프라인 지속 또는 서버 오류·점검 지속(500/503)",
+            "result": "안내 유지·재시도 또는 문의 유도, 복구 버튼 재노출",
+            "message": "아직 연결하지 못했어요. 잠시 후 다시 시도하거나 문의로 알려 주세요",
+            "placement": "banner",
+            "target": ".pd-empty-state",
+            "api": {
+              "endpoint": "GET /public/health",
+              "status": 503
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "N/A",
+            "guard": "권한없음: 해당 없음 — 비인증 공개 안내 화면(로그인·권한 게이트 없음, 누구나 접근 가능). 참고로 관리자 화면 권한 없음은 로그인(SCR-ADM-001)으로 유도되나 본 화면은 공개 대상",
+            "result": "해당 없음(공개)"
+          },
+          {
+            "state": "엣지",
+            "trigger": "오류 유형별 분기(404 vs 오프라인 vs 500)·오래된 북마크/삭제된 교회 주소·반복 재시도",
+            "guard": "원인별 카피 분기 필요, 삭제·이전된 교회 slug 접근, 짧은 시간 과도한 재시도(레이트리밋 429)",
+            "result": "유형에 맞는 안내로 표시하되 복구 경로(재시도·홈·문의)는 공통 유지, 과도 재시도 시 잠시 후 재시도 안내",
+            "message": "요청이 많아요. 잠시 후 다시 시도해 주세요. 없는 교회 주소라면 대표사이트 홈에서 다시 확인해 주세요",
+            "placement": "banner",
+            "target": ".pd-empty-state",
+            "api": {
+              "endpoint": "GET /public/health",
+              "status": 429
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "connectivityCheck",
+              "intent": "연결·서버 상태 확인(재시도)",
+              "method": "GET",
+              "path": "/public/health",
+              "params": "{}",
+              "response": "{status:'ok', time}",
+              "auth": "none(공개)",
+              "target": ".pd-fallback-retry",
+              "note": "플랫폼(hurmate.kr) 레벨 경량 헬스 프로브 — 비인증 공개 읽기. 테넌트·church_id와 무관하며 공개 콘텐츠만. '다시 시도'는 이 확인이 200이면 원래 요청을 재시도하고, 실패(5xx/네트워크)면 안내를 유지한다. 비가역 쓰기 아님(멱등·확인 모달 불필요).",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "플랫폼 서버 오류",
+                  "message": "아직 연결하지 못했어요. 잠시 후 다시 시도해 주세요"
+                },
+                {
+                  "status": 503,
+                  "when": "서비스 점검·일시 중단",
+                  "message": "지금은 서비스 점검 중이에요. 잠시 후 다시 시도해 주세요"
+                },
+                {
+                  "status": 429,
+                  "when": "짧은 시간 과도한 재시도(레이트리밋)",
+                  "message": "요청이 많아요. 잠시 후 다시 시도해 주세요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "name": "fallback.shown",
+              "when": "없는 페이지(404)·오프라인·서버 오류(500)로 폴백 화면 표시",
+              "intent": "오류·오프라인 안내 화면 노출",
+              "payload": "{reason:'not_found|offline|server_error', path}"
+            },
+            {
+              "name": "fallback.retry",
+              "when": "'다시 시도' 클릭",
+              "intent": "원래 요청 재시도",
+              "payload": "{reason}"
+            },
+            {
+              "name": "fallback.recovered",
+              "when": "재시도 성공(연결·서버 복구)",
+              "intent": "폴백에서 정상 복구",
+              "payload": "{reason}"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-001",
+              "via": "대표사이트 홈으로",
+              "trigger": ".pd-fallback-home"
+            },
+            {
+              "screen": "SCR-LND-010",
+              "via": "문의하기(사람 연결)",
+              "trigger": ".pd-fallback-contact"
+            },
+            {
+              "screen": "SCR-LND-014",
+              "via": "다시 시도(원래 요청 재시도·현재 화면 재진입)",
+              "trigger": ".pd-fallback-retry"
+            },
+            {
+              "screen": "SCR-LND-002",
+              "via": "자주 찾는 안내 — 기능 소개",
+              "trigger": ".pd-link-features"
+            },
+            {
+              "screen": "SCR-LND-005",
+              "via": "자주 찾는 안내 — 가격 안내",
+              "trigger": ".pd-link-pricing"
+            },
+            {
+              "screen": "SCR-LND-006",
+              "via": "자주 찾는 안내 — 도입 절차",
+              "trigger": ".pd-link-process"
+            },
+            {
+              "screen": "SCR-LND-007",
+              "via": "자주 찾는 안내 — 자주 묻는 질문",
+              "trigger": ".pd-link-faq"
+            },
+            {
+              "screen": "SCR-LND-010",
+              "via": "자주 찾는 안내 — 도입 문의",
+              "trigger": ".pd-link-contact"
             }
           ]
         }
@@ -4056,6 +5208,702 @@ window.PLANDECK_SCREENS = [
               "screen": "SCR-SITE-001",
               "via": "홈으로",
               "trigger": ".pd-tabbar"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SITE-009",
+        "label": "안내(오프라인·없는 교회·오류)",
+        "href": "s-status.html",
+        "surface": "site",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-005"
+        ],
+        "context": "테넌트 공용 상태 폴백(없는 교회 404·서버오류 500·오프라인·빈데이터) — 원인+다음행동(재시도/홈).",
+        "components": [
+          {
+            "role": ".pd-top-home",
+            "kind": "iconbutton",
+            "label": "상단 홈 아이콘 — ○○교회 공개홈으로",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-001"
+            }
+          },
+          {
+            "role": ".pd-empty-state",
+            "kind": "empty",
+            "label": "공용 폴백 안내 — \"지금은 내용을 불러올 수 없어요\" · 원인(없는 교회·서버오류·오프라인·빈데이터)+다음 행동(다시 시도/홈으로)"
+          },
+          {
+            "role": ".pd-fallback-retry",
+            "kind": "button",
+            "label": "다시 시도 — 같은 리소스 재요청(동일 화면 재진입)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-009"
+            }
+          },
+          {
+            "role": ".pd-fallback-home",
+            "kind": "button",
+            "label": "홈으로 가기 — 교회 공개홈",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-001"
+            }
+          },
+          {
+            "role": ".pd-cache-bulletin",
+            "kind": "row",
+            "label": "오프라인 캐시 주보 — 이번 주(10/5) 예배 순서 · 오프라인 저장(로그인 교인)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-004"
+            }
+          },
+          {
+            "role": ".pd-cache-sermon",
+            "kind": "row",
+            "label": "오프라인 캐시 설교 — 로마서 강해 12 · 조정표 담임목사(로그인 교인)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-002"
+            }
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "저장 콘텐츠 최신성 고지 — \"마지막 접속 시점 기준 · 최신 내용은 연결 후 확인\""
+          }
+        ],
+        "description": [
+          {
+            "target": ".pd-empty-state",
+            "text": "전 테넌트 공용 폴백(pd-empty-state). 없는 교회(404)·서버오류(500)·오프라인·빈데이터를 각각 사람이 읽을 한 문장 '원인'으로 설명하고, 바로 아래 '다음 행동'(다시 시도/홈으로)을 제시한다. 레이아웃은 단일 Design System 고정, 교회별로 바뀌는 건 교회명 \"○○교회\"뿐."
+          },
+          {
+            "target": ".pd-fallback-retry",
+            "text": "\"다시 시도\" 기본 CTA — 실패한 동일 리소스를 재요청(같은 화면 재진입). 서버오류·오프라인이 복구되면 원래 보려던 화면으로 자연스럽게 이어진다. 오프라인 상태에서는 이 버튼을 우선 강조한다."
+          },
+          {
+            "target": ".pd-fallback-home",
+            "text": "\"홈으로 가기\" — 교회 공개홈(SCR-SITE-001)으로 이동. 없는 교회(404)·빈데이터처럼 재시도가 의미 없을 때 가장 안전한 복귀 경로다."
+          },
+          {
+            "target": ".pd-cache-bulletin",
+            "text": "로그인 교인 한정 — 서비스워커에 오프라인 저장된 최근 주보·설교(이번 주 10/5 예배 순서 · 로마서 강해 12)를 노출해 연결이 끊겨도 핵심 콘텐츠를 볼 수 있게 한다. 비로그인이거나 캐시가 없으면 이 섹션은 숨긴다."
+          },
+          {
+            "target": ".pd-banner",
+            "text": "정직성 고지 — 캐시 콘텐츠는 '마지막 접속 시점' 기준이며 최신이 아닐 수 있음을 명시한다(최신성 한계 고지, 과장 없음)."
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "상위 화면(공개홈/소개/설교 등) 요청 실패 또는 라우터가 폴백으로 전환",
+            "guard": "원인 코드 수신 전·첫 렌더·입력 폼 없음(입력검증 N/A)",
+            "result": "공용 폴백 레이아웃(아이콘·안내 문구·다시 시도·홈으로)을 즉시 렌더, 원인 문구는 중립 기본값으로 표시",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-empty-state"
+          },
+          {
+            "state": "로딩",
+            "trigger": "\"다시 시도\"(.pd-fallback-retry) 탭",
+            "guard": "동일 리소스 재요청 응답 대기·중복 탭 비활성화",
+            "result": "다시 시도 버튼이 로딩 표시로 바뀌고 기존 안내는 유지, 성공 시 원래 화면으로 전환",
+            "message": "다시 불러오는 중이에요…",
+            "placement": "inline",
+            "target": ".pd-fallback-retry"
+          },
+          {
+            "state": "정상",
+            "trigger": "폴백 원인(404·500·오프라인·빈데이터) 식별 완료",
+            "guard": "원인별 안내 문구 + 다음 행동 버튼 정상 렌더",
+            "result": "원인 문구와 다시 시도/홈으로가 노출되고, 로그인 교인에게는 오프라인 캐시 주보·설교 섹션이 함께 표시됨",
+            "message": "지금은 내용을 불러올 수 없어요",
+            "placement": "full-page",
+            "target": ".pd-empty-state"
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "상위 요청은 성공했으나 표시할 공개 콘텐츠가 0건",
+            "guard": "교회 status=활성 · 공개 설교/주보/소식 모두 미게재(0건)",
+            "result": "없는 교회가 아니라 '아직 비어 있음'으로 구분해 안내, 다시 시도 대신 홈으로를 권장 동선으로",
+            "message": "아직 등록된 내용이 없어요. 교회 확인 후 게재됩니다.",
+            "placement": "full-page",
+            "target": ".pd-empty-state",
+            "api": {
+              "endpoint": "GET /churches/{slug}/home",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "상위 요청 또는 재시도가 서버오류로 실패",
+            "guard": "5xx 지속·게이트웨이 오류",
+            "result": "원인=서버오류로 안내하고 다시 시도/홈으로 유지, 반복 실패 시 '잠시 후 다시' 문구로 완화",
+            "message": "교회 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "full-page",
+            "target": ".pd-empty-state",
+            "api": {
+              "endpoint": "GET /churches/{slug}/home",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "비로그인 상태로 폴백 진입",
+            "guard": "공개 폴백은 인증 불요(해당 없음)·입력 폼 없음(입력검증 N/A)",
+            "result": "안내·다시 시도·홈으로는 전원 노출, 오프라인 캐시 섹션(.pd-cached-list)은 로그인 교인에게만 — 비로그인은 미노출",
+            "message": "저장된 주보·설교는 로그인 후 오프라인에서 볼 수 있어요",
+            "placement": "inline"
+          },
+          {
+            "state": "엣지",
+            "trigger": "없는/미개설 교회 slug(404) 또는 오프라인(네트워크 없음)",
+            "guard": "slug 미존재·개설 전(404) 또는 navigator offline(네트워크 0)·입력 폼 없음(입력검증 N/A)",
+            "result": "404는 '찾을 수 없는 교회'로 홈으로만 권장(재시도 숨김), 오프라인은 '인터넷 연결 없음'으로 다시 시도 강조 + 캐시 콘텐츠 우선 노출",
+            "message": "준비 중이거나 찾을 수 없는 교회예요 / 인터넷에 연결되어 있지 않아요",
+            "placement": "full-page",
+            "target": ".pd-empty-state",
+            "api": {
+              "endpoint": "GET /churches/{slug}/home",
+              "status": 404
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteFallbackProbe",
+              "intent": "폴백 원인 판별(상위 공개 요청 상태)",
+              "method": "GET",
+              "path": "/churches/{slug}/home",
+              "params": {
+                "slug": "교회 식별 slug(path)"
+              },
+              "response": "{entities.Church, entities.SiteContent}",
+              "auth": "none(공개)",
+              "target": ".pd-empty-state",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "없거나 미개설(status≠활성) 교회 slug",
+                  "message": "준비 중이거나 찾을 수 없는 교회예요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류·게이트웨이 실패",
+                  "message": "교회 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            },
+            {
+              "id": "offlineCache",
+              "intent": "오프라인 캐시 주보·설교 조회(캐시 우선)",
+              "method": "GET",
+              "path": "/churches/{slug}/offline-cache",
+              "params": {
+                "slug": "교회 식별 slug(path)"
+              },
+              "response": "{entities.Bulletin, entities.Sermon}",
+              "auth": "none(공개) · 캐시 섹션은 Bearer(교인) 세션 시에만 노출, 데이터는 Service Worker 캐시에서 제공(네트워크 실패 시 폴백)",
+              "errors": [
+                {
+                  "status": 0,
+                  "when": "오프라인이고 캐시도 없음",
+                  "message": "저장된 콘텐츠가 없어요. 연결 후 다시 확인해 주세요."
+                },
+                {
+                  "status": 401,
+                  "when": "비로그인·세션 만료",
+                  "message": "저장된 주보·설교는 로그인 후 오프라인에서 볼 수 있어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "id": "retryRequest",
+              "name": "fallback.retry",
+              "intent": "다시 시도(동일 리소스 재요청)",
+              "when": "\"다시 시도\"(.pd-fallback-retry) 탭 → 실패한 동일 리소스를 재요청(멱등 GET·비가역 쓰기 없음)",
+              "target": ".pd-fallback-retry"
+            },
+            {
+              "id": "networkStatus",
+              "name": "net.status-change",
+              "intent": "네트워크 상태 변화 감지",
+              "when": "navigator online/offline 이벤트 — 온라인 복귀 시 자동 재시도를 유도하고 오프라인 진입 시 캐시 콘텐츠를 우선 노출",
+              "target": ".pd-empty-state"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-001",
+              "via": "홈으로 가기",
+              "trigger": ".pd-fallback-home"
+            },
+            {
+              "screen": "SCR-SITE-009",
+              "via": "다시 시도(동일 리소스 재요청)",
+              "trigger": ".pd-fallback-retry"
+            },
+            {
+              "screen": "SCR-APP-004",
+              "via": "오프라인 캐시 주보(로그인 교인)",
+              "trigger": ".pd-cache-bulletin"
+            },
+            {
+              "screen": "SCR-APP-002",
+              "via": "오프라인 캐시 설교(로그인 교인)",
+              "trigger": ".pd-cache-sermon"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SITE-010",
+        "label": "공지",
+        "href": "s-notice.html",
+        "surface": "site",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-009"
+        ],
+        "context": "공개 공지(방문자·로그인 없이 목록/요약 열람·공개 5메뉴).",
+        "components": [
+          {
+            "role": ".pd-notice-list",
+            "kind": "list",
+            "label": "공지 목록 — 제목·요약·게시일(추수감사주일 안내 · 2026-09-27). 요약을 목록에서 바로 열람(상세 이동 없음)"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "중요·상단고정 배지 — 상단고정 공지는 최상단 정렬, 중요 공지는 '중요' 배지로 강조"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "nav",
+            "label": "뒤로가기 — 교회 공개홈으로 복귀",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-001"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "공개 공지 목록 — 방문자가 로그인 없이 교회 공지를 열람하는 공개 화면(공개 5메뉴 중 공지). 상단고정 공지가 목록 최상단에 노출되고 중요 공지는 '중요' 배지로 강조",
+            "target": ".pd-notice-list"
+          },
+          {
+            "text": "각 공지 행 — 제목·요약·게시일을 한 행에 표시하며, 요약(본문 발췌)을 목록에서 바로 읽을 수 있어 별도 상세 화면 이동이 없음(공개 요약 열람)",
+            "target": ".pd-notice-list"
+          },
+          {
+            "text": "중요·상단고정 배지 — 관리자가 설정한 중요(important)·상단고정(pinned) 공지를 배지로 구분, 상단고정은 게시일과 무관하게 최상단 정렬",
+            "target": ".pd-badge"
+          },
+          {
+            "text": "공지가 한 건도 없으면 빈 상태 안내('아직 등록된 공지가 없어요. 교회 확인 후 게재됩니다.')를 노출 — 미확보 콘텐츠 정직성 표기",
+            "target": ".pd-notice-list"
+          },
+          {
+            "text": "상단 뒤로가기 — 교회 공개홈으로 복귀(SCR-SITE-001)",
+            "target": ".pd-back"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "화면 진입",
+            "guard": "공개 공지 목록 미요청",
+            "result": "목록 영역 비움(상단고정 우선 정렬 대기)",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-notice-list"
+          },
+          {
+            "state": "로딩",
+            "trigger": "진입·추가 로드",
+            "guard": "공개 공지 목록 조회 중",
+            "result": "행 스켈레톤 표시",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-notice-list"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답 수신",
+            "guard": "공지 1건 이상",
+            "result": "상단고정 공지 최상단 정렬 + 중요/상단고정 배지, 제목·요약·게시일 행 목록 노출",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-notice-list",
+            "api": {
+              "endpoint": "GET /churches/{slug}/notices",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답 수신",
+            "guard": "공지 0건",
+            "result": "빈 상태 안내 노출",
+            "message": "아직 등록된 공지가 없어요. 교회 확인 후 게재됩니다.",
+            "placement": "inline",
+            "target": ".pd-notice-list",
+            "api": {
+              "endpoint": "GET /churches/{slug}/notices",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답 수신",
+            "guard": "서버 오류·네트워크 실패",
+            "result": "재시도 안내 노출",
+            "message": "공지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "toast",
+            "target": ".pd-notice-list",
+            "api": {
+              "endpoint": "GET /churches/{slug}/notices",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "화면 진입",
+            "guard": "공개 열람 화면 — 인증 불필요(권한없음 해당 없음)",
+            "result": "로그인 없이 공개 공지만 노출",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-notice-list"
+          },
+          {
+            "state": "엣지",
+            "trigger": "응답 수신",
+            "guard": "공지 20건 초과",
+            "result": "cursor 기반 추가 로드(스크롤), 상단고정 우선 순서 유지 + 긴 본문은 요약 말줄임 표기",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-notice-list",
+            "api": {
+              "endpoint": "GET /churches/{slug}/notices?cursor=&limit=20",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "publicNotices",
+              "intent": "공개 공지 목록 조회",
+              "method": "GET",
+              "path": "/churches/{slug}/notices",
+              "params": "cursor, limit=20 (상단고정 pinned 우선 → 게시일 postedAt 내림차순 정렬)",
+              "response": "{entities.Notice}[] — title·body(요약)·postedAt·important·pinned (notify/attachment 등 운영필드는 공개 응답 제외)",
+              "auth": "none(공개)",
+              "target": ".pd-notice-list",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "존재하지 않는 교회 slug",
+                  "message": "교회 공개홈을 찾을 수 없어요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "공지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "name": "notice.list.load",
+              "when": "화면 진입·목록 하단 도달(추가 로드)",
+              "intent": "공개 공지 목록 조회(상단고정 우선 정렬)",
+              "target": ".pd-notice-list"
+            },
+            {
+              "name": "notice.back",
+              "when": "상단 뒤로가기 탭",
+              "intent": "교회 공개홈으로 복귀(SCR-SITE-001)",
+              "target": ".pd-back"
+            }
+          ],
+          "auth": "none(공개) — 교회 식별 = path의 {slug}. 비인증 공개 읽기(공개 콘텐츠만), tenant 스코프는 slug로 강제(A교회↔B교회 차단)",
+          "notes": "에러규약 RFC 9457 Problem Details(application/problem+json). 비가역 쓰기 없음(멱등 대상 없음·읽기 전용 화면)"
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-001",
+              "via": "뒤로가기(교회 공개홈)",
+              "trigger": ".pd-back"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SITE-011",
+        "label": "주보",
+        "href": "s-bulletin.html",
+        "surface": "site",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-008"
+        ],
+        "context": "공개 주보(방문자·이번 주 주보 열람). ★공개 범위=교회별 공개 토글 권장(개인정보).",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "상단 앱바 — 뒤로 버튼·'주보' 제목"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "뒤로 가기 — 교회 공개홈(SCR-SITE-001)으로",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-001"
+            }
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "화면 제목 '주보'"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "앱바 우측 정렬 여백"
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "공개 안내 — '주보 공개 여부는 교회가 직접 켜고 끌 수 있어요'(교회별 공개 토글·개인정보 보호 권장)"
+          },
+          {
+            "role": ".pd-week-nav",
+            "kind": "group",
+            "label": "주차 네비 — 지난 주·이번 주(10/5)·다음 주"
+          },
+          {
+            "role": ".pd-segment",
+            "kind": "tabbar",
+            "label": "주차 세그먼트 — 지난 주 · 이번 주 (10/5) · 다음 주(기본 '이번 주' 활성)"
+          },
+          {
+            "role": ".pd-chips",
+            "kind": "group",
+            "label": "주보 섹션(5) — 예배 순서 · 교회 광고 · 헌금 안내 · 금주의 말씀 · 교회 일정"
+          },
+          {
+            "role": ".pd-bulletin-view",
+            "kind": "card",
+            "label": "주보 뷰어 — 이번 주(10/5) 주보 이미지(탭하면 원본 크기로 확대)"
+          },
+          {
+            "role": ".pd-empty-state",
+            "kind": "group",
+            "label": "빈 상태 — '다음 주 주보는 아직이에요'(교회 확인 후 게재)"
+          }
+        ],
+        "description": [
+          {
+            "text": "상단 앱바 뒤로가기 — 주보 열람을 닫고 교회 공개홈으로 복귀(SCR-SITE-001)",
+            "target": ".pd-back"
+          },
+          {
+            "text": "공개 안내 배너 — '주보 공개 여부는 교회가 직접 켜고 끌 수 있어요'. 주보에 성도 이름·당번 명단 등 개인정보가 담길 수 있어, 교회가 공개 토글로 직접 켜고 공개 전 내용을 확인하도록 권장(교회별 공개 토글)",
+            "target": ".pd-banner"
+          },
+          {
+            "text": "주차 세그먼트 — 지난 주 · 이번 주(10/5) · 다음 주를 전환하며 열람하고 기본은 '이번 주'가 활성. 비로그인 방문자도 공개로 설정된 주보를 로그인 없이 열람",
+            "target": ".pd-segment"
+          },
+          {
+            "text": "주보 뷰어 — 선택한 주차의 주보를 이미지로 표시하며, 이미지를 탭하면 원본 크기로 확대해 읽을 수 있음. 수록 내용(예배 순서·교회 광고·헌금 안내·금주의 말씀·교회 일정 5개 섹션)을 섹션 칩으로 안내",
+            "target": ".pd-bulletin-view"
+          },
+          {
+            "text": "빈 상태 — 해당 주차 주보가 아직 미발행이면 '다음 주 주보는 아직이에요 · 교회 확인 후 게재됩니다' 안내로 빈 화면 없이 상태를 명확히 표기",
+            "target": ".pd-empty-state"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "주보 화면 진입",
+            "guard": "데이터 요청 전 · church_id는 Host/slug로 자동 확정(교회검색 없음)",
+            "result": "'이번 주 (10/5)' 세그먼트가 활성, 뷰어 영역은 플레이스홀더",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-bulletin-view"
+          },
+          {
+            "state": "로딩",
+            "trigger": "공개 주보 조회",
+            "guard": "응답 대기 중(네트워크 지연)",
+            "result": "뷰어 영역 스켈레톤 표시, 주차 전환 일시 비활성",
+            "message": "주보를 불러오는 중이에요",
+            "placement": "inline",
+            "target": ".pd-bulletin-view"
+          },
+          {
+            "state": "정상",
+            "trigger": "주보 수신·주차 선택",
+            "guard": "공개 토글 ON이고 교회 확인·게재된 주보 1건 이상",
+            "result": "선택한 주차의 주보를 이미지 뷰어로 표시(세그먼트로 지난/이번/다음 주 전환, 이미지 탭 시 원본 확대)",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-bulletin-view",
+            "api": {
+              "endpoint": "GET /churches/{slug}/bulletins",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답 수신",
+            "guard": "선택 주차 주보 0건(예: 다음 주 10/12 미발행)",
+            "result": "미발행 빈 상태 안내 + 이번 주/지난 주 주보 확인 유도",
+            "message": "아직 이번 주 주보가 등록되지 않았어요. 교회 확인 후 게재됩니다.",
+            "placement": "inline",
+            "target": ".pd-empty-state",
+            "api": {
+              "endpoint": "GET /churches/{slug}/bulletins",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답 실패",
+            "guard": "서버 오류(5xx)",
+            "result": "불러오기 실패 안내 + 재시도",
+            "message": "주보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-bulletin-view",
+            "api": {
+              "endpoint": "GET /churches/{slug}/bulletins",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "비로그인 방문자 접근",
+            "guard": "공개 화면이나 교회가 주보 공개 토글을 OFF(비공개)로 둠 — 공개 콘텐츠만 노출. 입력 폼 없음 → 입력검증 N/A",
+            "result": "비공개 안내 + 교인 앱 로그인 유도(공개된 다른 메뉴는 그대로 열람 가능)",
+            "message": "이 교회는 주보를 공개로 설정하지 않았어요. 교회 확인 후 공개되거나, 교인 로그인 후 앱에서 확인할 수 있어요.",
+            "placement": "full-page",
+            "target": ".pd-banner",
+            "api": {
+              "endpoint": "GET /churches/{slug}/bulletins",
+              "status": 403
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "주보 이미지 확대 열람",
+            "guard": "파일 서명 URL 만료 또는 타 교회(slug) 리소스 접근 — 테넌트 격리",
+            "result": "파일 다시 불러오기 유도(A교회↔B교회 주보 교차 접근 차단)",
+            "message": "주보 파일을 여는 중 문제가 생겼어요. 새로고침해 주세요.",
+            "placement": "toast",
+            "target": ".pd-bulletin-view",
+            "api": {
+              "endpoint": "GET /churches/{slug}/bulletins",
+              "status": 403
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteBulletins",
+              "intent": "교회 공개 주보 조회(이번 주 중심·지난 주 포함)",
+              "method": "GET",
+              "path": "/churches/{slug}/bulletins",
+              "params": "?week=YYYY-MM-DD (주차 선택), ?cursor=&limit=20 (지난호 커서 페이지네이션)",
+              "response": "{entities.Bulletin}[] — 공개 토글(visibility=public)이고 교회 확인·게재된 주보만 반환",
+              "auth": "none(공개)",
+              "target": ".pd-bulletin-view",
+              "note": "tenant=path {slug}로 자동 확정(교회검색 없음·church_id 자동 바인딩), file은 교회별 서명 URL(이미지/PDF), 공개 토글 OFF면 미노출(타 교회 주보 교차 접근 차단)",
+              "errors": [
+                {
+                  "status": 403,
+                  "when": "교회가 주보 공개 토글 OFF 또는 서명 URL 만료·타 교회 리소스 접근",
+                  "message": "이 교회는 주보를 공개로 설정하지 않았어요. 교회 확인 후 공개되거나, 교인 로그인 후 앱에서 확인할 수 있어요."
+                },
+                {
+                  "status": 404,
+                  "when": "slug이 유효한 교회로 확인되지 않음(미개설·해지 테넌트)",
+                  "message": "요청하신 교회를 찾을 수 없어요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "주보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "name": "site.bulletin.week_switch",
+              "intent": "주차 전환(지난 주·이번 주·다음 주)",
+              "when": "주차 세그먼트 탭 선택",
+              "target": ".pd-segment"
+            },
+            {
+              "name": "site.bulletin.section_jump",
+              "intent": "주보 섹션 이동(예배 순서·교회 광고·헌금 안내·금주의 말씀·교회 일정)",
+              "when": "섹션 칩 선택",
+              "target": ".pd-chips"
+            },
+            {
+              "name": "site.bulletin.zoom",
+              "intent": "주보 확대 열람",
+              "when": "주보 이미지 탭(원본 크기 확대)",
+              "target": ".pd-bulletin-view"
+            },
+            {
+              "name": "site.bulletin.back_home",
+              "intent": "교회 공개홈으로 돌아가기",
+              "when": "뒤로 버튼 탭",
+              "target": ".pd-back"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-001",
+              "via": "뒤로 — 교회 공개홈",
+              "trigger": ".pd-back"
             }
           ]
         }
@@ -7124,6 +8972,1238 @@ window.PLANDECK_SCREENS = [
             }
           ]
         }
+      },
+      {
+        "id": "SCR-APP-013",
+        "label": "비밀번호 재설정·아이디 찾기",
+        "href": "a-password-reset.html",
+        "surface": "app",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-011"
+        ],
+        "context": "교인 비밀번호 재설정·아이디 찾기(휴대전화/이메일 인증→재설정→완료 3스텝). 소셜 가입자 분기 안내. 고령 접근성.",
+        "components": [
+          {
+            "role": ".pd-segment",
+            "kind": "segment",
+            "label": "모드 전환 — '비밀번호 재설정'(활성) · '아이디 찾기'. 두 기능을 한 카드에서 전환"
+          },
+          {
+            "role": ".pd-stepper",
+            "kind": "stepper",
+            "label": "3스텝 진행 — 1 본인 인증(활성) · 2 재설정 · 3 완료"
+          },
+          {
+            "role": ".pd-segment",
+            "kind": "segment",
+            "label": "인증 수단 전환 — '휴대전화 인증'(활성) · '이메일 인증'"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "본인 인증 폼 — 아이디 · 휴대전화 번호 · 인증번호(문자 6자리, 05:00 유효)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "인증번호 받기 — 입력한 휴대전화/이메일로 6자리 인증번호 발송"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "본인 인증 · 다음 — 인증 성공 시 2단계 재설정으로 진행"
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "소셜 가입자 분기 안내 — '카카오·네이버로 가입하셨다면 비밀번호가 없어요. 소셜 로그인으로 입장해 주세요.'"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "카카오·네이버로 로그인",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-009"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그인으로 돌아가기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-009"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "기능 전환 — 한 카드에서 '비밀번호 재설정'과 '아이디 찾기'를 세그먼트로 전환. 아이디 로그인 교인(고령 포함)이 아이디·비밀번호를 잊어도 재입장할 수 있도록 통합",
+            "target": ".pd-segment"
+          },
+          {
+            "text": "3단계 진행 — 본인 인증 → 재설정 → 완료. 상단 스텝퍼로 현재 위치를 크게 표시해 고령 교인도 흐름을 놓치지 않도록 함(현재 1단계 본인 인증)",
+            "target": ".pd-stepper"
+          },
+          {
+            "text": "본인 인증 — 휴대전화 또는 이메일로 6자리 인증번호를 받아 가입 정보와 일치하는지 확인. 인증 성공 시 비밀번호 재설정(2단계)으로 진행하고, 완료 후 교인 로그인(SCR-APP-009)으로 이동",
+            "target": ".pd-form"
+          },
+          {
+            "text": "소셜 가입자 분기 — 카카오·네이버로 가입한 계정은 비밀번호가 없으므로 재설정 대신 소셜 로그인(SCR-APP-009)으로 안내. 계정 열거 방지를 위해 일치 여부와 무관하게 동일 문구 노출",
+            "target": ".pd-banner"
+          },
+          {
+            "text": "로그인 복귀 — 소셜 로그인·'로그인으로 돌아가기' 모두 교인 로그인(SCR-APP-009)으로 이동해 막다른 흐름을 만들지 않음",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "교인 로그인(SCR-APP-009)에서 '비밀번호 찾기' 진입",
+            "guard": "접속 교회 주소 바인딩됨·브랜딩 로드 완료·1단계 본인 인증 노출",
+            "result": "재설정 카드 표시·스텝퍼 1단계 활성·입력 폼 비어 있음",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /app/church",
+              "status": 200
+            }
+          },
+          {
+            "state": "로딩",
+            "trigger": "인증번호 받기 또는 본인 인증·다음 제출",
+            "guard": "발송/검증 응답 대기 중",
+            "result": "해당 버튼 비활성·중복 제출 방지",
+            "message": "인증번호를 보내고 있어요",
+            "placement": "inline",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/request",
+              "status": 202
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "인증번호 검증 성공",
+            "guard": "가입 정보와 인증번호 일치·유효시간 내",
+            "result": "2단계 재설정으로 전환(새 비밀번호 입력)→확정 시 3단계 완료, 교인 로그인으로 이동",
+            "message": "본인 확인이 완료됐어요. 새 비밀번호를 설정해 주세요",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/verify",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "진입",
+            "guard": "교회 로고·대표색 미설정",
+            "result": "단일 Design System 기본 로고·'○○교회' placeholder 표시",
+            "message": "교회 확인 후 게재",
+            "placement": "inline"
+          },
+          {
+            "state": "에러",
+            "trigger": "본인 인증·다음 제출",
+            "guard": "인증번호 불일치",
+            "result": "인라인 오류·남은 시도 횟수 안내·입력값 유지",
+            "message": "인증번호가 일치하지 않아요. 다시 확인해 주세요",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/verify",
+              "status": 422
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "인증번호 받기 제출",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "인증번호 발송에 실패했어요. 잠시 후 다시 시도해 주세요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/request",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "본인 인증·다음 제출",
+            "guard": "해당 계정이 소셜(카카오·네이버) 전용으로 비밀번호 미보유",
+            "result": "재설정 차단·소셜 로그인 유도 배너 강조",
+            "message": "카카오·네이버로 가입한 계정이에요. 소셜 로그인으로 입장해 주세요",
+            "placement": "banner",
+            "target": ".pd-banner",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/verify",
+              "status": 409
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "본인 인증·다음 제출",
+            "guard": "인증번호 유효시간(5분) 만료",
+            "result": "만료 안내·재발송 유도",
+            "message": "인증번호가 만료됐어요. 다시 받아 주세요",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/verify",
+              "status": 410
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "인증번호 받기 반복 또는 인증 반복 실패",
+            "guard": "레이트리밋·5회 실패 잠금",
+            "result": "일시 차단·대기 안내",
+            "message": "요청이 많아요. 잠시 후 다시 시도해 주세요",
+            "placement": "banner",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/request",
+              "status": 429
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "'아이디 찾기' 모드 제출(일치 계정 없음)",
+            "guard": "입력 정보와 일치하는 계정 없음",
+            "result": "계정 열거 방지 위해 일치 여부와 무관하게 동일 처리 응답(존재 시에만 문자 발송)",
+            "message": "입력하신 정보로 가입된 계정이 있으면 아이디를 문자로 보내드렸어요",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /app/auth/find-id",
+              "status": 202
+            }
+          },
+          {
+            "state": "필수누락",
+            "trigger": "본인 인증·다음 제출",
+            "guard": "아이디·휴대전화·인증번호 중 미입력",
+            "result": "제출 차단·인라인 검증",
+            "message": "아이디와 휴대전화 번호, 인증번호를 모두 입력해 주세요",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "형식오류",
+            "trigger": "인증번호 받기 제출",
+            "guard": "휴대전화 번호(또는 이메일) 형식 오류",
+            "result": "인라인 검증·발송 차단",
+            "message": "휴대전화 번호 형식을 확인해 주세요(예: 010-1234-5678)",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "범위경계",
+            "trigger": "인증번호 받기 재요청",
+            "guard": "직전 발송 후 재전송 쿨다운(60초) 경계·인증번호 6자리 초과/미만 입력",
+            "result": "쿨다운 중 재발송 버튼 비활성·인증번호는 6자리로 제한",
+            "message": "인증번호는 6자리예요. 재전송은 60초 후 가능해요",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "중복충돌",
+            "trigger": "인증번호 받기 중복 제출",
+            "guard": "이미 유효한 인증 요청이 진행 중",
+            "result": "신규 발송 대신 기존 유효 코드 유지 안내(Idempotency-Key로 중복 발송 차단)",
+            "message": "이미 보낸 인증번호가 유효해요. 문자를 확인해 주세요",
+            "placement": "inline",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /app/auth/password-reset/request",
+              "status": 409
+            }
+          },
+          {
+            "state": "유효",
+            "trigger": "본인 인증·다음 제출",
+            "guard": "아이디·휴대전화·인증번호 형식 유효",
+            "result": "서버 인증 요청으로 진행",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-form"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appChurchBranding",
+              "intent": "교회 브랜딩 조회(재설정 카드)",
+              "method": "GET",
+              "path": "/app/church",
+              "response": "{entities.Church}",
+              "auth": "없음(공개)",
+              "note": "tenant는 접속 host로 서버가 자동 결정(교회 검색 없음·path 비노출). 로고·대표색·교회명 등 교회별 변경 4요소만 공개 노출. 미설정 시 단일 Design System 기본 로고·'○○교회' placeholder",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "교회 주소 미존재",
+                  "message": "교회를 찾을 수 없어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "requestVerification",
+              "intent": "인증번호 발송(비밀번호 재설정·아이디 찾기 공통)",
+              "method": "POST",
+              "path": "/app/auth/password-reset/request",
+              "body": "{channel: phone|email, identifier, contact}",
+              "auth": "없음(공개)",
+              "idempotency": true,
+              "note": "문자/메일 발송은 비용·부작용이 있는 외부효과이므로 Idempotency-Key로 중복 발송(409) 차단 + 레이트리밋(429)·재전송 쿨다운 60초. 계정 열거 방지를 위해 일치하는 계정이 없어도 202로 동일 응답(존재 시에만 실제 발송). tenant는 접속 host로 자동 결정",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "휴대전화/이메일 형식오류·미입력",
+                  "message": "휴대전화 번호 형식을 확인해 주세요(예: 010-1234-5678)"
+                },
+                {
+                  "status": 409,
+                  "when": "이미 유효한 인증 요청 진행 중",
+                  "message": "이미 보낸 인증번호가 유효해요. 문자를 확인해 주세요"
+                },
+                {
+                  "status": 429,
+                  "when": "발송 요청 과다·쿨다운",
+                  "message": "요청이 많아요. 잠시 후 다시 시도해 주세요"
+                },
+                {
+                  "status": 500,
+                  "when": "발송 게이트웨이 오류",
+                  "message": "인증번호 발송에 실패했어요. 잠시 후 다시 시도해 주세요"
+                }
+              ]
+            },
+            {
+              "id": "verifyResetCode",
+              "intent": "인증번호 검증(본인 인증)",
+              "method": "POST",
+              "path": "/app/auth/password-reset/verify",
+              "body": "{identifier, code}",
+              "auth": "없음(공개)",
+              "note": "성공 시 단기 유효 reset token 발급(2단계 재설정 전용). 인증 검증 전용으로 데이터 비가역 변경이 아니어서 멱등키 불필요. 5회 실패 시 잠금. 소셜 전용 계정은 409로 분기(비밀번호 미보유→소셜 로그인 유도)",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "인증번호 형식오류·필수누락",
+                  "message": "아이디와 휴대전화 번호, 인증번호를 모두 입력해 주세요"
+                },
+                {
+                  "status": 409,
+                  "when": "소셜(카카오·네이버) 전용 계정",
+                  "message": "카카오·네이버로 가입한 계정이에요. 소셜 로그인으로 입장해 주세요"
+                },
+                {
+                  "status": 410,
+                  "when": "인증번호 유효시간(5분) 만료",
+                  "message": "인증번호가 만료됐어요. 다시 받아 주세요"
+                },
+                {
+                  "status": 422,
+                  "when": "인증번호 불일치",
+                  "message": "인증번호가 일치하지 않아요. 다시 확인해 주세요"
+                },
+                {
+                  "status": 429,
+                  "when": "반복 실패 레이트리밋·잠금",
+                  "message": "요청이 많아요. 잠시 후 다시 시도해 주세요"
+                }
+              ]
+            },
+            {
+              "id": "confirmPasswordReset",
+              "intent": "비밀번호 재설정 확정",
+              "method": "POST",
+              "path": "/app/auth/password-reset/confirm",
+              "body": "{resetToken, newPassword}",
+              "auth": "reset token(단기)",
+              "idempotency": true,
+              "note": "비밀번호 변경은 보안 민감 비가역 쓰기 → Idempotency-Key + 감사로그(계정·시각·IP) 기록. 성공 시 기존 세션 전체 무효화 후 교인 로그인(SCR-APP-009)으로 이동. 비밀번호 정책 위반은 422",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "reset token 무효·위조",
+                  "message": "인증이 만료됐어요. 처음부터 다시 진행해 주세요"
+                },
+                {
+                  "status": 410,
+                  "when": "reset token 만료",
+                  "message": "인증이 만료됐어요. 처음부터 다시 진행해 주세요"
+                },
+                {
+                  "status": 422,
+                  "when": "비밀번호 정책 위반(길이·조합)",
+                  "message": "비밀번호는 8자 이상, 영문·숫자를 포함해 주세요"
+                }
+              ]
+            },
+            {
+              "id": "findId",
+              "intent": "아이디 찾기",
+              "method": "POST",
+              "path": "/app/auth/find-id",
+              "body": "{channel: phone|email, contact, code}",
+              "auth": "없음(공개)",
+              "note": "본인 인증 후 마스킹된 아이디를 문자/메일로 발송. 계정 열거 방지를 위해 일치 계정이 없어도 202로 동일 응답(존재 시에만 발송)",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "연락처/인증번호 형식오류",
+                  "message": "휴대전화 번호 형식을 확인해 주세요(예: 010-1234-5678)"
+                },
+                {
+                  "status": 422,
+                  "when": "인증번호 불일치",
+                  "message": "인증번호가 일치하지 않아요. 다시 확인해 주세요"
+                },
+                {
+                  "status": 429,
+                  "when": "요청 과다",
+                  "message": "요청이 많아요. 잠시 후 다시 시도해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "auth.reset.request",
+              "intent": "인증번호 발송 요청",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "auth.reset.verify",
+              "intent": "본인 인증 제출·재설정 단계 진행",
+              "target": ".pd-form"
+            },
+            {
+              "name": "auth.reset.confirm.success",
+              "intent": "비밀번호 재설정 완료·교인 로그인 이동",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "auth.findid.submit",
+              "intent": "아이디 찾기 제출",
+              "target": ".pd-form"
+            },
+            {
+              "name": "auth.social.redirect",
+              "intent": "소셜 전용 계정 분기·소셜 로그인 유도",
+              "target": ".pd-banner"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-009",
+              "via": "비밀번호 재설정 완료 후 로그인"
+            },
+            {
+              "screen": "SCR-APP-009",
+              "via": "소셜(카카오·네이버) 전용 계정 분기·소셜 로그인 유도",
+              "trigger": ".pd-banner"
+            },
+            {
+              "screen": "SCR-APP-009",
+              "via": "로그인으로 돌아가기"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-APP-014",
+        "label": "가입 접수완료·승인 대기",
+        "href": "a-signup-done.html",
+        "surface": "app",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-011"
+        ],
+        "context": "가입 접수완료·승인 대기 안내(관리자 승인 후 로그인 가능·승인 시 문자 안내). 홈/로그인 CTA.",
+        "components": [
+          {
+            "role": ".pd-done",
+            "kind": "status",
+            "label": "가입 신청이 접수되었어요 · 관리자 승인 후 로그인 가능"
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "승인 완료 시 등록하신 휴대전화로 문자 안내를 보내드려요"
+          },
+          {
+            "role": ".pd-wf-label",
+            "kind": "note",
+            "label": "승인 보통 1~2일 이내 · 지연 가능 · 문의는 소속 교회 사무실"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "홈으로",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-001"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그인으로",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-009"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "완료 상태 — '가입 신청이 접수되었어요'. ○○교회 가입 신청이 정상 접수됨을 알리고 관리자 승인 후 로그인 가능함을 명시(교회검색 없이 진입 URL로 church_id 자동 바인딩).",
+            "target": ".pd-done"
+          },
+          {
+            "text": "문자 안내 고지 — 관리자 승인이 완료되면 가입 시 등록한 휴대전화로 문자(SMS) 안내를 발송(실제 발송은 교회 관리자의 승인 시점에 이루어짐).",
+            "target": ".pd-banner"
+          },
+          {
+            "text": "승인 소요·문의 안내 — 승인은 보통 1~2일 이내 처리되며 교회 상황에 따라 지연될 수 있고 문의는 소속 교회 사무실로 안내(정직성: 확정 불가 항목 단정 회피).",
+            "target": ".pd-wf-label"
+          },
+          {
+            "text": "홈으로 — 접수 확인 후 교인 홈(SCR-APP-001)으로 이동. 승인 전에는 홈에서 기능 제한·승인대기 안내가 노출됨.",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "로그인으로 — 승인 완료 후 로그인(SCR-APP-009) 시도. 승인 대기 중이면 로그인 단계에서 '가입 승인 대기 중' 안내로 접근 차단.",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "회원가입 신청 직후 진입(SCR-APP-008 → 202 Accepted)",
+            "guard": "신청 토큰(applicationId) 보유",
+            "result": "완료 아이콘·접수 메시지·CTA 렌더 준비",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-done"
+          },
+          {
+            "state": "로딩",
+            "trigger": "승인 상태 재확인 진입(링크 재방문)",
+            "guard": "가입 신청 상태 응답 대기",
+            "result": "상태 영역 스켈레톤 표시",
+            "message": "상태를 확인하고 있어요",
+            "placement": "inline",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "GET /auth/signup/applications/{applicationId}"
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "접수 완료(승인대기 전이)",
+            "guard": "status=pending",
+            "result": "접수 안내 + 승인 후 로그인 가능 + 문자 안내 고지 + 홈으로/로그인으로 CTA 노출",
+            "message": "가입 신청이 접수되었어요. 관리자 승인 후 로그인하실 수 있어요. 승인이 완료되면 등록하신 휴대전화로 문자 안내를 보내드려요.",
+            "placement": "full-page",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 202
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "진입",
+            "guard": "빈데이터: 해당 없음(목록 없는 단일 상태 안내 화면)",
+            "result": "해당 없음(N/A)",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-done"
+          },
+          {
+            "state": "입력검증",
+            "trigger": "진입",
+            "guard": "입력검증: 해당 없음(입력 폼 없는 완료 상태 화면 · 폼 검증은 SCR-APP-008 소관)",
+            "result": "해당 없음(N/A)",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-done"
+          },
+          {
+            "state": "에러",
+            "trigger": "가입 신청 전송/상태 조회 실패",
+            "guard": "네트워크 단절 또는 서버 오류(5xx)",
+            "result": "접수 실패 안내·다시 시도 유도(홈으로/로그인으로는 유지)",
+            "message": "신청을 접수하지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "신청 토큰 없이 URL 직접 진입(비로그인 공개 화면)",
+            "guard": "applicationId/신청 토큰 없음 또는 만료(410)",
+            "result": "잘못된 접근 안내 → 로그인 화면으로 유도(공개 콘텐츠·개인 신청정보 비노출)",
+            "message": "잘못된 접근이에요. 로그인 화면으로 이동해 주세요.",
+            "placement": "full-page",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "GET /auth/signup/applications/{applicationId}",
+              "status": 404
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "중복 신청 / 이미 승인 / 승인 거절 재진입",
+            "guard": "status=approved(이미 활성) · 중복 신청(409) · status=rejected",
+            "result": "승인 완료 시 '로그인으로' 강조 · 중복 신청 시 접수 사실 재안내 · 거절 시 문의 안내",
+            "message": "이미 승인이 완료된 계정이에요. 로그인해 주세요. (이미 접수된 신청이면 '가입 신청이 이미 접수되어 있어요' · 미승인 시 '가입이 승인되지 않았어요. 소속 교회 사무실로 문의해 주세요')",
+            "placement": "banner",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "POST /auth/signup",
+              "status": 409
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "signupStatus",
+              "intent": "가입 신청 접수·승인 상태 확인",
+              "method": "GET",
+              "path": "/auth/signup/applications/{applicationId}",
+              "params": "{ applicationId }",
+              "response": "{ status: 'pending|approved|rejected', church: '{entities.Church}', maskedPhone: string, submittedAt: string }",
+              "auth": "none(공개·신청 토큰 applicationId로 접근)",
+              "target": ".pd-done",
+              "note": "tenant는 진입 URL slug로 바인딩(교회검색 없음)·개인 신청정보는 발급된 신청 토큰 범위로만 열람·교차테넌트 조회 차단",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "신청 토큰 없음/무효(직접 URL 진입)",
+                  "message": "잘못된 접근이에요. 로그인 화면으로 이동해 주세요"
+                },
+                {
+                  "status": 410,
+                  "when": "신청 토큰 만료",
+                  "message": "확인 링크가 만료됐어요. 로그인에서 다시 시도해 주세요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "상태를 확인하지 못했어요. 잠시 후 다시 시도해 주세요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "signupSubmit",
+              "intent": "회원가입 신청(승인대기 상태 생성)",
+              "method": "POST",
+              "path": "/auth/signup",
+              "response": "{ applicationId, member: '{entities.Member}', status: 'pending' }",
+              "auth": "none(공개·church_id=진입 URL slug 자동 바인딩·교회검색 없음)",
+              "status": 202,
+              "target": ".pd-done",
+              "idempotency": true,
+              "note": "SCR-APP-008 '가입 신청'에서 트리거되어 본 화면이 202 결과를 렌더 · Idempotency-Key로 중복 신청 멱등 처리(동일 키 재요청 시 동일 applicationId 반환, 신규 생성 없음) · 관리자 승인(active) 전까지 pending(비가역 아님) · 가입 데이터는 이름·휴대전화·이메일·교회·가입상태만(G2 최소수집)",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "동일 휴대전화로 이미 신청/가입됨",
+                  "message": "이미 가입 신청이 접수되어 있어요"
+                },
+                {
+                  "status": 422,
+                  "when": "필수 동의 누락 등 비즈니스 규칙 위반",
+                  "message": "필수 항목 동의 후 다시 신청해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "id": "signupAccepted",
+              "name": "signup.accepted",
+              "intent": "가입 신청 접수 완료(승인대기 전이)로 완료 상태 렌더",
+              "trigger": "POST /auth/signup 202 응답",
+              "target": ".pd-done"
+            },
+            {
+              "id": "approvalNotified",
+              "name": "approval.notified",
+              "intent": "관리자 승인 시 가입 시 등록한 휴대전화로 문자(SMS) 안내 발송",
+              "trigger": "관리자 회원 승인(POST /admin/members/{id}/approve) → Notification Gateway(channel=sms) · 감사로그",
+              "target": ".pd-banner"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-001",
+              "via": "홈으로",
+              "trigger": ".pd-cta-bar"
+            },
+            {
+              "screen": "SCR-APP-009",
+              "via": "로그인으로",
+              "trigger": ".pd-cta-bar"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-APP-015",
+        "label": "공지",
+        "href": "a-notice-list.html",
+        "surface": "app",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-009"
+        ],
+        "context": "공지 목록(중요/상단고정·최신순·빈상태). 행→공지 상세. 5메뉴 탭바.",
+        "components": [
+          {
+            "role": ".pd-apptop",
+            "kind": "group",
+            "label": "상단 — 제목 '공지'"
+          },
+          {
+            "role": ".pd-apptop-title",
+            "kind": "group",
+            "label": "제목 '공지'"
+          },
+          {
+            "role": ".pd-section-title",
+            "kind": "group",
+            "label": "섹션 구분 — '상단 고정' · '전체 공지'(최신순)"
+          },
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "공지 목록 — 상단 고정 2건·전체 공지 최신순",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-005"
+            }
+          },
+          {
+            "role": ".pd-row",
+            "kind": "group",
+            "label": "공지 행 — '추수감사주일 안내' · '2026-09-27 · 관리자'(탭하면 공지 상세)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-005"
+            }
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "group",
+            "label": "표시 배지 — '고정'(상단고정)·'중요'"
+          },
+          {
+            "role": ".pd-row-main",
+            "kind": "group",
+            "label": "행 본문 — 제목·게시정보"
+          },
+          {
+            "role": ".pd-row-title",
+            "kind": "group",
+            "label": "공지 제목 — 예 '추수감사주일 안내'"
+          },
+          {
+            "role": ".pd-row-sub",
+            "kind": "group",
+            "label": "게시정보 — '2026-09-27 · 관리자'"
+          },
+          {
+            "role": ".pd-chev",
+            "kind": "group",
+            "label": "이동 표시 꺾쇠(상세로)"
+          },
+          {
+            "role": ".pd-tabbar",
+            "kind": "tabbar",
+            "label": "하단 탭 — 홈·설교·주보·공지(현재)·마이",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-001"
+            }
+          },
+          {
+            "role": ".pd-tab",
+            "kind": "group",
+            "label": "탭 항목 — '공지'는 현재 활성(is-active)"
+          }
+        ],
+        "description": [
+          {
+            "text": "상단바 — 가운데 '공지' 제목을 표시하는 앱 상단 영역",
+            "target": ".pd-apptop"
+          },
+          {
+            "text": "섹션 구분 — '상단 고정'(관리자가 고정한 공지)과 '전체 공지'(최신순)로 나눠 표시",
+            "target": ".pd-section-title"
+          },
+          {
+            "text": "공지 목록 — 각 행에 '고정'·'중요' 배지와 제목·게시정보(날짜·관리자)를 표시하고, 탭하면 공지 상세(SCR-APP-005)로 이동",
+            "target": ".pd-list"
+          },
+          {
+            "text": "공지 행 — 제목 '추수감사주일 안내', 게시정보 '2026-09-27 · 관리자'. 상단고정은 '고정', 중요 공지는 '중요' 배지로 구분하며 탭 시 상세로 이동",
+            "target": ".pd-row"
+          },
+          {
+            "text": "하단 탭 — 홈·설교·주보·공지(현재 활성)·마이. 홈 탭 시 교인 홈(SCR-APP-001)으로 이동",
+            "target": ".pd-tabbar"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "화면 진입 직후(조회 호출 전)",
+            "guard": "탭 진입, GET 목록 호출 전",
+            "result": "목록 자리에 행 스켈레톤 표시",
+            "message": "",
+            "placement": "inline"
+          },
+          {
+            "state": "로딩",
+            "trigger": "목록 조회 요청 중",
+            "guard": "GET 응답 대기",
+            "result": "로딩 인디케이터 표시, 상호작용 보류",
+            "message": "",
+            "placement": "inline",
+            "api": {
+              "endpoint": "GET /app/notices"
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "공지 1건 이상 조회 성공",
+            "result": "상단 고정 공지(고정·중요 배지)를 먼저, 그 아래 전체 공지를 최신순으로 표시",
+            "message": "",
+            "placement": "inline",
+            "api": {
+              "endpoint": "GET /app/notices",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "교회에 등록된 공지 0건",
+            "result": "빈 상태 안내 표시(목록 영역 대체). 교인은 공지를 작성하지 않으므로 복구 액션은 알림 안내",
+            "message": "아직 등록된 공지가 없어요. 새 공지가 올라오면 알림으로 알려드릴게요.",
+            "placement": "full-page",
+            "api": {
+              "endpoint": "GET /app/notices",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류(5xx)",
+            "result": "목록 대신 오류 안내 + 다시 시도 버튼",
+            "message": "공지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "full-page",
+            "api": {
+              "endpoint": "GET /app/notices",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "응답",
+            "guard": "미인증/토큰 만료(401) — 교인(app)은 Bearer JWT 필요",
+            "result": "교인 로그인(SCR-APP-009)으로 유도",
+            "message": "로그인이 필요해요. 다시 로그인해 주세요.",
+            "placement": "full-page",
+            "api": {
+              "endpoint": "GET /app/notices",
+              "status": 401
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "스크롤 하단 도달(추가 로드) 또는 상단고정 다수",
+            "guard": "cursor 페이지네이션으로 다음 페이지 요청, 또는 고정 공지가 많아 상단이 길어짐 — 멀티테넌트 격리로 본인 교회(JWT tenantId) 공지만 조회",
+            "result": "다음 페이지를 이어 붙여 표시(중복 없이). 마지막 페이지면 추가 로드 중단",
+            "message": "",
+            "placement": "inline",
+            "api": {
+              "endpoint": "GET /app/notices?cursor=&limit=20",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appNoticeList",
+              "intent": "공지 목록 조회",
+              "method": "GET",
+              "path": "/app/notices?cursor=&limit=20",
+              "params": "query: cursor(다음 페이지 커서)·limit(기본 20). tenant는 JWT tenantId로 스코프(path 비노출). 정렬 = 상단고정(pinned desc) 후 게시일(createdAt desc)",
+              "response": "{ items: '{entities.Notice}'[], nextCursor }",
+              "auth": "Bearer",
+              "target": ".pd-list",
+              "note": "교인 공지 탭(SCR-APP-015) 진입 시 조회. 각 항목의 pinned·important 플래그로 '고정'·'중요' 배지를 표시. 행 탭 시 공지 상세(SCR-APP-005)로 이동. 멀티테넌트 격리 — 타 교회 공지는 조회 불가.",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미인증/토큰 만료",
+                  "message": "로그인이 필요해요. 다시 로그인해 주세요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "공지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "name": "notice.list.view",
+              "intent": "공지 목록 열람",
+              "when": "공지 탭 진입 시",
+              "payload": "{tenantId, count}"
+            },
+            {
+              "name": "notice.list.open",
+              "intent": "공지 상세 열기",
+              "when": ".pd-row 탭 시",
+              "payload": "{noticeId, tenantId, pinned, important}"
+            },
+            {
+              "name": "notice.list.loadmore",
+              "intent": "다음 페이지 추가 로드",
+              "when": "목록 하단 도달 시",
+              "payload": "{cursor, tenantId}"
+            },
+            {
+              "name": "notice.list.tab",
+              "intent": "홈 탭으로 이동",
+              "when": "하단 홈 탭 탭 시",
+              "payload": "{tenantId}"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-005",
+              "via": "공지 행 탭(상세 열람)",
+              "trigger": ".pd-row"
+            },
+            {
+              "screen": "SCR-APP-001",
+              "via": "하단 홈 탭",
+              "trigger": ".pd-tabbar"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-APP-016",
+        "label": "글자 크기",
+        "href": "a-font-size.html",
+        "surface": "app",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-006"
+        ],
+        "context": "글자 크기 조절(보통/크게/아주 크게) 즉시 미리보기. 고령 접근성. 앱 전역 본문 반영.",
+        "components": [
+          {
+            "role": ".pd-back",
+            "kind": "button",
+            "label": "뒤로 — 설정으로",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-012"
+            }
+          },
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "크기 선택 — 보통 · 크게 · 아주 크게 (현재 '보통' 선택)"
+          },
+          {
+            "role": ".pd-row",
+            "kind": "card",
+            "label": "글자 크기 선택지(보통/크게/아주 크게) — 탭하면 선택되고 미리보기에 즉시 반영",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-016"
+            }
+          },
+          {
+            "role": ".pd-card",
+            "kind": "card",
+            "label": "미리보기 — 설교 · 로마서 강해 12 샘플 문구가 선택한 글자 크기로 표시"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-012"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "크기 선택 목록 — 보통·크게·아주 크게 3단계 중 하나를 탭해 선택. 현재 선택된 항목('보통')은 우측에 체크 표시(.is-selected). 큰 탭 영역으로 고령 교우도 쉽게 고를 수 있게 설계했고, 선택 즉시 아래 미리보기에 반영된다. 화면 전환 없이 현재 화면(SCR-APP-016)에 머문다.",
+            "target": ".pd-list"
+          },
+          {
+            "text": "선택지 행 — 각 행은 크기 이름(보통/크게/아주 크게)과 설명(기본 크기·읽기 편하게·고령 교우 권장)을 함께 보여 어떤 크기인지 직관적으로 알 수 있다. 탭하면 선택 상태가 그 행으로 옮겨가고 미리보기 텍스트가 해당 크기로 갱신된다.",
+            "target": ".pd-row"
+          },
+          {
+            "text": "미리보기 — 실제 앱 문구(설교 · 로마서 강해 12 / 조정표 담임목사 · 주일 10:00 예배)를 선택한 크기 그대로 보여 준다. 저장 전에 설교·주보·공지 본문이 어떻게 보일지 눈으로 확인하고 결정할 수 있다.",
+            "target": ".pd-card"
+          },
+          {
+            "text": "저장 버튼 — 선택한 글자 크기를 저장하고 설정(SCR-APP-012)으로 돌아간다. 설정값은 기기에 저장되어 다음 접속에도 유지되며 앱 전체 글자에 적용된다. 되돌릴 수 있는 설정이라 확인 단계 없이 바로 저장한다.",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "상단 뒤로(.pd-back)는 변경을 적용하지 않고 설정(SCR-APP-012)으로 복귀한다. 저장 없이 나가면 기존 글자 크기가 유지된다.",
+            "target": ".pd-back"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로그인 세션 유효(Bearer)·저장된 글자크기 미수신",
+            "result": "크기 선택 목록 골격 표시, 기본값 '보통'에 선택 표시",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "로딩",
+            "trigger": "진입",
+            "guard": "GET /app/settings 응답 대기",
+            "result": "현재 선택·미리보기 자리에 스켈레톤 표시",
+            "message": "불러오는 중",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "설정 수신 완료",
+            "result": "저장된 글자 크기('보통')에 선택 표시·미리보기에 동일 크기 반영",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /app/settings",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "진입",
+            "guard": "빈데이터: 해당 없음 — 글자 크기는 항상 기본값('보통')을 보유",
+            "result": "빈 상태 화면 없음(항상 기본값 '보통' 선택 표시)",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "에러",
+            "trigger": "진입",
+            "guard": "GET /app/settings 서버 오류(500)",
+            "result": "기본값 '보통'으로 폴백·재시도 안내",
+            "message": "설정을 불러오지 못했어요. 기본 크기(보통)로 표시합니다. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /app/settings",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입",
+            "guard": "세션 만료·미인증(401)",
+            "result": "로그인 화면(SCR-APP-009)으로 유도",
+            "message": "로그인이 필요해요. 다시 로그인해 주세요.",
+            "placement": "full-page",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /app/settings",
+              "status": 401
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "이미 선택된 크기 재탭",
+            "guard": "선택값과 동일한 행 탭 — 변경 없음",
+            "result": "선택 상태·미리보기 그대로 유지(no-op)·저장 시 동일값 멱등 반영",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-row"
+          },
+          {
+            "state": "정상",
+            "trigger": "크기 변경 후 저장",
+            "guard": "선택값이 저장값과 다름·저장 탭",
+            "result": "글자 크기 저장·앱 전체 적용 후 설정(SCR-APP-012) 복귀",
+            "message": "글자 크기를 저장했어요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /app/settings/font-size",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "저장",
+            "guard": "PUT 서버 오류(500)·허용되지 않은 값(422)",
+            "result": "저장 미반영·재시도 유도(이전 크기 유지)",
+            "message": "글자 크기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /app/settings/font-size",
+              "status": 500
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appFontSize",
+              "intent": "글자 크기 설정 로드",
+              "method": "GET",
+              "path": "/app/settings",
+              "params": "-",
+              "response": "{fontSize:'보통'} — 클라이언트 접근성 설정값(엔티티 아님·보통|크게|아주 크게)",
+              "auth": "Bearer",
+              "target": ".pd-list",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "세션 만료·미인증",
+                  "message": "로그인이 필요해요. 다시 로그인해 주세요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "설정을 불러오지 못했어요. 기본 크기(보통)로 표시합니다. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "appFontSizeSave",
+              "intent": "글자 크기 저장(가역)",
+              "method": "PUT",
+              "path": "/app/settings/font-size",
+              "body": "{fontSize:'보통'|'크게'|'아주 크게'}",
+              "response": "200 → 설정 반영·앱 전체 적용 후 설정(SCR-APP-012) 복귀",
+              "auth": "Bearer",
+              "idempotency": true,
+              "note": "가역 설정(토글 유형) — PUT upsert로 동일값 반복 저장 안전(멱등). 확인 단계 불필요(비가역 아님). tenant=JWT tenantId·본인 설정 레코드만(교차테넌트 차단).",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "허용되지 않은 값(enum 외)",
+                  "message": "글자 크기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "글자 크기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "fontsize.select",
+              "when": "크기 선택지 탭",
+              "intent": "선택 크기 변경·미리보기 즉시 갱신",
+              "target": ".pd-row"
+            },
+            {
+              "name": "fontsize.save",
+              "when": "저장 버튼 탭",
+              "intent": "글자 크기 저장 후 설정(SCR-APP-012) 복귀",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "fontsize.back",
+              "when": "뒤로 탭",
+              "intent": "변경 적용 없이 설정(SCR-APP-012) 복귀",
+              "target": ".pd-back"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-012",
+              "via": "저장",
+              "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-APP-012",
+              "via": "뒤로"
+            }
+          ]
+        }
       }
     ]
   },
@@ -7421,8 +10501,7 @@ window.PLANDECK_SCREENS = [
             },
             {
               "screen": "SCR-ADM-003",
-              "via": "설정 완료 시 대시보드",
-              "trigger": ".pd-btn"
+              "via": "설정 완료 시 대시보드"
             }
           ]
         }
@@ -12306,6 +15385,769 @@ window.PLANDECK_SCREENS = [
             {
               "screen": "SCR-ADM-001",
               "via": "로그아웃"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-ADM-018",
+        "label": "비밀번호 재설정·최초 설정",
+        "href": "c-password-reset.html",
+        "surface": "admin",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-018"
+        ],
+        "context": "관리자 비밀번호 재설정·최초 설정(이메일 토큰 링크). 개설 승인 자동생성 계정 초대 수락 겸용.",
+        "components": [
+          {
+            "role": ".pd-auth-brand",
+            "kind": "hero",
+            "label": "새 비밀번호 설정 — ○○교회 관리자 계정"
+          },
+          {
+            "role": ".pd-stepper",
+            "kind": "stepper",
+            "label": "진행 단계 — 요청·메일 확인·새 비밀번호·완료 (3/4 단계)"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "새 비밀번호 설정 폼 (재설정·최초 설정 공용)"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "새 비밀번호·새 비밀번호 확인 입력"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "비밀번호 변경하고 로그인",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-001"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그인으로 돌아가기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-001"
+            }
+          },
+          {
+            "role": ".pd-wf-label",
+            "kind": "text",
+            "label": "링크 30분 유효·1회성 · 최초 비밀번호 설정 겸용 안내"
+          }
+        ],
+        "description": [
+          {
+            "text": "'새 비밀번호 설정' 브랜드 헤더 — ○○교회 관리자 콘솔 계정의 비밀번호를 재설정하거나 최초 설정하는 인증 카드. 교회 선택 없이 진입 서브도메인(JWT tenantId 바인딩)과 메일 링크 토큰으로 대상 계정을 확정",
+            "target": ".pd-auth-brand"
+          },
+          {
+            "text": "진행 단계 표시 — 요청→메일 확인→새 비밀번호→완료 4단계. 비밀번호 재설정과 개설 승인 시 자동 생성된 관리자 계정의 '최초 비밀번호 설정'이 같은 화면·링크를 공용하며 토큰 용도(reset/invite)로 분기",
+            "target": ".pd-stepper"
+          },
+          {
+            "text": "새 비밀번호·새 비밀번호 확인 입력 — 영문·숫자·기호 포함 10자 이상, 두 입력 일치 필요. 규칙 미달·불일치·이전 비밀번호 재사용 시 제출 차단(클라이언트+서버 검증)",
+            "target": ".pd-field"
+          },
+          {
+            "text": "비밀번호 변경하고 로그인 버튼 — 유효 토큰·규칙 충족 시 비밀번호를 변경(초대 토큰이면 계정 활성화)하고 관리자 로그인(SCR-ADM-001)으로 이동. '로그인으로 돌아가기'도 SCR-ADM-001로 이동",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "하단 안내 — 재설정·최초 설정 링크는 발송 후 30분간 유효하고 1회성. 만료·사용 시 로그인 화면에서 재요청하도록 안내",
+            "target": ".pd-wf-label"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "로그인 화면(SCR-ADM-001)의 '비밀번호 재설정' 클릭 후 진입(토큰 없음)",
+            "guard": "토큰 파라미터 없음 → 요청 단계",
+            "result": "관리자 이메일 입력 폼 노출('재설정 메일 받기')",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "초기",
+            "trigger": "재설정·초대 메일 링크(토큰) 클릭 진입",
+            "guard": "유효 토큰 → 새 비밀번호 단계(현재 화면)",
+            "result": "새 비밀번호·확인 입력 폼 노출(stepper 3/4 활성)",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /admin/auth/password-setup/{token}",
+              "status": 200
+            }
+          },
+          {
+            "state": "로딩",
+            "trigger": "폼 제출(메일 요청 또는 비밀번호 변경)",
+            "guard": "요청 처리 중",
+            "result": "제출 버튼 비활성 · 진행 표시",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-btn"
+          },
+          {
+            "state": "정상",
+            "trigger": "'재설정 메일 받기' 제출(요청 단계)",
+            "guard": "요청 접수 — 계정 존재 여부는 비노출(열거공격 방지)",
+            "result": "메일 발송 안내 노출 · 메일 확인 단계로 유도",
+            "message": "입력하신 주소로 재설정 메일을 보냈어요. 메일의 링크로 계속 진행해 주세요.",
+            "placement": "banner",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /admin/auth/password-reset/requests",
+              "status": 202
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "'비밀번호 변경하고 로그인' 제출(재설정 토큰)",
+            "guard": "유효 토큰(purpose=reset)·비밀번호 규칙 충족·두 입력 일치",
+            "result": "비밀번호 변경 완료 → 관리자 로그인(SCR-ADM-001)으로 이동",
+            "message": "새 비밀번호로 변경했어요. 변경한 비밀번호로 로그인해 주세요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/auth/password-setup/{token}",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "'비밀번호 변경하고 로그인' 제출(초대 토큰)",
+            "guard": "유효 초대 토큰(purpose=invite)·규칙 충족 → 자동 생성 관리자 계정 활성화",
+            "result": "최초 비밀번호 설정 완료·계정 활성화 → 관리자 로그인(SCR-ADM-001)으로 이동",
+            "message": "관리자 계정 설정을 마쳤어요. 방금 설정한 비밀번호로 로그인해 주세요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/auth/password-setup/{token}",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "화면 진입",
+            "guard": "빈데이터: 해당 없음(조회 목록이 없는 입력 폼 화면)",
+            "result": "N/A",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "에러",
+            "trigger": "토큰 링크 진입 또는 비밀번호 제출",
+            "guard": "토큰 만료(30분 초과) 또는 이미 사용됨(1회성)",
+            "result": "재설정 재요청 안내 노출",
+            "message": "링크가 만료되었거나 이미 사용되었어요. 재설정 메일을 다시 요청해 주세요.",
+            "placement": "banner",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "PUT /admin/auth/password-setup/{token}",
+              "status": 410
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "폼 제출",
+            "guard": "서버 오류",
+            "result": "처리 실패 · 재시도 안내",
+            "message": "일시적인 오류로 처리하지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "PUT /admin/auth/password-setup/{token}",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "토큰 없이 새 비밀번호 화면에 직접 접근",
+            "guard": "토큰 파라미터 없음·무효 → 임의 변경 차단",
+            "result": "접근 차단 → 관리자 로그인(SCR-ADM-001)으로 유도",
+            "message": "유효한 재설정 링크로만 접근할 수 있어요. 로그인 화면에서 다시 요청해 주세요.(SCR-ADM-001)",
+            "placement": "full-page",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /admin/auth/password-setup/{token}",
+              "status": 404
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "재설정 메일 반복 요청",
+            "guard": "짧은 시간 내 과다 요청(레이트리밋)",
+            "result": "요청 차단 · 대기 안내",
+            "message": "메일 요청이 많아요. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /admin/auth/password-reset/requests",
+              "status": 429
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "변경 완료 후 같은 토큰으로 재제출(멱등)",
+            "guard": "소비된 1회성 토큰 재사용",
+            "result": "중복 처리 없이 완료 상태 유지 · 로그인(SCR-ADM-001) 유도",
+            "message": "이미 변경이 완료된 링크예요. 로그인 화면에서 로그인해 주세요.(SCR-ADM-001)",
+            "placement": "banner",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/auth/password-setup/{token}",
+              "status": 410
+            }
+          },
+          {
+            "state": "입력검증",
+            "trigger": "비밀번호 변경 제출",
+            "guard": "필수누락 — 새 비밀번호 또는 확인 미입력(요청 단계면 이메일 미입력)",
+            "result": "제출 차단(클라이언트 검증)",
+            "message": "새 비밀번호와 확인을 모두 입력해 주세요.",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "입력검증",
+            "trigger": "비밀번호 변경 제출",
+            "guard": "형식오류 — 영문·숫자·기호 조합 규칙 미충족(요청 단계면 이메일 형식오류)",
+            "result": "제출 차단",
+            "message": "영문·숫자·기호를 포함해 10자 이상으로 입력해 주세요.",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "PUT /admin/auth/password-setup/{token}",
+              "status": 400
+            }
+          },
+          {
+            "state": "입력검증",
+            "trigger": "비밀번호 변경 제출",
+            "guard": "범위경계 — 길이 10자 미만(경계값 9자)",
+            "result": "제출 차단",
+            "message": "비밀번호는 10자 이상이어야 해요.",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "입력검증",
+            "trigger": "비밀번호 변경 제출",
+            "guard": "중복충돌 — 새 비밀번호와 확인 불일치, 또는 직전 사용 비밀번호 재사용",
+            "result": "제출 차단",
+            "message": "두 비밀번호가 일치하지 않거나 이전과 같은 비밀번호예요. 다시 확인해 주세요.",
+            "placement": "inline",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "PUT /admin/auth/password-setup/{token}",
+              "status": 422
+            }
+          },
+          {
+            "state": "입력검증",
+            "trigger": "비밀번호 변경 제출",
+            "guard": "유효 — 규칙 충족·두 입력 일치",
+            "result": "제출 허용 → 변경 처리",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-field"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "loadAdminBranding",
+              "intent": "재설정 화면 교회 브랜딩 로드",
+              "method": "GET",
+              "path": "/churches/{slug}/branding",
+              "params": "slug=진입 서브도메인(공개 식별)",
+              "response": "'{entities.Church}' (name·logo·primaryColor — '○○교회' 헤더 렌더)",
+              "auth": "none(공개)",
+              "target": ".pd-auth-brand",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "존재하지 않는 교회 슬러그",
+                  "message": "요청하신 교회를 찾을 수 없어요."
+                },
+                {
+                  "status": 500,
+                  "when": "브랜딩 로드 실패",
+                  "message": "화면 정보를 불러오지 못했어요. 새로고침해 주세요."
+                }
+              ]
+            },
+            {
+              "id": "loadResetTokenContext",
+              "intent": "재설정·초대 토큰 유효성·용도 확인",
+              "method": "GET",
+              "path": "/admin/auth/password-setup/{token}",
+              "params": "token=메일 링크 1회성 토큰(path)",
+              "response": "{purpose:(reset|invite), loginIdMasked, churchName, expiresAt} — 토큰 유효성과 용도(재설정/최초 설정) 판별, 대상 주체 '{entities.Member}'(role=admin)",
+              "auth": "none(공개·토큰 보유)",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "토큰 없음·무효(링크 없이 직접 접근) → 권한없음 유도",
+                  "message": "유효한 재설정 링크로만 접근할 수 있어요.(SCR-ADM-001)"
+                },
+                {
+                  "status": 410,
+                  "when": "토큰 만료(30분 초과)·이미 사용됨",
+                  "message": "링크가 만료되었거나 이미 사용되었어요. 재설정 메일을 다시 요청해 주세요."
+                },
+                {
+                  "status": 500,
+                  "when": "토큰 확인 실패",
+                  "message": "화면 정보를 불러오지 못했어요. 새로고침해 주세요."
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "requestPasswordReset",
+              "intent": "재설정 메일 요청",
+              "method": "POST",
+              "path": "/admin/auth/password-reset/requests",
+              "body": "{email 또는 loginId} — 테넌트는 진입 서브도메인({slug})으로 확정(path 비노출)",
+              "response": "202 접수 — 계정 존재 여부를 응답에 노출하지 않음(열거공격 방지). 메일 발송은 비동기, 대상 '{entities.Member}'(role=admin)",
+              "auth": "none(공개)",
+              "idempotency": "비가역 대량발송(알림 broadcast·Tenant 생성 등)에 해당하지 않아 Idempotency-Key 불필요. 남용·열거공격 방지를 위해 레이트리밋(429) 적용, confirm 불필요",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "이메일/아이디 누락·형식오류",
+                  "message": "관리자 이메일을 정확히 입력해 주세요."
+                },
+                {
+                  "status": 429,
+                  "when": "짧은 시간 내 과다 요청(레이트리밋)",
+                  "message": "메일 요청이 많아요. 잠시 후 다시 시도해 주세요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "일시적인 오류로 처리하지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            },
+            {
+              "id": "setNewPassword",
+              "intent": "새 비밀번호 설정(재설정·최초 설정 공용)",
+              "method": "PUT",
+              "path": "/admin/auth/password-setup/{token}",
+              "body": "{newPassword, newPasswordConfirm} — 대상 계정은 token으로 확정(tenantId는 token에 귀속)",
+              "response": "200 {role:admin, purpose:(reset|invite), activated:boolean} — 초대 토큰(invite)이면 '{entities.Member}' 활성화, 완료 후 관리자 재로그인(SCR-ADM-001) 필요",
+              "auth": "none(공개·1회성 토큰)→완료 후 Bearer(admin) 재로그인",
+              "idempotency": "1회성 토큰(소비형)으로 멱등 보장 — 동일 토큰 재호출은 변경을 반복하지 않고 410(사용됨) 반환. 사용자 명시 제출이므로 별도 confirm 불필요, 모든 처리는 감사 로그 기록",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "비밀번호 규칙 미달(영문·숫자·기호 포함 10자 미만)",
+                  "message": "영문·숫자·기호를 포함해 10자 이상으로 입력해 주세요."
+                },
+                {
+                  "status": 410,
+                  "when": "토큰 만료·이미 사용",
+                  "message": "링크가 만료되었거나 이미 사용되었어요. 재설정 메일을 다시 요청해 주세요."
+                },
+                {
+                  "status": 422,
+                  "when": "두 입력 불일치·직전 비밀번호 재사용 등 비즈니스 규칙 위반",
+                  "message": "두 비밀번호가 일치하지 않거나 이전과 같은 비밀번호예요. 다시 확인해 주세요."
+                },
+                {
+                  "status": 429,
+                  "when": "시도 과다(레이트리밋)",
+                  "message": "시도가 많아요. 잠시 후 다시 시도해 주세요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "일시적인 오류로 처리하지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "ui.pw_reset.request_submit",
+              "when": "'재설정 메일 받기' 버튼 클릭 또는 요청 폼 제출",
+              "intent": "재설정 메일 요청 제출",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "ui.pw_reset.set_submit",
+              "when": "'비밀번호 변경하고 로그인' 버튼 클릭 또는 설정 폼 제출",
+              "intent": "새 비밀번호 설정 제출(재설정·최초 설정 공용)",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "ui.pw_reset.back_login",
+              "when": "'로그인으로 돌아가기' 클릭",
+              "intent": "관리자 로그인(SCR-ADM-001) 이동",
+              "target": ".pd-btn"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-001",
+              "via": "비밀번호 변경·최초 설정 완료 후 관리자 로그인",
+              "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-ADM-001",
+              "via": "로그인으로 돌아가기",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-ADM-019",
+        "label": "서비스 오픈 완료",
+        "href": "c-wizard-done.html",
+        "surface": "admin",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-004"
+        ],
+        "context": "서비스 오픈 완료(공개홈 URL 표시·복사/QR·PWA 설치 안내·다음 할 일 체크리스트).",
+        "components": [
+          {
+            "role": ".pd-done",
+            "kind": "feedback",
+            "label": "○○교회 서비스가 오픈되었어요 — 서비스 상태 · 활성 (환영형 완료 상태)"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "panel",
+            "label": "교인에게 공유할 공개홈 주소 — ○○.hurmate.kr"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "field",
+            "label": "공개홈 URL — ○○.hurmate.kr (읽기 전용 표시)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "주소 복사"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "공개홈 열기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-001"
+            }
+          },
+          {
+            "role": ".pd-qr-area",
+            "kind": "media",
+            "label": "공개홈 접속 QR — 스캔 시 공개홈 바로 연결"
+          },
+          {
+            "role": ".pd-banner",
+            "kind": "banner",
+            "label": "앱으로 설치 안내 — iPhone 공유→홈 화면에 추가 · Android 설치 배너 · Web Push iOS 16.4+ · Native 차기 제공"
+          },
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "다음 할 일 체크리스트 — 설교·주보·공지 등록 바로가기"
+          },
+          {
+            "role": ".pd-row",
+            "kind": "row",
+            "label": "설교 등록 — 로마서 강해 12 · 조정표 담임목사 (YouTube URL)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-006"
+            }
+          },
+          {
+            "role": ".pd-row",
+            "kind": "row",
+            "label": "주보 업로드 — 이번 주(10/5) 예배 순서",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-008"
+            }
+          },
+          {
+            "role": ".pd-row",
+            "kind": "row",
+            "label": "공지 작성 — 추수감사주일 안내",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-009"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "대시보드로 가기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "첫 설교 등록하기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-006"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "완료 히어로(.pd-done) — Wizard STEP8 '서비스 오픈(OPEN)' 성공 직후 진입하는 환영형 완료 상태. ○○교회 status=활성 전환·공개홈 노출 확정을 아웃라인 체크 아이콘과 함께 확인시키고, '서비스 상태 · 활성' 뱃지로 결과를 명시한다",
+            "target": ".pd-done"
+          },
+          {
+            "text": "공개홈 주소 패널(.pd-wpanel) — 교인에게 공유할 공개홈 URL({slug}.hurmate.kr, 목업=○○.hurmate.kr)을 표시하고 '주소 복사'(클립보드)·'공개홈 열기'(공개홈 SCR-SITE-001) 액션과 접속 QR을 함께 제공한다. 미확보 소개·연혁·계좌는 '교회 확인 후 게재'로 정직하게 안내한다",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "접속 QR(.pd-qr-area) — 공개홈 URL을 담은 QR. 주보·게시판에 넣어 교인이 스캔 한 번으로 공개홈에 접속하도록 돕는다",
+            "target": ".pd-qr-area"
+          },
+          {
+            "text": "설치 안내 배너(.pd-banner) — 홈 화면 설치 시 교회 로고·교회명 아이콘, iPhone(Safari) 공유→'홈 화면에 추가', Android(Chrome) 설치 배너, Web Push는 iOS 16.4+ 설치 시 가능, Native 앱은 차기 제공을 정직하게 표기하고 설치 안내(SCR-SITE-007 미리보기)·PWA 관리(SCR-ADM-014)로 연결한다",
+            "target": ".pd-banner"
+          },
+          {
+            "text": "다음 할 일 체크리스트(.pd-list/.pd-row) — 오픈 직후 가장 먼저 할 일을 설교 등록(SCR-ADM-006)·주보 업로드(SCR-ADM-008)·공지 작성(SCR-ADM-009) 바로가기 행으로 묶어 '할 일' 뱃지와 함께 안내한다. 하단 CTA로 대시보드(SCR-ADM-003)·첫 설교 등록(SCR-ADM-006)으로 이동한다",
+            "target": ".pd-list"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "Wizard STEP8 '서비스 오픈(OPEN)' 성공 후 리다이렉트 진입",
+            "guard": "church.opened 이벤트 수신 · church.status=활성",
+            "result": "완료 히어로·공개홈 주소·QR·다음 할 일 체크리스트 노출",
+            "message": "○○교회 서비스가 오픈되었어요",
+            "placement": "summary",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "GET /admin/church/overview",
+              "status": 200
+            }
+          },
+          {
+            "state": "로딩",
+            "trigger": "진입·새로고침",
+            "guard": "오픈 요약(공개홈 URL·QR·콘텐츠 건수) 조회 응답 대기",
+            "result": "완료 히어로·주소 패널·체크리스트 스켈레톤 표시",
+            "message": "오픈 정보를 불러오는 중이에요",
+            "placement": "inline",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /admin/church/overview",
+              "status": "응답 대기"
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "오픈 요약 조회 성공",
+            "guard": "church.status=활성 · ChannelConfig(web/pwa/webPush) 활성 · PwaConfig manifest 생성",
+            "result": "공개홈 URL(○○.hurmate.kr)·QR·설치 안내·체크리스트 정상 노출",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /admin/church/overview",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "'주소 복사' 클릭",
+            "guard": "브라우저 Clipboard API 지원",
+            "result": "공개홈 URL({slug}.hurmate.kr) 클립보드 복사(클라이언트 액션·서버 쓰기 없음)",
+            "message": "공개홈 주소를 복사했어요",
+            "placement": "toast",
+            "target": ".pd-btn"
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "오픈 직후 첫 콘텐츠 미등록 상태",
+            "guard": "설교·주보·공지 건수 0 (counts.sermon=0, bulletin=0, notice=0)",
+            "result": "체크리스트 3행 모두 '할 일' 뱃지로 강조 · CTA로 첫 콘텐츠 등록 유도",
+            "message": "아직 등록한 설교·주보·공지가 없어요. 첫 콘텐츠를 올려 교인에게 공개홈을 채워주세요",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "에러",
+            "trigger": "진입·새로고침",
+            "guard": "오픈 요약 조회 서버 오류(500)",
+            "result": "요약 정보 미표시 · 완료 히어로는 유지하고 재시도 안내",
+            "message": "오픈 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요",
+            "placement": "banner",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /admin/church/overview",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입",
+            "guard": "JWT 없음/세션 만료(401) 또는 role≠admin·타 교회 스코프(403)",
+            "result": "접근 차단 후 관리자 로그인(SCR-ADM-001)으로 유도",
+            "message": "관리자 로그인이 필요해요",
+            "placement": "full-page",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "GET /admin/church/overview",
+              "status": 401
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "아직 오픈하지 않은 교회가 완료 URL(c-wizard-done.html) 직접 접근",
+            "guard": "church.status≠활성(미오픈)",
+            "result": "완료 화면 대신 개설 설정 Wizard(SCR-ADM-002)로 유도",
+            "message": "아직 서비스가 오픈되지 않았어요. 개설 설정을 마치고 오픈해 주세요",
+            "placement": "modal",
+            "target": ".pd-done",
+            "api": {
+              "endpoint": "GET /admin/church/overview",
+              "status": 409
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "'주소 복사' 클릭",
+            "guard": "Clipboard API 미지원·비보안(비 HTTPS) 컨텍스트",
+            "result": "자동 복사 불가 · URL 수동 선택 복사 안내",
+            "message": "자동 복사가 안 돼요. 주소를 길게 눌러 복사해 주세요",
+            "placement": "toast",
+            "target": ".pd-btn"
+          },
+          {
+            "state": "입력검증",
+            "trigger": "해당 없음",
+            "guard": "편집 가능한 입력 폼 없음 — 공개홈 URL은 읽기 전용 표시(.pd-input ph), '주소 복사'는 클립보드 클라이언트 액션. 필수누락·형식오류·범위경계·중복충돌 검증 대상 없음",
+            "result": "입력검증 5종 N/A",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-field"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "churchOpenOverview",
+              "intent": "서비스 오픈 완료 요약 조회(공개홈 주소·QR·콘텐츠 건수)",
+              "method": "GET",
+              "path": "/admin/church/overview",
+              "params": "tenantId=JWT(path 비노출·본인 교회 스코프)",
+              "response": "{ church: '{entities.Church}'(slug·name·status), publicUrl: '{slug}.hurmate.kr', qrImageUrl, channel: '{entities.ChannelConfig}'(web/pwa/webPush), pwa: '{entities.PwaConfig}'(name·icon), counts: { sermon, bulletin, notice } }",
+              "auth": "Bearer(admin)",
+              "target": ".pd-wpanel",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미인증·세션 만료",
+                  "message": "관리자 로그인이 필요해요"
+                },
+                {
+                  "status": 403,
+                  "when": "비관리자·타 교회 스코프 접근",
+                  "message": "이 교회를 관리할 권한이 없어요"
+                },
+                {
+                  "status": 409,
+                  "when": "아직 오픈하지 않은 교회(status≠활성) 직접 접근",
+                  "message": "아직 서비스가 오픈되지 않았어요. 개설 설정을 마치고 오픈해 주세요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "오픈 정보를 불러오지 못했어요. 잠시 후 다시 시도해 주세요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "writesNote": "이 화면은 조회·이동 전용 터미널 확인 화면이다. '주소 복사'는 클라이언트 클립보드 액션(서버 쓰기 없음), 체크리스트/CTA는 다른 화면으로의 이동이다. 비가역 쓰기(서비스 오픈=POST /admin/church/open · Idempotency-Key·confirm·감사로그)는 선행 화면 SCR-ADM-002에서 수행되며 여기서는 재실행되지 않는다(멱등·중복 오픈 차단).",
+          "events": [
+            {
+              "id": "churchOpenedLanded",
+              "name": "church.opened.landed",
+              "intent": "서비스 오픈 완료 진입",
+              "when": "선행 church.opened 성공 후 완료 화면 리다이렉트",
+              "effect": "'{entities.Church}'.status=활성 확인 · 공개홈({slug}.hurmate.kr) 노출 상태 표시 · 온보딩 완료 화면 노출"
+            },
+            {
+              "id": "shareLinkCopied",
+              "name": "share.link.copied",
+              "intent": "공개홈 주소 복사",
+              "when": "'주소 복사' 버튼 클릭",
+              "effect": "공개홈 URL({slug}.hurmate.kr)을 클립보드에 복사(클라이언트) · '공개홈 주소를 복사했어요' 토스트"
+            },
+            {
+              "id": "onboardingChecklistClicked",
+              "name": "onboarding.checklist.clicked",
+              "intent": "다음 할 일 바로가기",
+              "when": "체크리스트 행(설교·주보·공지) 클릭",
+              "effect": "설교 등록(SCR-ADM-006)·주보 업로드(SCR-ADM-008)·공지 작성(SCR-ADM-009) 화면으로 이동"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "'대시보드로 가기' — 관리자 대시보드"
+            },
+            {
+              "screen": "SCR-ADM-006",
+              "via": "'설교 등록'/'첫 설교 등록하기' — 설교 관리"
+            },
+            {
+              "screen": "SCR-ADM-008",
+              "via": "'주보 업로드' — 주보 관리"
+            },
+            {
+              "screen": "SCR-ADM-009",
+              "via": "'공지 작성' — 공지 관리"
+            },
+            {
+              "screen": "SCR-SITE-001",
+              "via": "'공개홈 열기' — 교회 공개홈"
             }
           ]
         }

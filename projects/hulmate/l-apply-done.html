@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>개설 신청 접수완료·상태 (SCR-LND-011)</title>
+  <link rel="stylesheet" href="../../engine/common.css" />
+  <link rel="stylesheet" href="../../engine/plandeck.css" />
+</head>
+<body>
+  <div class="device-stage"><div class="device-mockup"><div class="device-frame"><div class="device-screen">
+    <div class="pd-screen">
+<header class="pd-gnb"><span class="logo">훌메이트</span><nav class="menu"><a href="l-home.html">홈</a><a href="l-features.html">기능</a><a href="l-web.html">WEB 상품</a><a href="l-app.html">APP 상품</a><a href="l-pricing.html">가격</a><a href="l-process.html">도입 절차</a><a href="l-faq.html">FAQ</a><a href="l-contact.html">문의</a></nav><div class="gnb-right"><a class="pd-btn secondary" href="l-login.html">로그인</a><a class="pd-btn primary is-active" href="l-apply.html">교회 개설 신청</a></div></header>
+<main class="pd-content">
+  <div class="pd-pagehead"><div><div class="pd-breadcrumb">훌메이트 / 교회 개설 신청 / 접수완료</div><div class="pd-wf-title">개설 신청 접수완료</div></div><div class="pd-pagehead-actions"><a class="pd-btn secondary" href="l-home.html">홈으로</a></div></div>
+
+  <div class="pd-done">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
+    <div class="pd-wf-title">개설 신청이 접수됐어요</div>
+    <div class="pd-section-sub">슈퍼 운영자가 신청 내용을 검토한 뒤 승인 결과를 담당자 이메일로 알려드려요. 아래에서 접수 정보와 진행 상태를 확인할 수 있어요.</div>
+  </div>
+
+  <div class="pd-stepper">
+    <div class="pd-step is-done"><div class="pd-step-dot">1</div><div class="pd-step-label">접수됨</div></div>
+    <div class="pd-step is-active"><div class="pd-step-dot">2</div><div class="pd-step-label">검토중</div></div>
+    <div class="pd-step"><div class="pd-step-dot">3</div><div class="pd-step-label">승인완료</div></div>
+  </div>
+
+  <div class="pd-banner pd-soft"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>현재 상태 — 검토중 · 슈퍼 운영자가 신청 내용을 확인하고 있어요 <span class="pd-badge">검토중</span></div>
+
+  <div class="pd-wpanel"><div class="pd-wpanel-head">접수 정보<span class="pd-wpanel-sub">신청 시점 기준</span></div>
+    <div class="pd-form pd-wpanel-pad">
+      <div class="pd-pricerow"><span class="lbl">접수번호</span><span class="amt">HM-2026-0147</span></div>
+      <div class="pd-pricerow"><span class="lbl">교회명</span><span class="amt">○○교회</span></div>
+      <div class="pd-pricerow"><span class="lbl">요금제</span><span class="amt">WEB 상품 · 월 이용료 <span class="pd-badge">미확정</span></span></div>
+      <div class="pd-pricerow"><span class="lbl">신청일시</span><span class="amt">2026-10-09 14:20</span></div>
+      <div class="pd-pricerow"><span class="lbl">예상 검토 소요</span><span class="amt">영업일 기준 1~2일</span></div>
+      <div class="pd-pricerow"><span class="lbl">결과 안내</span><span class="amt">담당자 이메일 (church@example.com)</span></div>
+    </div>
+    <div class="pd-section-sub">요금 금액은 시장 검증 후 확정되며 현재는 미확정입니다. 구체 금액은 교회 확인 후 안내드려요. 접수번호는 문의 시 사용하세요.</div>
+  </div>
+
+  <div class="pd-section-title">검토 결과에 따라</div>
+  <div class="pd-section-sub">검토가 끝나면 아래 두 갈래 중 하나로 안내돼요. 결과는 담당자 이메일로 통지됩니다.</div>
+
+  <div class="pd-card flat">
+    <div class="pd-section-title">승인완료 시 — 설정 Wizard로 바로 시작</div>
+    <div class="pd-section-sub">승인되면 교회 전용 Tenant가 자동 생성되고(church_id 자동 매핑), 공개홈·교인 PWA 설정을 위한 개설 설정 Wizard(8단계)가 열려요. 교회별 데이터는 서로 완전히 분리됩니다(Tenant 격리).</div>
+    <div class="pd-cta-bar"><a class="pd-btn primary" href="c-wizard.html">설정 Wizard 시작 (승인 후 활성화)</a></div>
+  </div>
+
+  <div class="pd-card flat">
+    <div class="pd-section-title">반려 시 — 사유 확인 후 보완 재신청</div>
+    <div class="pd-section-sub">반려되면 반려 사유가 담당자 이메일로 안내돼요. 사유를 반영해 내용을 보완하면 다시 신청할 수 있어요. 재신청해도 이미 접수된 동일 신청은 중복 생성되지 않아요(멱등).</div>
+    <div class="pd-cta-bar"><a class="pd-btn secondary" href="l-apply.html">보완하여 다시 신청</a></div>
+  </div>
+
+  <div class="pd-banner pd-warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg>검토 상태가 궁금하면 문의해 주세요 · 담당자 연락처는 교회 확인 후 게재됩니다 · 문의 메일 support@hurmate.kr</div>
+
+  <div class="pd-cta">
+    <a class="pd-btn primary block" href="l-home.html">홈으로 돌아가기</a>
+    <a class="pd-btn secondary block" href="l-contact.html">문의하기</a>
+  </div>
+</main>
+    </div>
+  </div></div><div class="device-stand"></div><div class="device-base"></div></div></div>
+  <script>window.PLANDECK_CURRENT='l-apply-done.html';window.PDK_CURRENT=window.PLANDECK_CURRENT;</script>
+  <script>
+    (function(){var v=Date.now();var files=['config/devices.js','config/project.js','config/entities.js','config/prd.js','config/screens.js','../../engine/common.js','../../engine/plandeck.js'];
+    for(var i=0;i<files.length;i++)document.write('<scr'+'ipt src="'+files[i]+'?_='+v+'"></scr'+'ipt>');})();
+  </script>
+</body>
+</html>
