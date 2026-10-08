@@ -3821,8 +3821,7 @@ window.PLANDECK_SCREENS = [
           "to": [
             {
               "screen": "SCR-APP-006",
-              "via": "뒤로",
-              "trigger": ".pd-btn"
+              "via": "뒤로"
             },
             {
               "screen": "SCR-APP-011",
@@ -6294,8 +6293,7 @@ window.PLANDECK_SCREENS = [
             },
             {
               "screen": "SCR-ADM-001",
-              "via": "로그아웃",
-              "trigger": ".pd-btn"
+              "via": "로그아웃"
             }
           ]
         }

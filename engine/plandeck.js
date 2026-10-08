@@ -1488,6 +1488,15 @@
   function enhanceInteractions() {
     var screen = document.querySelector('.pd-screen');
     if (!screen) return;
+    // 아코디언 — .pd-acc-q 클릭 시 부모 .pd-acc-item 토글(is-open). 내부 링크는 제외(링크 우선).
+    screen.querySelectorAll('.pd-acc-q').forEach(function (q) {
+      q.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('a[href]')) return;
+        e.preventDefault();
+        var item = q.closest && q.closest('.pd-acc-item');
+        if (item) item.classList.toggle('is-open');
+      });
+    });
     // 세그먼트(탭) — 단일 선택 + .pd-tabs 안이면 해당 인덱스 패널로 내용 전환(프로토타입)
     screen.querySelectorAll('.pd-segment').forEach(function (seg) {
       seg.addEventListener('click', function (e) {
