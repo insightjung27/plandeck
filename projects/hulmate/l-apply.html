@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>교회 개설 신청 (SCR-LND-009)</title>
+  <link rel="stylesheet" href="../../engine/common.css" />
+  <link rel="stylesheet" href="../../engine/plandeck.css" />
+</head>
+<body>
+  <div class="device-stage"><div class="device-mockup"><div class="device-frame"><div class="device-screen">
+    <div class="pd-screen">
+<header class="pd-gnb"><span class="logo">훌메이트</span><nav class="menu"><a href="l-home.html">홈</a><a href="l-features.html">기능</a><a href="l-web.html">WEB 상품</a><a href="l-app.html">APP 상품</a><a href="l-pricing.html">가격</a><a href="l-process.html">도입 절차</a><a href="l-faq.html">FAQ</a><a href="l-contact.html">문의</a></nav><div class="gnb-right"><a class="pd-btn secondary" href="l-login.html">로그인</a><a class="pd-btn primary is-active" href="l-apply.html">교회 개설 신청</a></div></header>
+<main class="pd-content">
+  <div class="pd-pagehead"><div><div class="pd-breadcrumb">훌메이트 / 교회 개설 신청</div><div class="pd-wf-title">교회 개설 신청</div></div><div class="pd-pagehead-actions"><a class="pd-btn secondary" href="l-pricing.html">가격 보기</a></div></div>
+
+  <div><div class="pd-section-sub">회원가입 → 교회정보 입력 → 요금제 선택 → 제출 순서로 진행됩니다. 교회를 검색하는 과정은 없으며, 슈퍼 운영자 승인 시 교회 전용 Tenant가 자동 생성되고 발급되는 전용 주소(slug)로 교인이 바로 접속합니다(church_id 자동 매핑). 교회별 데이터는 서로 완전히 분리됩니다(Tenant 격리).</div></div>
+
+  <div class="pd-stepper">
+    <div class="pd-step is-done"><div class="pd-step-dot">1</div><div class="pd-step-label">회원가입</div></div>
+    <div class="pd-step is-active"><div class="pd-step-dot">2</div><div class="pd-step-label">교회정보</div></div>
+    <div class="pd-step"><div class="pd-step-dot">3</div><div class="pd-step-label">요금제</div></div>
+    <div class="pd-step"><div class="pd-step-dot">4</div><div class="pd-step-label">제출</div></div>
+  </div>
+
+  <div class="pd-card flat">
+    <div class="pd-section-title">먼저 로그인이 필요해요</div>
+    <div class="pd-section-sub">개설 신청을 위해 먼저 로그인해주세요. 로그인한 계정이 교회 관리자 계정으로 연결됩니다. <span class="pd-badge">초기 · 미로그인</span></div>
+    <div class="pd-cta-bar"><a class="pd-btn secondary" href="l-login.html">로그인</a><a class="pd-btn primary" href="l-login.html">회원가입 후 계속</a></div>
+  </div>
+
+  <div class="pd-card flat">
+    <div class="pd-section-title">교회정보 입력</div>
+    <form class="pd-form grid2">
+      <div class="pd-field"><label class="pd-field-label">교회명</label><div class="pd-input ph">○○교회</div></div>
+      <div class="pd-field"><label class="pd-field-label">대표자(담임목사)</label><div class="pd-input ph">홍○○ 목사</div></div>
+      <div class="pd-field"><label class="pd-field-label">담당자 성함</label><div class="pd-input ph">담당 교역자·행정 담당</div></div>
+      <div class="pd-field"><label class="pd-field-label">담당자 연락처</label><div class="pd-input ph">010-</div></div>
+      <div class="pd-field"><label class="pd-field-label">이메일</label><div class="pd-input ph">church@example.com</div></div>
+      <div class="pd-field"><label class="pd-field-label">교회 규모</label><div class="pd-select"><span>출석 규모 선택</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div></div>
+      <div class="span2 pd-field"><label class="pd-field-label">교회 주소</label><div class="pd-input ph">도로명 주소</div></div>
+      <div class="span2 pd-field"><label class="pd-field-label">희망 주소(slug)</label><div class="pd-input ph">예: onnuri — 발급 주소에 사용됩니다</div></div>
+      <div class="span2 pd-field-inline"><a class="pd-btn secondary" href="#" onclick="return false">slug 중복 확인</a></div>
+    </form>
+    <div class="pd-section-sub">희망 주소(slug)는 중복 확인 후 확정됩니다. 이미 사용 중이면 "이미 사용 중인 주소예요. 다른 slug를 입력해주세요"라고 안내되며 다른 값을 입력해야 합니다. 확정된 slug가 교회 전용 접속 주소가 됩니다.</div>
+  </div>
+
+  <div class="pd-card flat">
+    <div class="pd-section-title">요금제 선택</div>
+    <label class="pd-check on"><span class="box radio"></span>WEB 상품 — 공개 Web + 교인용 PWA(홈·설교·주보·공지·마이 5개 메뉴, Web Push 알림)</label>
+    <div class="pd-pricerow"><span class="lbl">WEB 상품 이용료</span><span class="amt">미확정</span></div>
+    <label class="pd-check"><span class="box radio"></span>WEB + APP 상품 — 네이티브 앱 포함(차기 준비 중)</label>
+    <div class="pd-pricerow"><span class="lbl">WEB+APP 이용료</span><span class="amt">미확정</span></div>
+    <div class="pd-section-sub">요금은 초기등록비 + 월 이용료 구조이며, 구체 금액은 교회 확인 후 안내드립니다(현재 미확정). 네이티브 앱(APP 상품)은 차기 단계로 준비 중이며, 현재 도입 범위는 공개 Web과 교인용 PWA입니다.</div>
+    <div class="pd-cta-bar"><a class="pd-btn secondary" href="l-pricing.html">가격 자세히 보기</a></div>
+  </div>
+
+  <div class="pd-card flat">
+    <div class="pd-section-title">제출 전 확인</div>
+    <div class="pd-section-sub">제출하면 개설 신청(OnboardingApplication)이 생성되어 슈퍼 운영자 검토 큐로 접수됩니다. 제출 전 확인 모달이 표시되며, 재클릭해도 중복 생성되지 않습니다(멱등 처리 — "이미 접수된 신청이에요"). 접수 성공 시 "신청이 접수됐어요. 슈퍼 운영자 승인을 기다려주세요"라고 안내됩니다.</div>
+    <label class="pd-check on"><span class="box"></span>입력 내용과 요금제 선택을 확인했으며, 개설 신청에 동의합니다</label>
+  </div>
+
+  <div class="pd-cta">
+    <a class="pd-btn primary block" href="x-tenant-new.html">개설 신청 제출 — 슈퍼 승인 대기</a>
+  </div>
+</main>
+    </div>
+  </div></div><div class="device-stand"></div><div class="device-base"></div></div></div>
+  <script>window.PLANDECK_CURRENT='l-apply.html';window.PDK_CURRENT=window.PLANDECK_CURRENT;</script>
+  <script>
+    (function(){var v=Date.now();var files=['config/devices.js','config/project.js','config/entities.js','config/prd.js','config/screens.js','../../engine/common.js','../../engine/plandeck.js'];
+    for(var i=0;i<files.length;i++)document.write('<scr'+'ipt src="'+files[i]+'?_='+v+'"></scr'+'ipt>');})();
+  </script>
+</body>
+</html>

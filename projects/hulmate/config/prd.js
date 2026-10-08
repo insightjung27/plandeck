@@ -158,6 +158,7 @@ window.PLANDECK_PRD = {
     { reqId: 'REQ-023', text: '기본 도메인은 {slug}.hurmate.kr이며 Premium 옵션으로 커스텀 도메인을 연결한다 (§56)', surfaces: ['super', 'admin'] },
     { reqId: 'REQ-024', text: '운영자/관리자는 WEB(초기 등록비+월 이용료)과 APP(구축비+스토어 등록·관리비+연간 유지비) 상품 구조로 구독·과금하며 APP은 BASIC에 포함하지 않는다. 금액은 시장검증 후 확정 (§66·67·68)', surfaces: ['landing', 'super', 'admin'] },
     { reqId: 'REQ-025', text: '[차기] 앱이 꼭 필요한 교회에 한하여 교회별 White Label Native App(One codebase + Tenant Config + Automated Build, Native Push·Deep Link, 교회 소유 개발자계정 운영대행)을 Premium Add-on으로 제공한다 (§13·14·65·72)', surfaces: ['admin', 'super'] },
+    { reqId: 'REQ-SEAL', text: '[봉인·V1 제외] 헌금·전자기부금영수증·교적·출석·커뮤니티·아나바다·성도매장·교회학교·검색·PIPA 권리요청·이단심사 등 V1 기능군은 삭제가 아닌 feature-flag OFF로 봉인(향후 Add-on 자산). 아카이브 화면으로 보존·검토용 (§60·작업계획 §3.2)', surfaces: ['app', 'site', 'admin', 'super'] },
   ],
   workflows: [
     { name: '대표사이트 방문→교회 개설 신청', steps: ['대표사이트 접속(www.hurmate.kr)', '가격 안내·WEB/APP 상품 확인', '회원가입', '교회 정보 입력', '요금제 선택', '개설 신청 제출'] },

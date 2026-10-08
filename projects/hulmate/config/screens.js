@@ -1,1120 +1,8982 @@
-/* 훌메이트 — 소규모 교회 화이트라벨 PWA. 전체 페이지 와이어프레임(4서피스 61화면).
- * 기본은 흑백 와이어프레임(화면설계서 수준). 디자인은 Figma 연동(옵션)으로 승격. */
+/* 훌메이트 V2.0 — 교회 멀티테넌트 플랫폼. 전체 화면 와이어프레임.
+ * ★V2.0 재기준화: 대표사이트(landing)·교회 공개홈(site)·교인 Web/PWA(app)·교회 관리자(admin)·슈퍼관리자(super) 5채널.
+ *   활성 56화면 + 봉인 25화면(V1 제외·feature-flag OFF·삭제 아님). 교인 5메뉴 고정·단일 Design System·church_id 자동.
+ * 기본은 흑백 와이어프레임. screens.js↔HTML·flow·REQ 추적성 정합. /pd-scaffold·/pd-wireframe */
 window.PLANDECK_SCREENS = [
   {
-    category: '교인앱 (모바일 PWA)',
-    pages: [
-      // ── 1. 교인앱 홈 ──
+    "category": "대표사이트 (landing · www.hurmate.kr · PC웹)",
+    "pages": [
       {
-        id: 'SCR-APP-001', label: '교인앱 홈', href: 'a-home.html',
-        surface: 'app', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
-        context: '교인앱 첫 화면. 이번 주 설교·공지·바로가기. 교회별 브랜드(화이트라벨)로 표시.',
-        components: [
-          { role: '.pd-live', kind: 'banner', label: '주일 라이브 배너', action: { on: 'click', do: 'go:SCR-APP-011' } },
-          { role: '.pd-sermon-card', kind: 'card', label: '이번 주 설교', action: { on: 'click', do: 'go:SCR-APP-011' } },
-          { role: '.pd-notice', kind: 'list', label: '공지 목록', action: { on: 'click', do: 'go:SCR-APP-009' } },
-          { role: '.pd-quick', kind: 'list', label: '바로가기', action: { on: 'click', do: 'go:SCR-APP-003' } },
-          { role: '.pd-tabbar', kind: 'tabbar', label: '하단 탭', action: { on: 'click', do: 'go:SCR-APP-004' } },
+        "id": "SCR-LND-001",
+        "label": "대표사이트 홈",
+        "href": "l-home.html",
+        "surface": "landing",
+        "entry": true,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001"
         ],
-        description: [
-          { text: '주일 라이브 배너 — 탭하면 설교 상세·재생(SCR-APP-011)', target: '.pd-live' },
-          { text: '이번 주 설교 — 탭하면 설교 상세·재생(SCR-APP-011)', target: '.pd-sermon-card' },
-          { text: '바로가기 — 헌금안내(SCR-APP-003)·예배', target: '.pd-quick' },
-          { text: '하단 탭 — 홈·설교·헌금·마이(SCR-APP-004)', target: '.pd-tabbar' },
+        "context": "훌메이트 플랫폼 소개 랜딩. 히어로('교회마다 독립 Web·PWA를 설정만으로')·핵심가치 3·채널 소개·CTA '교회 개설 신청'. 플랫폼 비가시성(교회 독립 서비스처럼 보이게).",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비(서비스소개·기능·WEB·APP·가격·도입절차·FAQ·문의·로그인·개설신청)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-002"
+            }
+          },
+          {
+            "role": ".pd-hero",
+            "kind": "banner",
+            "label": "히어로 — '교회마다 독립 Web·PWA를 설정만으로'",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "tiles",
+            "label": "핵심가치 3(독립 브랜드·설정만으로 오픈·Web Push 알림)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-002"
+            }
+          },
+          {
+            "role": ".pd-cardgrid",
+            "kind": "tiles",
+            "label": "채널 소개(교회 공개홈·교인 PWA·관리자 콘솔)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-003"
+            }
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "가격 보기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-005"
+            }
+          }
         ],
-        cases: [
-          { state: '초기', trigger: '진입', guard: '', result: '홈 로딩(테넌트 테마)', message: '' },
-          { state: '정상', trigger: '응답', guard: '설교 1건+', result: '설교·공지·바로가기', message: '', target: '.pd-sermon-card', api: { endpoint: 'GET /app/home', status: 200 } },
-          { state: '빈데이터', trigger: '응답', guard: '설교 0건', result: '준비중', message: '아직 등록된 설교가 없어요', placement: 'inline', target: '.pd-sermon-card' },
-          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '공개 콘텐츠 + 로그인 유도', message: '로그인하면 더 많은 기능을 쓸 수 있어요', placement: 'inline' },
+        "description": [
+          {
+            "text": "상단 GNB — 서비스소개·기능·WEB·APP·가격·도입절차·FAQ·문의·로그인·개설신청. 기능 소개로 이동(SCR-LND-002)",
+            "target": ".pd-gnb"
+          },
+          {
+            "text": "히어로 CTA — '교회마다 독립 Web·PWA를 설정만으로', 탭하면 교회 개설 신청(SCR-LND-009)",
+            "target": ".pd-hero"
+          },
+          {
+            "text": "채널 소개 카드 — 공개홈·교인 PWA·관리자 콘솔, WEB 상품 상세로(SCR-LND-003)",
+            "target": ".pd-cardgrid"
+          },
+          {
+            "text": "하단 CTA — 교회 개설 신청(SCR-LND-009) / 가격 보기(SCR-LND-005)",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [{ id: 'appHome', intent: '홈 집계', method: 'GET', path: '/app/home', response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-card', errors: [{ status: 500, when: '서버 오류', message: '정보를 불러오지 못했어요' }] }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-APP-011', via: '설교 상세·재생', trigger: '.pd-sermon-card' }, { screen: 'SCR-APP-003', via: '헌금안내', trigger: '.pd-quick' }, { screen: 'SCR-APP-009', via: '공지', trigger: '.pd-notice' }, { screen: 'SCR-APP-004', via: '마이', trigger: '.pd-tabbar' }] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "콘텐츠 로딩",
+            "result": "히어로·섹션 스켈레톤",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-hero"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "마케팅 블록 수신",
+            "result": "히어로·핵심가치·채널·CTA 렌더",
+            "message": "",
+            "target": ".pd-hero",
+            "api": {
+              "endpoint": "GET /public/landing",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "기본(정적) 콘텐츠로 폴백",
+            "message": "일시적으로 일부 내용을 불러오지 못했어요",
+            "placement": "inline",
+            "target": ".pd-feature"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "landing",
+              "intent": "랜딩 마케팅 블록(히어로·가치·채널)",
+              "method": "GET",
+              "path": "/public/landing",
+              "response": "{hero,values[],channels[]}",
+              "auth": "none(공개)",
+              "target": ".pd-hero",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "내용을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-002",
+              "via": "기능 소개",
+              "trigger": ".pd-gnb"
+            },
+            {
+              "screen": "SCR-LND-003",
+              "via": "WEB 상품",
+              "trigger": ".pd-cardgrid"
+            },
+            {
+              "screen": "SCR-LND-005",
+              "via": "가격 안내"
+            },
+            {
+              "screen": "SCR-LND-009",
+              "via": "교회 개설 신청",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
       },
-      // ── 2. 설교 ──
       {
-        id: 'SCR-APP-002', label: '설교', href: 'a-sermon.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
-        context: '설교 목록·검색·재생. 유튜브 연동, 주일 라이브.',
-        components: [
-          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
-          { role: '.pd-feature', kind: 'card', label: '최신 설교(탭하면 상세·재생)' },
-          { role: '.pd-sermon-list', kind: 'list', label: '설교 목록' },
+        "id": "SCR-LND-002",
+        "label": "기능 소개",
+        "href": "l-features.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001"
         ],
-        description: [
-          { text: '최신 설교 — 탭하면 상세·재생', target: '.pd-feature' },
-          { text: '설교 목록 — 시리즈·날짜', target: '.pd-sermon-list' },
+        "context": "제품 기능 소개 — 교회 공개홈·교인 PWA·관리자 콘솔·Web Push·개설 Wizard. 카드그리드로 기능별 가치 전달.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-section-title",
+            "kind": "banner",
+            "label": "기능 소개"
+          },
+          {
+            "role": ".pd-cardgrid",
+            "kind": "tiles",
+            "label": "기능 카드(공개홈·교인 PWA·관리자 콘솔·Web Push·개설 Wizard)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-003"
+            }
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "card",
+            "label": "Web Push — iOS 16.4+ 홈 설치 PWA에서 수신"
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '선택', guard: 'videoUrl 있음', result: '상세·재생', message: '', target: '.pd-feature', api: { endpoint: 'GET /app/sermons', status: 200 } },
-          { state: '빈데이터', trigger: '응답', guard: '0건', result: '준비중', message: '설교 영상 준비중이에요', placement: 'full-page' },
-          { state: '에러', trigger: '선택', guard: '비공개/깨짐', result: '대체 안내', message: '영상을 재생할 수 없어요', placement: 'inline', target: '.pd-feature' },
+        "description": [
+          {
+            "text": "기능 카드그리드 — 공개홈·교인 PWA·관리자 콘솔·Web Push·개설 Wizard, WEB 상품 상세로(SCR-LND-003)",
+            "target": ".pd-cardgrid"
+          },
+          {
+            "text": "Web Push 설명 — iOS는 16.4+ 홈 화면 설치 PWA에서만 수신(과장 없이 조건 명시)",
+            "target": ".pd-feature"
+          },
+          {
+            "text": "하단 CTA — 교회 개설 신청(SCR-LND-009)",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [{ id: 'listSermons', intent: '설교 목록', method: 'GET', path: '/app/sermons', params: [{ in: 'query', name: 'series', type: 'string', required: false }], response: '{entities.Sermon}[]', auth: 'Bearer(선택)', target: '.pd-sermon-list' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "기능 목록 수신",
+            "result": "기능 카드·설명 렌더",
+            "message": "",
+            "target": ".pd-cardgrid",
+            "api": {
+              "endpoint": "GET /public/features",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "정적 폴백",
+            "message": "기능 정보를 불러오지 못했어요",
+            "placement": "inline",
+            "target": ".pd-cardgrid"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "features",
+              "intent": "기능 소개 블록",
+              "method": "GET",
+              "path": "/public/features",
+              "response": "{features[]}",
+              "auth": "none(공개)",
+              "target": ".pd-cardgrid",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "기능 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-003",
+              "via": "WEB 상품 자세히",
+              "trigger": ".pd-cardgrid"
+            },
+            {
+              "screen": "SCR-LND-009",
+              "via": "교회 개설 신청",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
       },
-      // ── 3. 헌금 안내 ──
       {
-        id: 'SCR-APP-003', label: '헌금 안내', href: 'a-giving.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-003'],
-        context: '헌금 종류·계좌 안내(안내전용). 계좌 미제공 시 "교회 확인 후 게재".',
-        components: [
-          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
-          { role: '.pd-kinds', kind: 'list', label: '헌금 종류' },
-          { role: '.pd-account', kind: 'card', label: '계좌 안내(복사)' },
+        "id": "SCR-LND-003",
+        "label": "WEB 상품",
+        "href": "l-web.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001",
+          "REQ-024"
         ],
-        description: [
-          { text: '헌금 종류 — 주정/십일조/감사', target: '.pd-kinds' },
-          { text: '계좌 안내 — 복사. 미제공 시 "교회 확인 후 게재"', target: '.pd-account' },
+        "context": "기본 상품 = Responsive Web + PWA + Web Push + Admin. 포함 범위·장점. 초기등록비+월이용료(금액 미확정).",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-hero",
+            "kind": "banner",
+            "label": "WEB 상품 — 반응형 Web + PWA + Web Push + Admin"
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "tiles",
+            "label": "포함 범위(공개홈·교인 PWA·관리자 콘솔·Web Push)"
+          },
+          {
+            "role": ".pd-pricerow",
+            "kind": "table",
+            "label": "요금 구조(초기등록비+월이용료) — 금액 미확정",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-005"
+            }
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '계좌 등록', result: '종류·계좌', message: '', target: '.pd-account', api: { endpoint: 'GET /app/offering', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '계좌 미등록', result: '준비중', message: '헌금 계좌는 교회 확인 후 게재됩니다', placement: 'inline', target: '.pd-account' },
-          { state: '정상', trigger: '복사', guard: '', result: '클립보드', message: '계좌번호를 복사했어요', placement: 'toast', target: '.pd-account' },
+        "description": [
+          {
+            "text": "포함 범위 타일 — 반응형 Web·PWA·Web Push·Admin이 기본 상품에 모두 포함",
+            "target": ".pd-feature"
+          },
+          {
+            "text": "요금 구조 — 초기등록비+월이용료 구조만 표기, 금액은 '시장검증 후 확정(미확정)'. 가격 안내로(SCR-LND-005)",
+            "target": ".pd-pricerow"
+          },
+          {
+            "text": "하단 CTA — 교회 개설 신청(SCR-LND-009)",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [{ id: 'getOffering', intent: '헌금 안내', method: 'GET', path: '/app/offering', response: '{entities.Offering}', auth: 'Bearer(선택)', target: '.pd-account' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "상품 정보 수신",
+            "result": "포함 범위·요금 구조(미확정) 렌더",
+            "message": "",
+            "target": ".pd-pricerow",
+            "api": {
+              "endpoint": "GET /public/product/web",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "정적 폴백",
+            "message": "상품 정보를 불러오지 못했어요",
+            "placement": "inline",
+            "target": ".pd-feature"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "productWeb",
+              "intent": "WEB 상품 포함 범위·요금 구조",
+              "method": "GET",
+              "path": "/public/product/web",
+              "response": "{scope[],priceModel(amountTBD:true)}",
+              "auth": "none(공개)",
+              "target": ".pd-pricerow",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "상품 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-005",
+              "via": "가격 안내",
+              "trigger": ".pd-pricerow"
+            },
+            {
+              "screen": "SCR-LND-009",
+              "via": "교회 개설 신청",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
       },
-      // ── 4. 마이/로그인 ──
       {
-        id: 'SCR-APP-004', label: '마이', href: 'a-my.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
-        context: '로그인/내 정보. 가입은 승인대기 흐름.',
-        components: [
-          { role: '.pd-login', kind: 'form', label: '로그인 폼' },
-          { role: '.pd-signup', kind: 'button', label: '회원가입(승인대기)' },
-          { role: '.pd-profile', kind: 'card', label: '내 프로필' },
+        "id": "SCR-LND-004",
+        "label": "APP 상품 (차기)",
+        "href": "l-app.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-025"
         ],
-        description: [
-          { text: '로그인 폼 — 교회별 세션', target: '.pd-login' },
-          { text: '회원가입 — 승인대기', target: '.pd-signup' },
-          { text: '프로필 — 이름·역할·부서', target: '.pd-profile' },
+        "context": "[차기·Premium Add-on] White Label Native App — 앱이 꼭 필요한 교회에만. 구축비+스토어등록관리+연간유지. '준비 중' 표기.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-hero",
+            "kind": "banner",
+            "label": "APP 상품(차기) — 화이트라벨 네이티브 앱 · 준비 중"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "가격 비교 보기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-005"
+            }
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "WEB로 먼저 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          }
         ],
-        cases: [
-          { state: '초기', trigger: '진입', guard: '비로그인', result: '로그인 폼', message: '', target: '.pd-login' },
-          { state: '정상', trigger: '로그인', guard: '승인 성도', result: '프로필', message: '', target: '.pd-profile', api: { endpoint: 'POST /auth/login', status: 200 } },
-          { state: '권한없음', trigger: '로그인', guard: '승인대기', result: '대기 안내', message: '승인 대기 중이에요', placement: 'inline', target: '.pd-login' },
-          { state: '필수누락', trigger: '로그인', guard: '미입력', result: '막음', message: '아이디와 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-login', priority: 'P1' },
-          { state: '형식오류', trigger: '로그인', guard: '비번 규칙', result: '막음', message: '비밀번호 형식을 확인해 주세요', placement: 'inline', priority: 'P2' },
-          { state: '중복충돌', trigger: '회원가입', guard: '중복 아이디', result: '막음', message: '이미 가입된 아이디예요', placement: 'inline', target: '.pd-signup', priority: 'P2' },
-          { state: '유효', trigger: '로그인', guard: '정상', result: '세션 생성', message: '', priority: 'P0' },
+        "description": [
+          {
+            "text": "히어로 — 네이티브 앱은 차기 Premium Add-on, 상단에 '준비 중' 명확 표기(과장 금지)",
+            "target": ".pd-hero"
+          },
+          {
+            "text": "Add-on 구성 타일 — 구축비+스토어 등록관리+연간 유지, BASIC(WEB)에는 미포함"
+          },
+          {
+            "text": "가격 비교(SCR-LND-005) / WEB로 먼저 개설 신청(SCR-LND-009)",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [], writes: [{ id: 'login', intent: '로그인', method: 'POST', path: '/auth/login', request: '{entities.Member}', response: '{entities.Member}', errors: [{ status: 401, when: '자격 불일치', message: '아이디 또는 비밀번호를 확인해 주세요' }, { status: 403, when: '승인대기' }], auth: 'None', target: '.pd-login' }], events: [{ name: 'member.signup.requested', when: '회원가입 시', payload: '{entities.Member}' }] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "Add-on 정보 수신",
+            "result": "'준비 중' 배지와 구성 안내 렌더",
+            "message": "현재는 준비 중입니다. 오픈 시 안내드려요",
+            "placement": "inline",
+            "target": ".pd-hero",
+            "api": {
+              "endpoint": "GET /public/product/app",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "정적 '준비 중' 폴백",
+            "message": "정보를 불러오지 못했어요",
+            "placement": "inline"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "productApp",
+              "intent": "APP(차기) Add-on 구성·상태",
+              "method": "GET",
+              "path": "/public/product/app",
+              "response": "{status:'comingSoon',components[]}",
+              "auth": "none(공개)",
+              "target": ".pd-hero",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-005",
+              "via": "가격 비교"
+            },
+            {
+              "screen": "SCR-LND-009",
+              "via": "WEB 개설 신청",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
       },
-      // ── 5. 커뮤니티(나눔터) ──
       {
-        id: 'SCR-APP-005', label: '커뮤니티', href: 'a-community.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
-        context: '교인 간 나눔터(기도제목·간증·소그룹 게시). 작성·댓글.',
-        components: [
-          { role: '.pd-feed', kind: 'list', label: '게시 피드' },
-          { role: '.pd-write', kind: 'button', label: '글쓰기' },
+        "id": "SCR-LND-005",
+        "label": "가격 안내",
+        "href": "l-pricing.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-024"
         ],
-        description: [
-          { text: '게시 피드 — 기도제목·간증·소그룹', target: '.pd-feed' },
-          { text: '글쓰기 — 로그인 성도만', target: '.pd-write' },
+        "context": "WEB vs APP 상품 구조 비교표. 금액은 '시장검증 후 확정(미확정)' 명시. APP은 BASIC에 미포함.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-section-title",
+            "kind": "banner",
+            "label": "가격 안내 — 금액 미확정(시장검증 후 확정)"
+          },
+          {
+            "role": ".pd-pricerow",
+            "kind": "table",
+            "label": "WEB vs APP 비교표(포함 항목·과금 구조)"
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "card",
+            "label": "APP은 차기 Premium Add-on(BASIC 미포함)"
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '피드 표시', message: '', target: '.pd-feed', api: { endpoint: 'GET /app/community', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '0건', result: '첫 글 유도', message: '첫 나눔을 남겨보세요', placement: 'inline', target: '.pd-feed' },
-          { state: '권한없음', trigger: '글쓰기', guard: '비로그인', result: '로그인 유도', message: '로그인 후 작성할 수 있어요', placement: 'toast', target: '.pd-write' },
+        "description": [
+          {
+            "text": "비교표 — WEB(기본)과 APP(차기 Add-on)의 포함 항목·과금 구조를 행으로 대비, 금액란은 '미확정' placeholder",
+            "target": ".pd-pricerow"
+          },
+          {
+            "text": "안내 카드 — APP은 BASIC에 미포함되는 별도 Add-on(과금 분리)",
+            "target": ".pd-feature"
+          },
+          {
+            "text": "하단 CTA — 교회 개설 신청(SCR-LND-009)",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [{ id: 'listPosts', intent: '커뮤니티 피드', method: 'GET', path: '/app/community', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }, { in: 'query', name: 'limit', type: 'number', required: false, example: '20' }], response: '{entities.Post}[]', auth: 'Bearer', target: '.pd-feed' }], writes: [{ id: 'writePost', intent: '글 작성', method: 'POST', path: '/app/community', auth: 'Bearer', target: '.pd-write' }], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "요금제 구조 수신",
+            "result": "비교표 렌더(금액=미확정)",
+            "message": "요금은 시장 검증 후 확정됩니다",
+            "placement": "inline",
+            "target": ".pd-pricerow",
+            "api": {
+              "endpoint": "GET /public/pricing",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "정적 구조 폴백",
+            "message": "가격 정보를 불러오지 못했어요",
+            "placement": "inline",
+            "target": ".pd-pricerow"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "pricing",
+              "intent": "WEB/APP 요금제 비교 구조",
+              "method": "GET",
+              "path": "/public/pricing",
+              "response": "{plans[{name,items[],amount:null}]}",
+              "auth": "none(공개)",
+              "target": ".pd-pricerow",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "가격 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-009",
+              "via": "교회 개설 신청",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
       },
-      // ── 6. 아나바다(중고나눔) ──
       {
-        id: 'SCR-APP-006', label: '아나바다', href: 'a-market.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
-        context: '성도 간 중고 나눔(무료·나눔). 폐쇄몰·성도매장과 구분(성도 간 중고).',
-        components: [
-          { role: '.pd-item-grid', kind: 'list', label: '나눔 물품 그리드' },
-          { role: '.pd-register', kind: 'button', label: '물품 등록' },
+        "id": "SCR-LND-006",
+        "label": "도입 절차",
+        "href": "l-process.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001"
         ],
-        description: [
-          { text: '나눔 물품 — 사진·상태·나눔여부', target: '.pd-item-grid' },
-          { text: '물품 등록 — 성도만', target: '.pd-register' },
+        "context": "개설 9단계 종단(가입→개설신청→요금제→승인→Tenant생성→Wizard→오픈→교인가입→알림) 스테퍼.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-section-title",
+            "kind": "banner",
+            "label": "도입 절차 — 9단계"
+          },
+          {
+            "role": ".pd-stepper",
+            "kind": "stepper",
+            "label": "가입→개설신청→요금제→승인→Tenant생성→Wizard→오픈→교인가입→알림"
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "card",
+            "label": "승인 후 Tenant 자동 생성·관리자 Wizard 8STEP 안내"
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '물품 그리드', message: '', target: '.pd-item-grid', api: { endpoint: 'GET /app/market', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '0건', result: '등록 유도', message: '아직 등록된 나눔이 없어요', placement: 'inline', target: '.pd-item-grid' },
+        "description": [
+          {
+            "text": "도입 스테퍼 — 9단계 종단 흐름을 순서대로 표시(가입~알림)",
+            "target": ".pd-stepper"
+          },
+          {
+            "text": "핵심 안내 — 슈퍼 승인 후 Tenant 자동 생성, 관리자 Wizard 8STEP으로 설정만으로 오픈",
+            "target": ".pd-feature"
+          },
+          {
+            "text": "하단 CTA — 1단계 가입·개설 신청 시작(SCR-LND-009)",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [{ id: 'listItems', intent: '나눔 물품', method: 'GET', path: '/app/market', auth: 'Bearer', target: '.pd-item-grid' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "절차 데이터 수신",
+            "result": "9단계 스테퍼 렌더",
+            "message": "",
+            "target": ".pd-stepper",
+            "api": {
+              "endpoint": "GET /public/process",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "정적 스테퍼 폴백",
+            "message": "절차 정보를 불러오지 못했어요",
+            "placement": "inline",
+            "target": ".pd-stepper"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "process",
+              "intent": "도입 9단계 스텝",
+              "method": "GET",
+              "path": "/public/process",
+              "response": "{steps[]}",
+              "auth": "none(공개)",
+              "target": ".pd-stepper",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "절차 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-009",
+              "via": "교회 개설 신청",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
       },
-      // ── 7. 교회학교/교육 ──
       {
-        id: 'SCR-APP-007', label: '교회학교', href: 'a-edu.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-013'],
-        context: '교회학교(부서별 공지·일정·자료). 유치/아동/중고등/청년.',
-        components: [
-          { role: '.pd-dept-tabs', kind: 'segment', label: '부서 탭' },
-          { role: '.pd-edu-list', kind: 'list', label: '부서 공지·일정' },
+        "id": "SCR-LND-007",
+        "label": "자주 묻는 질문",
+        "href": "l-faq.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001"
         ],
-        description: [
-          { text: '부서 탭 — 유치/아동/중고등/청년', target: '.pd-dept-tabs' },
-          { text: '공지·일정 — 부서별', target: '.pd-edu-list' },
+        "context": "FAQ 아코디언 — Web/앱 차이·PWA·Web Push·도메인·가격·데이터 소유 등.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-section-title",
+            "kind": "banner",
+            "label": "자주 묻는 질문"
+          },
+          {
+            "role": ".pd-acc-item",
+            "kind": "list",
+            "label": "FAQ 아코디언(Web/앱 차이·PWA·Web Push·도메인·가격·데이터 소유)"
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "교회 개설 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "더 궁금하면 문의하기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-010"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '부서 콘텐츠', message: '', target: '.pd-edu-list', api: { endpoint: 'GET /app/education', status: 200 } },
-          { state: '빈데이터', trigger: '부서 전환', guard: '0건', result: '준비중', message: '등록된 내용이 없어요', placement: 'inline', target: '.pd-edu-list' },
+        "description": [
+          {
+            "text": "FAQ 아코디언 — 질문(pd-acc-q) 클릭 시 답변(pd-acc-a) 펼침, Web/앱 차이·PWA·Web Push 조건·도메인·가격 미확정·데이터 소유 등",
+            "target": ".pd-acc-item"
+          },
+          {
+            "text": "개설 신청으로(SCR-LND-009)",
+            "target": ".pd-cta"
+          },
+          {
+            "text": "해결 안 되면 문의하기(SCR-LND-010)",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'eduDept', intent: '부서 콘텐츠', method: 'GET', path: '/app/education', params: [{ in: 'query', name: 'dept', type: 'string', required: true }], auth: 'Bearer', target: '.pd-edu-list' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "FAQ 수신",
+            "result": "아코디언 항목 렌더(접힘 기본)",
+            "message": "",
+            "target": ".pd-acc-item",
+            "api": {
+              "endpoint": "GET /public/faq",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "FAQ 0건",
+            "result": "문의 유도",
+            "message": "등록된 FAQ가 아직 없어요. 문의로 남겨주세요",
+            "placement": "inline",
+            "target": ".pd-acc-item"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "정적 폴백",
+            "message": "FAQ를 불러오지 못했어요",
+            "placement": "inline",
+            "target": ".pd-acc-item"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "faq",
+              "intent": "FAQ 질문·답변 목록",
+              "method": "GET",
+              "path": "/public/faq",
+              "response": "{faq[{q,a}]}",
+              "auth": "none(공개)",
+              "target": ".pd-acc-item",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "FAQ를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-009",
+              "via": "교회 개설 신청",
+              "trigger": ".pd-cta"
+            },
+            {
+              "screen": "SCR-LND-010",
+              "via": "문의"
+            }
+          ]
+        }
       },
-      // ── 8. 주보 ──
       {
-        id: 'SCR-APP-008', label: '주보', href: 'a-bulletin.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-014'],
-        context: '주간 주보 열람(예배 순서·광고·헌금·일정). 관리자 발행분.',
-        components: [
-          { role: '.pd-bulletin-view', kind: 'hero', label: '주보 본문' },
-          { role: '.pd-week-nav', kind: 'segment', label: '주차 이동' },
+        "id": "SCR-LND-008",
+        "label": "로그인",
+        "href": "l-login.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-002"
         ],
-        description: [
-          { text: '주보 본문 — 예배 순서·광고', target: '.pd-bulletin-view' },
-          { text: '주차 이동 — 지난 주보', target: '.pd-week-nav' },
+        "context": "대표사이트 로그인(전역 계정 AppUser). 소셜 4사+아이디. 로그인 후 개설 신청 또는 내 교회로.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "로그인 폼(아이디·비밀번호)"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "아이디·비밀번호 입력"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "소셜 로그인 4사(카카오·네이버·구글·애플)"
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "로그인",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '발행됨', result: '주보 표시', message: '', target: '.pd-bulletin-view', api: { endpoint: 'GET /app/bulletin', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '미발행', result: '준비중', message: '이번 주 주보가 아직 발행되지 않았어요', placement: 'full-page', target: '.pd-bulletin-view' },
+        "description": [
+          {
+            "text": "로그인 폼 — 전역 계정(AppUser) 아이디·비밀번호 입력",
+            "target": ".pd-form"
+          },
+          {
+            "text": "소셜 로그인 4사(카카오·네이버·구글·애플) 버튼",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "로그인 성공 시 개설 신청(SCR-LND-009) 또는 내 교회로 이동",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [{ id: 'getBulletin', intent: '주보 조회', method: 'GET', path: '/app/bulletin', params: [{ in: 'query', name: 'week', type: 'string', required: false }], auth: 'Bearer(선택)', target: '.pd-bulletin-view' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-      // ── 9. 공지 상세 ──
-      {
-        id: 'SCR-APP-009', label: '공지 상세', href: 'a-notice.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
-        context: '공지 상세 본문. 첨부·이미지·링크.',
-        components: [
-          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } },
-          { role: '.pd-notice-body', kind: 'card', label: '공지 본문' },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "제출",
+            "guard": "자격증명 일치",
+            "result": "세션 발급·개설 신청으로 이동",
+            "message": "",
+            "target": ".pd-cta",
+            "api": {
+              "endpoint": "POST /auth/login",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "자격증명 불일치",
+            "result": "인라인 오류",
+            "message": "아이디 또는 비밀번호가 올바르지 않아요",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "로그인에 실패했어요. 잠시 후 다시 시도해주세요",
+            "placement": "toast",
+            "target": ".pd-form"
+          }
         ],
-        description: [
-          { text: '공지 본문 — 제목·일시·내용', target: '.pd-notice-body' },
+        "interface": {
+          "reads": [],
+          "writes": [
+            {
+              "id": "login",
+              "intent": "전역 계정 로그인",
+              "method": "POST",
+              "path": "/auth/login",
+              "request": "{loginId,password}",
+              "response": "{accessToken,user}",
+              "auth": "none→세션",
+              "target": ".pd-cta",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "자격증명 불일치",
+                  "message": "아이디 또는 비밀번호가 올바르지 않아요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "로그인에 실패했어요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "login_success",
+              "when": "로그인 성공",
+              "payload": "{userId}"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-009",
+              "via": "로그인 후 개설 신청",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-LND-009",
+        "label": "교회 개설 신청",
+        "href": "l-apply.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-002"
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '공지 표시', message: '', target: '.pd-notice-body', api: { endpoint: 'GET /app/notices/{id}', status: 200 } },
-          { state: '에러', trigger: '진입', guard: '삭제됨', result: '목록으로', message: '삭제된 공지예요', placement: 'full-page' },
+        "context": "개설 신청 폼 — 회원가입→교회정보(교회명·대표자·담당자·전화·이메일·주소·규모·희망slug)→요금제(WEB/WEB+APP) 선택→제출. OnboardingApplication(신청) 생성. 제출 후 '슈퍼 승인 대기' 안내.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-stepper",
+            "kind": "stepper",
+            "label": "신청 단계(회원가입→교회정보→요금제→제출)"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "교회정보 입력(교회명·대표자·담당자·전화·이메일·주소·규모·희망slug)"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "희망 slug 입력(중복 확인)"
+          },
+          {
+            "role": ".pd-pricerow",
+            "kind": "table",
+            "label": "요금제 선택(WEB / WEB+APP, 금액 미확정)"
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "개설 신청 제출",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-004"
+            }
+          }
         ],
-        interface: { reads: [{ id: 'getNotice', intent: '공지 상세', method: 'GET', path: '/app/notices/{id}', auth: 'Bearer(선택)', target: '.pd-notice-body' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-      // ── 10. 성도 매장 ──
-      {
-        id: 'SCR-APP-010', label: '성도 매장', href: 'a-stores.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
-        context: '성도 생업(가게) 홍보 디렉터리. 등록→관리자 승인→노출.',
-        components: [
-          { role: '.pd-store-list', kind: 'list', label: '성도 매장 목록' },
+        "description": [
+          {
+            "text": "신청 스테퍼 — 회원가입→교회정보→요금제→제출 단계 표시",
+            "target": ".pd-stepper"
+          },
+          {
+            "text": "교회정보 폼 — 교회명·대표자·담당자·전화·이메일·주소·규모·희망slug. slug는 중복 확인 후 확정",
+            "target": ".pd-field"
+          },
+          {
+            "text": "요금제 선택 — WEB 또는 WEB+APP(차기), 금액은 미확정 안내",
+            "target": ".pd-pricerow"
+          },
+          {
+            "text": "제출 시 OnboardingApplication 생성→슈퍼 승인 검토 큐로 접수(SCR-SUP-004). 제출 전 확인 모달",
+            "target": ".pd-cta"
+          }
         ],
-        description: [
-          { text: '성도 매장 — 업종·연락처·소개(승인분만)', target: '.pd-store-list' },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "미로그인",
+            "result": "먼저 회원가입/로그인 단계 노출",
+            "message": "개설 신청을 위해 먼저 로그인해주세요",
+            "placement": "inline",
+            "target": ".pd-stepper"
+          },
+          {
+            "state": "정상",
+            "trigger": "제출",
+            "guard": "필수값+slug 유효+확인 동의",
+            "result": "신청 접수·승인 대기 안내",
+            "message": "신청이 접수됐어요. 슈퍼 운영자 승인을 기다려주세요",
+            "placement": "inline",
+            "target": ".pd-cta",
+            "api": {
+              "endpoint": "POST /onboarding/applications",
+              "status": 201
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "희망 slug 중복",
+            "result": "slug 필드 인라인 오류",
+            "message": "이미 사용 중인 주소예요. 다른 slug를 입력해주세요",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "중복 제출(재클릭)",
+            "result": "멱등 처리로 기존 신청 재노출",
+            "message": "이미 접수된 신청이에요",
+            "placement": "toast",
+            "target": ".pd-cta"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '승인 1건+', result: '매장 목록', message: '', target: '.pd-store-list', api: { endpoint: 'GET /app/stores', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '0건', result: '등록 유도', message: '등록된 성도 매장이 없어요', placement: 'inline', target: '.pd-store-list' },
+        "interface": {
+          "reads": [
+            {
+              "id": "slugCheck",
+              "intent": "희망 slug 사용 가능 여부",
+              "method": "GET",
+              "path": "/onboarding/slug-availability",
+              "response": "{available:boolean}",
+              "auth": "Bearer(로그인)",
+              "target": ".pd-field",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "slug 중복",
+                  "message": "이미 사용 중인 주소예요"
+                }
+              ]
+            },
+            {
+              "id": "pricing",
+              "intent": "요금제 선택지",
+              "method": "GET",
+              "path": "/public/pricing",
+              "response": "{plans[]}",
+              "auth": "none(공개)",
+              "target": ".pd-pricerow",
+              "errors": []
+            }
+          ],
+          "writes": [
+            {
+              "id": "apply",
+              "intent": "개설 신청 생성(OnboardingApplication) — 비가역 생성, Idempotency-Key로 멱등 보장·제출 전 확인 모달 필수",
+              "method": "POST",
+              "path": "/onboarding/applications",
+              "request": "{church{name,owner,manager,phone,email,addr,size,slug},plan}",
+              "response": "{applicationId,status:'pending'}",
+              "auth": "Bearer(로그인)",
+              "idempotent": "Idempotency-Key 헤더",
+              "confirm": "제출 전 확인 모달",
+              "target": ".pd-cta",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "slug 중복/중복 제출",
+                  "message": "이미 접수됐거나 사용 중인 주소예요"
+                },
+                {
+                  "status": 422,
+                  "when": "필수값 누락",
+                  "message": "필수 항목을 모두 입력해주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "application_submitted",
+              "when": "신청 접수 성공",
+              "payload": "{applicationId}"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-004",
+              "via": "제출→슈퍼 개설 검토·승인 큐로 접수",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-LND-010",
+        "label": "문의",
+        "href": "l-contact.html",
+        "surface": "landing",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001"
         ],
-        interface: { reads: [{ id: 'listStores', intent: '성도 매장', method: 'GET', path: '/app/stores', auth: 'Bearer', target: '.pd-store-list' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-APP-017', via: '매장 상세', trigger: '.pd-store-list' }] },
-      },
-      // ── 11. 설교 상세 ──
-      {
-        id: 'SCR-APP-011', label: '설교 상세', href: 'a-sermon-detail.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
-        context: '설교 영상 재생·설교 노트·같은 시리즈. 목록(SCR-APP-002)·홈 설교카드에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-002' } }, { role: '.pd-player', kind: 'hero', label: '영상 플레이어' }],
-        description: [{ text: '영상 플레이어 — 유튜브 재생', target: '.pd-player' }, { text: '설교 노트·같은 시리즈 목록' }],
-        cases: [{ state: '정상', trigger: '진입', guard: 'videoUrl', result: '재생', message: '', target: '.pd-player' }, { state: '빈데이터', trigger: '진입', guard: '영상 없음', result: '준비중', message: '영상 준비중이에요', placement: 'inline', target: '.pd-player' }],
-        interface: { reads: [{ id: 'getSermon', intent: '설교 상세', method: 'GET', path: '/app/sermons/{id}', auth: 'Bearer(선택)', target: '.pd-player' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-      // ── 12. 나눔 글 상세 ──
-      {
-        id: 'SCR-APP-012', label: '나눔 글', href: 'a-community-detail.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
-        context: '커뮤니티 나눔 글 상세·댓글. 피드(SCR-APP-005)에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-005' } }],
-        description: [{ text: '본문·댓글·댓글 입력' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '', result: '글·댓글 표시', message: '' }, { state: '권한없음', trigger: '댓글', guard: '비로그인', result: '로그인 유도', message: '로그인 후 댓글을 쓸 수 있어요', placement: 'toast' }],
-        interface: { reads: [{ id: 'getPost', intent: '나눔 글', method: 'GET', path: '/app/community/{id}', auth: 'Bearer' }], writes: [{ id: 'addComment', intent: '댓글', method: 'POST', path: '/app/community/{id}/comments', auth: 'Bearer' }], events: [] },
-        flow: { to: [] },
-      },
-      // ── 13. 글쓰기 ──
-      {
-        id: 'SCR-APP-013', label: '글쓰기', href: 'a-community-write.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-011'],
-        context: '커뮤니티 나눔 글 작성(분류·제목·내용·익명). 게시 시 피드로.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-005' } }],
-        description: [{ text: '분류·제목·내용·익명 옵션' }],
-        cases: [{ state: '정상', trigger: '게시', guard: '제목·내용', result: '피드 반영', message: '나눔을 게시했어요', placement: 'toast' }, { state: '필수누락', trigger: '게시', guard: '내용 없음', result: '막음', message: '내용을 입력해 주세요', placement: 'inline', priority: 'P1' }],
-        interface: { reads: [], writes: [{ id: 'createPost', intent: '글 작성', method: 'POST', path: '/app/community', successStatus: 201, auth: 'Bearer' }], events: [] },
-        flow: { to: [{ screen: 'SCR-APP-005', via: '게시', kind: 'auto' }] },
-      },
-      // ── 14. 나눔물품 상세 ──
-      {
-        id: 'SCR-APP-014', label: '나눔물품 상세', href: 'a-market-detail.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
-        context: '아나바다 나눔 물품 상세·나눔자·채팅. 그리드(SCR-APP-006)에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-006' } }],
-        description: [{ text: '사진·상태·나눔자·채팅/찜' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '', result: '물품 상세', message: '' }, { state: '빈데이터', trigger: '진입', guard: '거래완료', result: '안내', message: '나눔이 완료된 물품이에요', placement: 'inline' }],
-        interface: { reads: [{ id: 'getItem', intent: '물품 상세', method: 'GET', path: '/app/market/{id}', auth: 'Bearer' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-      // ── 15. 물품 등록 ──
-      {
-        id: 'SCR-APP-015', label: '물품 등록', href: 'a-market-register.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
-        context: '아나바다 나눔 물품 등록(사진·물품명·상태·방식·설명).',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-006' } }],
-        description: [{ text: '사진·물품명·상태·나눔 방식·설명' }],
-        cases: [{ state: '정상', trigger: '등록', guard: '물품명', result: '그리드 반영', message: '등록됐어요', placement: 'toast' }, { state: '필수누락', trigger: '등록', guard: '사진 없음', result: '막음', message: '사진을 1장 이상 올려주세요', placement: 'inline', priority: 'P2' }],
-        interface: { reads: [], writes: [{ id: 'createItem', intent: '물품 등록', method: 'POST', path: '/app/market', successStatus: 201, auth: 'Bearer' }], events: [] },
-        flow: { to: [{ screen: 'SCR-APP-006', via: '등록', kind: 'auto' }] },
-      },
-      // ── 16. 교회학교 공지 상세 ──
-      {
-        id: 'SCR-APP-016', label: '교회학교 공지', href: 'a-edu-detail.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-013'],
-        context: '교회학교 부서 공지·일정 상세. 부서 목록(SCR-APP-007)에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-007' } }],
-        description: [{ text: '공지 본문·참가 신청' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '공지 표시', message: '' },
-          { state: '빈데이터', trigger: '진입', guard: '본문 없음', result: '준비중', message: '등록된 내용이 없어요', placement: 'inline' },
-          { state: '에러', trigger: '진입', guard: '삭제됨', result: '목록으로', message: '삭제된 공지예요', placement: 'full-page' },
+        "context": "도입 문의 폼(교회명·연락처·문의내용). 전송 확인.",
+        "components": [
+          {
+            "role": ".pd-gnb",
+            "kind": "tabbar",
+            "label": "상단 네비",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          },
+          {
+            "role": ".pd-section-title",
+            "kind": "banner",
+            "label": "도입 문의"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "문의 폼(교회명·연락처·문의내용)"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "교회명·연락처·문의내용 입력"
+          },
+          {
+            "role": ".pd-cta",
+            "kind": "button",
+            "label": "문의 보내기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-001"
+            }
+          }
         ],
-        interface: { reads: [{ id: 'getEdu', intent: '부서 공지', method: 'GET', path: '/app/education/{id}', auth: 'Bearer' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-      // ── 17. 성도 매장 상세 ──
-      {
-        id: 'SCR-APP-017', label: '성도 매장 상세', href: 'a-store-detail.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-012'],
-        context: '성도 매장 상세(주소·연락처·전화·길찾기). 목록(SCR-APP-010)에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-010' } }],
-        description: [{ text: '매장 소개·주소·연락처·전화/길찾기' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '승인됨', result: '매장 상세', message: '' },
-          { state: '빈데이터', trigger: '진입', guard: '승인 전', result: '노출 안 함', message: '승인 대기 중인 매장이에요', placement: 'inline' },
-          { state: '에러', trigger: '전화', guard: '번호 없음', result: '대체 안내', message: '연락처가 등록되지 않았어요', placement: 'toast' },
+        "description": [
+          {
+            "text": "문의 폼 — 교회명·연락처·문의내용 입력(개인정보 최소 수집)",
+            "target": ".pd-form"
+          },
+          {
+            "text": "전송 버튼 — 접수 후 확인 메시지, 홈으로 복귀(SCR-LND-001)",
+            "target": ".pd-cta"
+          }
         ],
-        interface: { reads: [{ id: 'getStore', intent: '매장 상세', method: 'GET', path: '/app/stores/{id}', auth: 'Bearer' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-      // ── 18. 회원가입 ──
-      {
-        id: 'SCR-APP-018', label: '회원가입', href: 'a-signup.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004', 'REQ-026'],
-        context: '교인앱 회원가입(가입 후 관리자 승인). 마이(SCR-APP-004)에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-004' } }],
-        description: [{ text: '이름·연락처·아이디·부서·동의' }],
-        cases: [{ state: '필수누락', trigger: '가입', guard: '필수 동의(수집·이용) 미체크', result: '막음', message: '필수 개인정보 수집·이용 동의가 필요해요', placement: 'inline', priority: 'P1' }, { state: '권한없음', trigger: '가입', guard: '14세 미만·법정대리인 미동의', result: '막음', message: '만 14세 미만은 법정대리인 동의가 필요해요(PIPA)', placement: 'inline', priority: 'P0' }, { state: '유효', trigger: '가입', guard: '목적별 동의 완료', result: '승인대기', message: '가입 신청됐어요. 관리자 승인 후 이용 가능해요', placement: 'toast', priority: 'P0' }],
-        interface: { reads: [], writes: [{ id: 'signup', intent: '회원가입(목적별 분리 동의)', method: 'POST', path: '/auth/signup', successStatus: 201, request: '{ member:{entities.Member}, consents:[{ purpose:"required|messaging|photo|guardian", granted:boolean }] }', errors: [{ status: 422, when: '필수 동의 누락/미성년 법정대리인 미동의', message: '필수 동의가 필요해요' }], auth: 'None' }], events: [{ name: 'member.signup.requested', when: '가입 신청', payload: '{entities.Member}' }, { name: 'consent.recorded', when: '동의 기록', payload: '{entities.Consent}[]' }] },
-        flow: { to: [{ screen: 'SCR-APP-004', via: '가입 완료', kind: 'auto' }] },
-      },
-      // ── 19. 내 정보 수정 ──
-      {
-        id: 'SCR-APP-019', label: '내 정보 수정', href: 'a-profile-edit.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-004'],
-        context: '내 프로필 수정(이름·연락처·부서·직분). 마이(SCR-APP-004)에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-004' } }],
-        description: [{ text: '프로필 사진·이름·연락처·부서·직분' }],
-        cases: [
-          { state: '정상', trigger: '저장', guard: '', result: '프로필 갱신', message: '저장됐어요', placement: 'toast' },
-          { state: '필수누락', trigger: '저장', guard: '이름 공백', result: '막음', message: '이름을 입력해 주세요', placement: 'inline', priority: 'P1' },
-          { state: '형식오류', trigger: '저장', guard: '연락처 형식', result: '막음', message: '연락처 형식을 확인해 주세요', placement: 'inline', priority: 'P2' },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "제출",
+            "guard": "필수값 입력",
+            "result": "문의 접수·확인",
+            "message": "문의가 접수됐어요. 빠르게 연락드릴게요",
+            "placement": "inline",
+            "target": ".pd-cta",
+            "api": {
+              "endpoint": "POST /public/contact",
+              "status": 201
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "필수값 누락",
+            "result": "인라인 오류",
+            "message": "교회명·연락처·문의내용을 입력해주세요",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "전송에 실패했어요. 잠시 후 다시 시도해주세요",
+            "placement": "toast",
+            "target": ".pd-form"
+          }
         ],
-        interface: { reads: [], writes: [{ id: 'updateProfile', intent: '프로필 수정', method: 'PUT', path: '/app/me', auth: 'Bearer' }], events: [] },
-        flow: { to: [{ screen: 'SCR-APP-004', via: '저장', kind: 'auto' }] },
-      },
-      // ── 20. 알림 ──
-      {
-        id: 'SCR-APP-020', label: '알림', href: 'a-notifications.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001', 'REQ-019'],
-        context: '알림 목록(설교·공지·댓글). 홈 종 아이콘에서 진입. 항목 탭 시 해당 화면으로.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-APP-001' } }],
-        description: [{ text: '설교·공지·댓글 알림 — 탭하면 해당 화면' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '', result: '알림 목록', message: '' }, { state: '빈데이터', trigger: '진입', guard: '0건', result: '안내', message: '새 알림이 없어요', placement: 'inline' }],
-        interface: { reads: [{ id: 'listNotifications', intent: '알림 목록', method: 'GET', path: '/app/notifications', auth: 'Bearer' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-APP-011', via: '설교 알림', trigger: '.pd-list' }, { screen: 'SCR-APP-009', via: '공지 알림' }, { screen: 'SCR-APP-012', via: '댓글 알림' }] },
-      },
-    ],
+        "interface": {
+          "reads": [],
+          "writes": [
+            {
+              "id": "contact",
+              "intent": "도입 문의 접수",
+              "method": "POST",
+              "path": "/public/contact",
+              "request": "{churchName,contact,message}",
+              "response": "{inquiryId}",
+              "auth": "none(공개)",
+              "target": ".pd-cta",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "필수값 누락",
+                  "message": "필수 항목을 입력해주세요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "전송에 실패했어요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "contact_submitted",
+              "when": "문의 접수 성공",
+              "payload": "{inquiryId}"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-LND-001",
+              "via": "접수 후 홈 복귀",
+              "trigger": ".pd-cta"
+            }
+          ]
+        }
+      }
+    ]
   },
   {
-    category: '공개 홈페이지 (모바일)',
-    pages: [
-      // ── 공개 환영형 홈 ──
+    "category": "교회 공개홈 (site · {slug}.hurmate.kr · 방문자)",
+    "pages": [
       {
-        id: 'SCR-SITE-001', label: '공개 환영형 홈', href: 's-home.html',
-        surface: 'site', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005', 'REQ-028'],
-        context: '방문자용 공개 홈(환영형). 히어로·말씀·예배안내·방문 허브.',
-        components: [
-          { role: '.pd-hero', kind: 'hero', label: '히어로(교회 이미지·비전)' },
-          { role: '.pd-cta-worship', kind: 'button', label: '예배 안내 보기', action: { on: 'click', do: 'go:SCR-SITE-002' } },
-          { role: '.pd-first-visit', kind: 'card', label: '처음 오셨나요(방문 허브)', action: { on: 'click', do: 'go:SCR-SITE-007' } },
+        "id": "SCR-SITE-001",
+        "label": "교회 공개홈",
+        "href": "s-home.html",
+        "surface": "site",
+        "entry": true,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-005",
+          "REQ-006"
         ],
-        description: [
-          { text: '히어로 — 교회 이미지·비전', target: '.pd-hero' },
-          { text: '예배 안내 보기 — SCR-SITE-002', target: '.pd-cta-worship' },
-          { text: '처음 오셨나요 — 새가족(SCR-SITE-007)', target: '.pd-first-visit' },
+        "context": "교회 공개 HOME(§29). 교회 로고·대표이미지(히어로)·예배안내 요약·최근공지·최근설교·이번주 주보 요약. 화이트라벨은 로고/대표색/커버/교회명 4요소만 교회별이고 Layout/Nav/Grid/Typography는 단일 Design System 고정. 방문자용 5메뉴 탭바(HOME·교회소개·설교·주보·공지).",
+        "components": [
+          {
+            "role": ".pd-hero-img",
+            "kind": "banner",
+            "label": "교회 로고·대표이미지·교회명 히어로"
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "card",
+            "label": "예배 안내 요약",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-003"
+            }
+          },
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "최근 설교·공지·이번주 주보 요약",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-005"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: 'homeConcept=welcome', result: '환영형 홈', message: '', target: '.pd-hero', api: { endpoint: 'GET /site/home', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '콘텐츠 미제공', result: '교회 확인 후 게재', message: '', placement: 'inline' },
-          { state: '권한없음', trigger: '진입', guard: 'homeConcept 미설정', result: '404', message: '', placement: 'full-page' },
+        "description": [
+          {
+            "text": "대표이미지 히어로 — 교회 로고·커버·교회명(교회별 4요소만 교체, 레이아웃은 단일 DS)",
+            "target": ".pd-hero-img"
+          },
+          {
+            "text": "예배 안내 요약 — 탭하면 예배 시간표(SCR-SITE-003)",
+            "target": ".pd-feature"
+          },
+          {
+            "text": "최근 설교·공지·주보 요약 — 탭하면 공개 설교 목록(SCR-SITE-005)",
+            "target": ".pd-list"
+          },
+          {
+            "text": "하단 5메뉴 — HOME·교회소개(SCR-SITE-002)·설교(SCR-SITE-005)·주보·공지(주보·공지는 교인 로그인 연계)"
+          }
         ],
-        interface: { reads: [{ id: 'siteHome', intent: '공개 홈', method: 'GET', path: '/site/home', params: [{ in: 'query', name: 'tenant', type: 'string', required: true, example: 'eunsung' }], response: '{entities.Church}', auth: 'None', target: '.pd-hero' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-SITE-002', via: '예배 안내', trigger: '.pd-cta-worship' }, { screen: 'SCR-SITE-007', via: '처음 오셨나요', trigger: '.pd-first-visit' }] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "데이터 로딩",
+            "result": "히어로·섹션 스켈레톤",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "설교·공지 1건+",
+            "result": "히어로·예배안내·최근 설교/공지·주보 요약 노출",
+            "message": "",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /site/home",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "설교·공지 0건",
+            "result": "교회 소개·예배 안내만 노출",
+            "message": "아직 등록된 소식이 없어요",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "교회 정보를 불러오지 못했어요",
+            "placement": "toast",
+            "target": ".pd-hero-img"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteHome",
+              "intent": "공개홈 집계",
+              "method": "GET",
+              "path": "/site/home",
+              "response": "{entities.Church, entities.Sermon[], entities.Notice[], entities.Bulletin}",
+              "auth": "없음(공개·Host 서브도메인으로 테넌트 확정, path에 tenant 비노출)",
+              "target": ".pd-list",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "교회 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "id": "pwaInstallHint",
+              "name": "pwa:install-eligible",
+              "when": "beforeinstallprompt 캡처",
+              "target": ".pd-banner"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-003",
+              "via": "예배 안내"
+            },
+            {
+              "screen": "SCR-SITE-005",
+              "via": "설교 목록",
+              "trigger": ".pd-list"
+            },
+            {
+              "screen": "SCR-SITE-007",
+              "via": "PWA 설치 안내",
+              "trigger": ".pd-banner"
+            },
+            {
+              "screen": "SCR-SITE-008",
+              "via": "약관·개인정보",
+              "trigger": ".pd-legal"
+            },
+            {
+              "screen": "SCR-SITE-002",
+              "via": "교회 소개 탭",
+              "trigger": ".pd-tabbar"
+            }
+          ]
+        }
       },
-      // ── 예배 안내 ──
       {
-        id: 'SCR-SITE-002', label: '예배 안내', href: 's-worship.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
-        context: '예배 시간·부서·오시는 길.',
-        components: [
-          { role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SITE-001' } },
-          { role: '.pd-worship-table', kind: 'table', label: '예배 시간표' },
-          { role: '.pd-map', kind: 'hero', label: '오시는 길', action: { on: 'click', do: 'go:SCR-SITE-005' } },
+        "id": "SCR-SITE-002",
+        "label": "교회 소개",
+        "href": "s-about.html",
+        "surface": "site",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-010"
         ],
-        description: [
-          { text: '예배 시간표 — 주일/청년/수요/금요', target: '.pd-worship-table' },
-          { text: '오시는 길 — 상세(SCR-SITE-005)', target: '.pd-map' },
+        "context": "교회소개(§30) 허브 — 교회명·담임목사·소개·비전. 예배안내·오시는 길로 링크. 섬기는사람들·새가족·소식 섹션은 봉인(5메뉴 외).",
+        "components": [
+          {
+            "role": ".pd-section-title",
+            "kind": "card",
+            "label": "담임목사·소개·비전 본문"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '시간표·지도', message: '', target: '.pd-worship-table', api: { endpoint: 'GET /site/worship', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '예배시간 미등록', result: '준비중', message: '예배 시간은 교회 확인 후 게재됩니다', placement: 'inline', target: '.pd-worship-table' },
-          { state: '정상', trigger: '주소 복사', guard: '', result: '클립보드', message: '주소를 복사했어요', placement: 'toast' },
+        "description": [
+          {
+            "text": "소개·비전 본문 — 교회가 입력한 소개·담임목사 소개(관리자 교회소개 콘텐츠에서 관리)",
+            "target": ".pd-section-title"
+          },
+          {
+            "text": "예배 안내 바로가기 — 탭하면 예배 시간표(SCR-SITE-003)"
+          },
+          {
+            "text": "오시는 길 바로가기 — 탭하면 지도·주소(SCR-SITE-004)"
+          }
         ],
-        interface: { reads: [{ id: 'getWorship', intent: '예배 안내', method: 'GET', path: '/site/worship', params: [{ in: 'query', name: 'tenant', type: 'string', required: true }], response: '{entities.Church}', auth: 'None', target: '.pd-worship-table' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-SITE-005', via: '오시는 길', trigger: '.pd-map' }] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "소개 입력됨",
+            "result": "교회 소개·비전·링크 노출",
+            "message": "",
+            "target": ".pd-section-title",
+            "api": {
+              "endpoint": "GET /site/about",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "소개 미입력",
+            "result": "기본 안내만 노출",
+            "message": "교회 소개가 곧 준비될 예정이에요",
+            "placement": "inline",
+            "target": ".pd-section-title"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "교회 소개를 불러오지 못했어요",
+            "placement": "toast",
+            "target": ".pd-section-title"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteAbout",
+              "intent": "교회 소개 조회",
+              "method": "GET",
+              "path": "/site/about",
+              "response": "{entities.Church, intro, vision, pastor}",
+              "auth": "없음(공개·Host로 테넌트 확정)",
+              "target": ".pd-section-title",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "교회 소개를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-003",
+              "via": "예배 안내",
+              "trigger": ".pd-feature"
+            },
+            {
+              "screen": "SCR-SITE-004",
+              "via": "오시는 길",
+              "trigger": ".pd-tiles"
+            }
+          ]
+        }
       },
-      // ── 교회 소개(비전·연혁) ──
       {
-        id: 'SCR-SITE-003', label: '교회 소개', href: 's-about.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
-        context: '교회 비전·연혁·인사말. 미확보 콘텐츠는 "교회 확인 후 게재".',
-        components: [
-          { role: '.pd-vision', kind: 'card', label: '비전·인사말' },
-          { role: '.pd-history', kind: 'list', label: '연혁' },
+        "id": "SCR-SITE-003",
+        "label": "예배 안내",
+        "href": "s-worship.html",
+        "surface": "site",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-006"
         ],
-        description: [
-          { text: '비전·인사말 — 교회 소개문', target: '.pd-vision' },
-          { text: '연혁 — 주요 연대', target: '.pd-history' },
+        "context": "예배 시간표(주일·수요·금요·새벽) 단순 표. 교회가 입력한 예배 안내를 표로 표시.",
+        "components": [
+          {
+            "role": ".pd-section-title",
+            "kind": "banner",
+            "label": "예배 안내"
+          },
+          {
+            "role": ".pd-list",
+            "kind": "table",
+            "label": "예배 시간표(주일·수요·금요·새벽)"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '등록됨', result: '소개 표시', message: '', target: '.pd-vision', api: { endpoint: 'GET /site/about', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '미제공', result: '준비중', message: '내용은 교회 확인 후 게재됩니다', placement: 'inline', target: '.pd-vision' },
+        "description": [
+          {
+            "text": "예배 시간표 — 요일·예배명·시간을 단순 표로 표시",
+            "target": ".pd-list"
+          },
+          {
+            "text": "교회 소개 바로가기 — 탭하면 교회 소개 허브(SCR-SITE-002)"
+          }
         ],
-        interface: { reads: [{ id: 'getAbout', intent: '교회 소개', method: 'GET', path: '/site/about', auth: 'None', target: '.pd-vision' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "예배 1건+",
+            "result": "시간표 표 노출",
+            "message": "",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /site/worship",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "예배 0건",
+            "result": "준비중 안내",
+            "message": "예배 시간 안내가 곧 등록될 예정이에요",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "예배 안내를 불러오지 못했어요",
+            "placement": "toast",
+            "target": ".pd-list"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteWorship",
+              "intent": "예배 시간표 조회",
+              "method": "GET",
+              "path": "/site/worship",
+              "response": "{worships[]{name, day, time, place}}",
+              "auth": "없음(공개·Host로 테넌트 확정)",
+              "target": ".pd-list",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "예배 안내를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-002",
+              "via": "교회 소개",
+              "trigger": ".pd-feature"
+            }
+          ]
+        }
       },
-      // ── 섬기는 사람들(교역자) ──
       {
-        id: 'SCR-SITE-004', label: '섬기는 사람들', href: 's-staff.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
-        context: '교역자·중직자 소개(사진·직분·담당).',
-        components: [
-          { role: '.pd-staff-list', kind: 'list', label: '교역자 카드 목록' },
+        "id": "SCR-SITE-004",
+        "label": "오시는 길",
+        "href": "s-location.html",
+        "surface": "site",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-010"
         ],
-        description: [
-          { text: '교역자 — 담임·부교역자·직분(사진 미확보=준비중)', target: '.pd-staff-list' },
+        "context": "주소·지도(pd-map)·대중교통·주차 안내. 지도는 G3 키리스 임베드(API 키 불필요). 교회가 입력한 주소 기준.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '교역자 목록', message: '', target: '.pd-staff-list', api: { endpoint: 'GET /site/staff', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '사진 미확보', result: '아이콘 대체', message: '', placement: 'inline', target: '.pd-staff-list' },
+        "description": [
+          {
+            "text": "지도 — 교회 주소 기반 키리스 임베드(별도 API 키·서명 불필요)"
+          },
+          {
+            "text": "안내 — 주소·대중교통·주차 텍스트 안내"
+          },
+          {
+            "text": "하단 5메뉴 — 교회 소개 탭으로 복귀 가능(SCR-SITE-002)"
+          }
         ],
-        interface: { reads: [{ id: 'getStaff', intent: '교역자', method: 'GET', path: '/site/staff', auth: 'None', target: '.pd-staff-list' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "주소 입력됨",
+            "result": "지도·주소·교통·주차 노출",
+            "message": "",
+            "api": {
+              "endpoint": "GET /site/location",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "주소 미입력",
+            "result": "지도 숨김·준비중 안내",
+            "message": "오시는 길 정보가 곧 등록될 예정이에요",
+            "placement": "inline"
+          },
+          {
+            "state": "에러",
+            "trigger": "렌더",
+            "guard": "지도 임베드 로드 실패",
+            "result": "주소 텍스트 폴백",
+            "message": "지도를 불러오지 못해 주소만 표시해요",
+            "placement": "inline"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteLocation",
+              "intent": "위치 안내 조회",
+              "method": "GET",
+              "path": "/site/location",
+              "response": "{address, lat, lng, transit, parking, mapEmbedUrl}",
+              "auth": "없음(공개·Host로 테넌트 확정)",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "오시는 길 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-002",
+              "via": "교회 소개",
+              "trigger": ".pd-tabbar"
+            }
+          ]
+        }
       },
-      // ── 오시는 길 ──
       {
-        id: 'SCR-SITE-005', label: '오시는 길', href: 's-location.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-006'],
-        context: '주소·지도·대중교통·주차. 주소 복사.',
-        components: [
-          { role: '.pd-map-full', kind: 'hero', label: '지도' },
-          { role: '.pd-address', kind: 'card', label: '주소·교통·주차' },
+        "id": "SCR-SITE-005",
+        "label": "설교",
+        "href": "s-sermons.html",
+        "surface": "site",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-007"
         ],
-        description: [
-          { text: '지도 — 구글/카카오 임베드', target: '.pd-map-full' },
-          { text: '주소·교통 — 복사', target: '.pd-address' },
+        "context": "공개 설교 목록(YouTube 썸네일·제목·설교자·날짜). 자체 영상 저장 없음(YouTube 링크/임베드만). 방문자 열람 가능.",
+        "components": [
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "설교 목록(썸네일·제목·설교자·날짜)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-006"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '지도·주소', message: '', target: '.pd-map-full', api: { endpoint: 'GET /site/location', status: 200 } },
-          { state: '정상', trigger: '주소 복사', guard: '', result: '클립보드', message: '주소를 복사했어요', placement: 'toast', target: '.pd-address' },
+        "description": [
+          {
+            "text": "설교 목록 — YouTube 썸네일·제목·설교자·날짜, 탭하면 설교 상세·재생(SCR-SITE-006)",
+            "target": ".pd-list"
+          },
+          {
+            "text": "자체 영상 저장 없이 YouTube 메타데이터만 노출",
+            "target": ".pd-list"
+          }
         ],
-        interface: { reads: [{ id: 'getLocation', intent: '오시는 길', method: 'GET', path: '/site/location', auth: 'None', target: '.pd-address' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "목록 로딩",
+            "result": "카드 스켈레톤",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "설교 1건+",
+            "result": "설교 목록 노출",
+            "message": "",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /site/sermons",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "설교 0건",
+            "result": "준비중 안내",
+            "message": "아직 등록된 설교가 없어요",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "설교 목록을 불러오지 못했어요",
+            "placement": "toast",
+            "target": ".pd-list"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteSermons",
+              "intent": "공개 설교 목록",
+              "method": "GET",
+              "path": "/site/sermons",
+              "response": "{entities.Sermon[]{title, preacher, date, youtubeId, thumbnail}}",
+              "auth": "없음(공개·Host로 테넌트 확정)",
+              "target": ".pd-list",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "설교 목록을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-006",
+              "via": "설교 상세·재생",
+              "trigger": ".pd-list"
+            }
+          ]
+        }
       },
-      // ── 설교·찬양(공개) ──
       {
-        id: 'SCR-SITE-006', label: '설교·찬양', href: 's-sermons.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
-        context: '공개 설교 목록(비로그인 열람). 시리즈·검색.',
-        components: [
-          { role: '.pd-public-sermons', kind: 'list', label: '공개 설교 목록' },
+        "id": "SCR-SITE-006",
+        "label": "공개 설교 상세",
+        "href": "s-sermon-detail.html",
+        "surface": "site",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-007"
         ],
-        description: [
-          { text: '공개 설교 — 비로그인도 열람', target: '.pd-public-sermons' },
+        "context": "설교 상세 — YouTube 임베드 플레이어(pd-player)·성경본문·설명. 자체 스트리밍 없음.",
+        "components": [
+          {
+            "role": ".pd-player",
+            "kind": "card",
+            "label": "YouTube 임베드 플레이어"
+          },
+          {
+            "role": ".pd-row",
+            "kind": "list",
+            "label": "성경 본문·설교자·설명"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '설교 목록', message: '', target: '.pd-public-sermons', api: { endpoint: 'GET /site/sermons', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '0건', result: '준비중', message: '공개된 설교가 없어요', placement: 'inline', target: '.pd-public-sermons' },
+        "description": [
+          {
+            "text": "YouTube 플레이어 — 교회가 등록한 영상 ID로 임베드 재생(자체 저장 없음)",
+            "target": ".pd-player"
+          },
+          {
+            "text": "성경 본문·설명 — 설교자·본문·설명 텍스트",
+            "target": ".pd-row"
+          },
+          {
+            "text": "상단 뒤로가기 — 설교 목록으로 복귀(SCR-SITE-005)"
+          }
         ],
-        interface: { reads: [{ id: 'siteSermons', intent: '공개 설교', method: 'GET', path: '/site/sermons', auth: 'None', target: '.pd-public-sermons' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "상세 로딩",
+            "result": "플레이어·본문 스켈레톤",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-player"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "설교 존재",
+            "result": "임베드 재생·본문·설명 노출",
+            "message": "",
+            "target": ".pd-player",
+            "api": {
+              "endpoint": "GET /site/sermons/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "삭제·비공개 영상",
+            "result": "재생 불가 안내·목록 복귀 유도",
+            "message": "이 설교 영상을 재생할 수 없어요",
+            "placement": "inline",
+            "target": ".pd-player"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteSermonDetail",
+              "intent": "공개 설교 상세",
+              "method": "GET",
+              "path": "/site/sermons/{id}",
+              "response": "{entities.Sermon{title, preacher, date, youtubeId, scripture, description}}",
+              "auth": "없음(공개·Host로 테넌트 확정)",
+              "target": ".pd-player",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "설교 없음·비공개",
+                  "message": "이 설교 영상을 재생할 수 없어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-005",
+              "via": "목록으로",
+              "trigger": ".pd-apptop"
+            }
+          ]
+        }
       },
-      // ── 새가족 안내 ──
       {
-        id: 'SCR-SITE-007', label: '새가족 안내', href: 's-newcomer.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-016'],
-        context: '처음 오신 분 안내(절차·등록·새가족 환영회). 개인정보 동의 기반 등록.',
-        components: [
-          { role: '.pd-steps', kind: 'list', label: '방문 절차' },
-          { role: '.pd-register-form', kind: 'form', label: '새가족 등록(선택)' },
+        "id": "SCR-SITE-007",
+        "label": "PWA 설치 안내",
+        "href": "s-install.html",
+        "surface": "site",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-013"
         ],
-        description: [
-          { text: '방문 절차 — 예배·새가족실·등록', target: '.pd-steps' },
-          { text: '새가족 등록 — 동의 기반(PIPA)', target: '.pd-register-form' },
+        "context": "'우리 교회 앱처럼 이용하세요' 홈 화면 설치 안내. Android=설치 프롬프트 버튼(beforeinstallprompt) / iOS 16.4+=공유→홈 화면에 추가 수동 단계 안내. 설치 시 교회 로고+교회명 아이콘(PwaConfig 기반). Web Push는 iOS 16.4+ 홈설치 PWA에서만 수신.",
+        "components": [
+          {
+            "role": ".pd-hero-img",
+            "kind": "banner",
+            "label": "우리 교회 앱처럼 이용하세요"
+          },
+          {
+            "role": ".pd-stepper",
+            "kind": "stepper",
+            "label": "iOS 16.4+ 공유→홈 화면에 추가 단계"
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "card",
+            "label": "설치 아이콘 미리보기(교회 로고·교회명)"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '절차·등록', message: '', target: '.pd-steps' },
-          { state: '필수누락', trigger: '등록', guard: '동의 미체크', result: '막음', message: '개인정보 수집 동의가 필요해요', placement: 'inline', target: '.pd-register-form', priority: 'P1' },
+        "description": [
+          {
+            "text": "설치 버튼 — Android/Chromium에서 beforeinstallprompt 캡처 시 활성, 탭하면 브라우저 설치 프롬프트"
+          },
+          {
+            "text": "iOS 단계 안내 — 16.4+ Safari 공유→'홈 화면에 추가' 수동 단계(설치형 버튼 미지원)",
+            "target": ".pd-stepper"
+          },
+          {
+            "text": "아이콘 미리보기 — 설치 시 홈 화면에 교회 로고·교회명으로 추가(PwaConfig)",
+            "target": ".pd-feature"
+          },
+          {
+            "text": "하단 5메뉴 — 홈으로 복귀(SCR-SITE-001)"
+          }
         ],
-        interface: { reads: [], writes: [{ id: 'newcomer', intent: '새가족 등록', method: 'POST', path: '/site/newcomer', request: '{entities.Member}', errors: [{ status: 422, when: '동의 누락', message: '개인정보 동의 필요' }], auth: 'None', target: '.pd-register-form' }], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "Android/Chromium·beforeinstallprompt 캡처",
+            "result": "설치 버튼 활성·iOS 단계 숨김",
+            "message": "",
+            "api": {
+              "endpoint": "GET /site/pwa",
+              "status": 200
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "진입",
+            "guard": "iOS 16.4+ Safari",
+            "result": "설치 버튼 숨김·수동 단계 안내 노출",
+            "message": "공유 버튼을 눌러 '홈 화면에 추가'를 선택하세요",
+            "placement": "inline",
+            "target": ".pd-stepper"
+          },
+          {
+            "state": "엣지",
+            "trigger": "진입",
+            "guard": "이미 설치됨(standalone)",
+            "result": "설치 영역 숨김·바로가기 안내",
+            "message": "이미 홈 화면에 설치되어 있어요",
+            "placement": "inline"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입",
+            "guard": "iOS 16.4 미만·미지원 브라우저",
+            "result": "설치·푸시 제한 안내",
+            "message": "이 브라우저에서는 설치와 알림이 제한돼요",
+            "placement": "inline",
+            "target": ".pd-stepper"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "sitePwaConfig",
+              "intent": "PWA 설치 메타 조회",
+              "method": "GET",
+              "path": "/site/pwa",
+              "response": "{name, shortName, icons[192,512], themeColor, startUrl}",
+              "auth": "없음(공개·Host로 테넌트 확정)",
+              "target": ".pd-feature",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "설치 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "id": "beforeinstallprompt",
+              "name": "beforeinstallprompt",
+              "when": "설치 가능 시점(브라우저)",
+              "target": ".pd-cta"
+            },
+            {
+              "id": "appinstalled",
+              "name": "appinstalled",
+              "when": "홈 화면 설치 완료",
+              "target": ".pd-cta"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-001",
+              "via": "홈으로",
+              "trigger": ".pd-tabbar"
+            }
+          ]
+        }
       },
-      // ── 교회 소식/주보(공개) ──
       {
-        id: 'SCR-SITE-008', label: '교회 소식', href: 's-news.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
-        context: '교회 소식·공개 주보·행사 안내.',
-        components: [
-          { role: '.pd-news-list', kind: 'list', label: '소식 목록' },
+        "id": "SCR-SITE-008",
+        "label": "약관·개인정보처리방침",
+        "href": "s-terms.html",
+        "surface": "site",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-011"
         ],
-        description: [
-          { text: '소식 — 행사·주보·공지(공개분)', target: '.pd-news-list' },
+        "context": "이용약관·개인정보처리방침(pd-legal). 교회 검색 없는 가입(church_id 자동) 시 동의 연계. '교회 확정·법률검토 후 게시' 배너로 초안 상태 표기.",
+        "components": [
+          {
+            "role": ".pd-legal",
+            "kind": "list",
+            "label": "이용약관·개인정보처리방침 본문(탭 전환)"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '소식 목록', message: '', target: '.pd-news-list', api: { endpoint: 'GET /site/news', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '0건', result: '준비중', message: '등록된 소식이 없어요', placement: 'inline', target: '.pd-news-list' },
+        "description": [
+          {
+            "text": "게시 상태 배너 — 법률검토 전에는 초안 안내, 교회 확정 후 정식 게시"
+          },
+          {
+            "text": "약관·방침 본문 — 이용약관/개인정보처리방침 탭 전환 열람, 가입 동의 화면과 동일 내용 연계",
+            "target": ".pd-legal"
+          },
+          {
+            "text": "하단 5메뉴 — 홈으로 복귀(SCR-SITE-001)"
+          }
         ],
-        interface: { reads: [{ id: 'siteNews', intent: '교회 소식', method: 'GET', path: '/site/news', auth: 'None', target: '.pd-news-list' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-SITE-010', via: '소식 상세', trigger: '.pd-news-list' }] },
-      },
-      // ── 공개 설교 상세 ──
-      {
-        id: 'SCR-SITE-009', label: '공개 설교 상세', href: 's-sermon-detail.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-005'],
-        context: '공개 설교 영상 상세(비로그인 열람). 공개 설교 목록(SCR-SITE-006)·홈 말씀에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SITE-006' } }, { role: '.pd-player', kind: 'hero', label: '영상 플레이어' }],
-        description: [{ text: '공개 영상 재생·본문·지난 설교' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '재생', message: '', target: '.pd-player' },
-          { state: '빈데이터', trigger: '진입', guard: '영상 없음', result: '준비중', message: '공개된 영상이 없어요', placement: 'inline', target: '.pd-player' },
-          { state: '에러', trigger: '재생', guard: '비공개/깨짐', result: '대체 안내', message: '영상을 재생할 수 없어요', placement: 'inline', target: '.pd-player' },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "교회 확정·게시됨",
+            "result": "약관·방침 본문 노출",
+            "message": "",
+            "target": ".pd-legal",
+            "api": {
+              "endpoint": "GET /site/legal",
+              "status": 200
+            }
+          },
+          {
+            "state": "초기",
+            "trigger": "응답",
+            "guard": "법률검토 전(초안)",
+            "result": "초안 배너·임시 안내 노출",
+            "message": "약관은 교회 확정·법률검토 후 정식 게시돼요",
+            "placement": "inline"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "약관을 불러오지 못했어요",
+            "placement": "toast",
+            "target": ".pd-legal"
+          }
         ],
-        interface: { reads: [{ id: 'siteSermon', intent: '공개 설교 상세', method: 'GET', path: '/site/sermons/{id}', auth: 'None', target: '.pd-player' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-      // ── 소식 상세 ──
-      {
-        id: 'SCR-SITE-010', label: '소식 상세', href: 's-news-detail.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-015'],
-        context: '교회 소식·행사 상세. 소식 목록(SCR-SITE-008)에서 진입.',
-        components: [{ role: '.pd-back', kind: 'button', label: '뒤로', action: { on: 'click', do: 'go:SCR-SITE-008' } }],
-        description: [{ text: '소식 본문·이미지' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '소식 표시', message: '' },
-          { state: '에러', trigger: '진입', guard: '삭제됨', result: '목록으로', message: '삭제된 소식이에요', placement: 'full-page' },
-        ],
-        interface: { reads: [{ id: 'siteNewsDetail', intent: '소식 상세', method: 'GET', path: '/site/news/{id}', auth: 'None' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-    ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteLegal",
+              "intent": "약관·방침 조회",
+              "method": "GET",
+              "path": "/site/legal",
+              "response": "{terms, privacy, status(draft|published)}",
+              "auth": "없음(공개·Host로 테넌트 확정)",
+              "target": ".pd-legal",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "약관을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SITE-001",
+              "via": "홈으로",
+              "trigger": ".pd-tabbar"
+            }
+          ]
+        }
+      }
+    ]
   },
   {
-    category: '관리자 콘솔 (PC웹)',
-    pages: [
-      // ── 관리자 대시보드 ──
+    "category": "교인 Web·PWA (app · 로그인 후 교인영역)",
+    "pages": [
       {
-        id: 'SCR-ADM-001', label: '관리자 대시보드', href: 'c-dashboard.html',
-        surface: 'admin', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-007'],
-        context: '성도·출석·헌금 현황. 좌측 메뉴로 각 관리로.',
-        components: [
-          { role: '.pd-nav-members', kind: 'button', label: '사이드바: 성도관리', action: { on: 'click', do: 'go:SCR-ADM-002' } },
-          { role: '.pd-kpi', kind: 'card', label: 'KPI' },
-          { role: '.pd-recent', kind: 'table', label: '최근 활동' },
+        "id": "SCR-APP-001",
+        "label": "교인 홈",
+        "href": "a-home.html",
+        "surface": "app",
+        "entry": true,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-005",
+          "REQ-006"
         ],
-        description: [
-          { text: 'KPI — 성도·출석·대기 승인', target: '.pd-kpi' },
-          { text: '사이드바 "성도관리" → SCR-ADM-002', target: '.pd-nav-members' },
-          { text: '최근 활동 — 가입·설교 등록', target: '.pd-recent' },
+        "context": "교인 HOME(§29). 교회 브랜드·이번주 설교·최근공지·이번주 주보 바로가기. 5메뉴 탭바(홈·설교·주보·공지·마이) + 알림 아이콘. 교회별 브랜드=로고/색/커버/교회명만, 레이아웃은 단일 Design System 고정.",
+        "components": [
+          {
+            "role": ".pd-apptop",
+            "kind": "banner",
+            "label": "교회 로고·교회명·알림 아이콘",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-010"
+            }
+          },
+          {
+            "role": ".pd-feature",
+            "kind": "card",
+            "label": "이번 주 설교",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-002"
+            }
+          },
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "최근 공지",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-005"
+            }
+          },
+          {
+            "role": ".pd-row",
+            "kind": "card",
+            "label": "이번 주 주보 바로가기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-004"
+            }
+          },
+          {
+            "role": ".pd-tabbar",
+            "kind": "tabbar",
+            "label": "하단 탭(홈·설교·주보·공지·마이)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-006"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '관리자', result: '대시보드', message: '', target: '.pd-kpi', api: { endpoint: 'GET /admin/overview', status: 200 } },
-          { state: '권한없음', trigger: '진입', guard: '관리자 아님', result: '접근 거부', message: '관리자 권한이 필요해요', placement: 'full-page', api: { endpoint: 'GET /admin/overview', status: 403 } },
+        "description": [
+          {
+            "text": "상단바 로고·교회명(교회별 브랜드 4요소)과 알림 아이콘 — 알림함으로(SCR-APP-010)",
+            "target": ".pd-apptop"
+          },
+          {
+            "text": "이번 주 설교 카드 — 탭하면 설교 목록(SCR-APP-002)",
+            "target": ".pd-feature"
+          },
+          {
+            "text": "최근 공지 요약 — 탭하면 공지(SCR-APP-005)",
+            "target": ".pd-list"
+          },
+          {
+            "text": "하단 탭 — 홈·설교·주보·공지·마이(마이=SCR-APP-006)",
+            "target": ".pd-tabbar"
+          }
         ],
-        interface: { reads: [{ id: 'adminOverview', intent: '운영 현황', method: 'GET', path: '/admin/overview', response: '{ memberCount:number, pendingApprovals:number, attendanceRate:number, offeringThisMonth:number, longAbsentCount:number }', auth: 'Bearer(관리자)', target: '.pd-kpi' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-ADM-002', via: '성도관리', trigger: '.pd-nav-members' }] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "설교 1건+",
+            "result": "설교·공지·주보 요약 표시",
+            "message": "",
+            "target": ".pd-feature",
+            "api": {
+              "endpoint": "GET /app/home",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "설교·공지 0건",
+            "result": "준비중 안내",
+            "message": "아직 등록된 콘텐츠가 없어요",
+            "placement": "inline",
+            "target": ".pd-feature"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입",
+            "guard": "비로그인",
+            "result": "공개 요약+로그인 유도",
+            "message": "로그인하면 알림을 받을 수 있어요",
+            "placement": "inline",
+            "target": ".pd-apptop"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도 안내",
+            "message": "정보를 불러오지 못했어요",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appHome",
+              "intent": "홈 집계(이번주 설교·최근공지·주보 요약)",
+              "method": "GET",
+              "path": "/app/home",
+              "response": "{sermon,notices[],bulletin}",
+              "auth": "Bearer(선택)",
+              "note": "tenant는 JWT/host에서 결정(path 비노출)",
+              "target": ".pd-feature",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": [
+            {
+              "id": "pushReceived",
+              "intent": "Web Push 수신 시 알림 뱃지 갱신",
+              "trigger": "ServiceWorker push"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-002",
+              "via": "설교 목록"
+            },
+            {
+              "screen": "SCR-APP-004",
+              "via": "주보 바로가기"
+            },
+            {
+              "screen": "SCR-APP-005",
+              "via": "공지",
+              "trigger": ".pd-list"
+            },
+            {
+              "screen": "SCR-APP-006",
+              "via": "마이 탭",
+              "trigger": ".pd-tabbar"
+            },
+            {
+              "screen": "SCR-SITE-002",
+              "via": "교회소개"
+            },
+            {
+              "screen": "SCR-APP-010",
+              "via": "알림 아이콘",
+              "trigger": ".pd-apptop"
+            }
+          ]
+        }
       },
-      // ── 성도관리(교적) ──
       {
-        id: 'SCR-ADM-002', label: '성도관리(교적)', href: 'c-members.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008', 'REQ-030'],
-        context: '성도 카드 원장·가입 승인·검색. 민감정보 마스킹(PIPA).',
-        components: [
-          { role: '.pd-member-search', kind: 'button', label: '성도 검색/필터' },
-          { role: '.pd-member-table', kind: 'table', label: '성도 목록' },
-          { role: '.pd-btn-approve', kind: 'button', label: '가입 승인', action: { on: 'click', do: 'write:approveMember' } },
-          { role: '.pd-btn-reject', kind: 'button', label: '가입 거부', action: { on: 'click', do: 'write:rejectMember' } },
-          { role: '.pd-confirm', kind: 'confirm', label: '가입 거부(사유·확인)' },
+        "id": "SCR-APP-002",
+        "label": "설교",
+        "href": "a-sermon.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-007"
         ],
-        description: [
-          { text: '성도 목록 — 이름(마스킹)·직분·부서·상태', target: '.pd-member-table' },
-          { text: '가입 승인 → approveMember', target: '.pd-btn-approve' },
-          { text: '검색/필터 — 이름·부서·직분·상태', target: '.pd-member-search' },
+        "context": "교인 설교 목록(YouTube). 최신·시리즈. 자체 영상 저장 없음(YouTube 임베드).",
+        "components": [
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "설교 목록(최신·시리즈)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-003"
+            }
+          },
+          {
+            "role": ".pd-row",
+            "kind": "card",
+            "label": "설교 항목(썸네일·제목·설교자·날짜)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-003"
+            }
+          },
+          {
+            "role": ".pd-tabbar",
+            "kind": "tabbar",
+            "label": "하단 탭"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '1명+', result: '목록', message: '', target: '.pd-member-table', api: { endpoint: 'GET /admin/members', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '0명', result: '초대 유도', message: '아직 등록된 성도가 없어요', placement: 'inline', target: '.pd-member-table' },
-          { state: '정상', trigger: '승인', guard: '승인대기', result: 'active·갱신', message: '승인되었어요', placement: 'toast', target: '.pd-btn-approve', api: { endpoint: 'POST /admin/members/{id}/approve', status: 200 } },
-          { state: '필수누락', trigger: '거부', guard: '사유 없음', result: '막음', message: '거부 사유를 입력해 주세요', placement: 'inline', target: '.pd-confirm', priority: 'P1' },
-          { state: '유효', trigger: '거부', guard: '사유 입력·확인', result: 'rejected·통지(재신청 가능)', message: '가입을 거부했어요. 신청자에게 사유가 안내됩니다', placement: 'toast', target: '.pd-confirm', priority: 'P0', api: { endpoint: 'POST /admin/members/{id}/reject', status: 200 } },
-          { state: '권한없음', trigger: '민감정보 열람', guard: '권한 부족', result: '마스킹·차단', message: '권한이 없어요', placement: 'inline', target: '.pd-member-table' },
+        "description": [
+          {
+            "text": "설교 목록 — 각 항목 탭 시 상세·재생(SCR-APP-003)",
+            "target": ".pd-list"
+          },
+          {
+            "text": "설교 항목 — YouTube 썸네일·제목·설교자·날짜",
+            "target": ".pd-row"
+          },
+          {
+            "text": "하단 탭 — 홈·설교·주보·공지·마이",
+            "target": ".pd-tabbar"
+          }
         ],
-        interface: { reads: [{ id: 'listMembers', intent: '성도 목록', method: 'GET', path: '/admin/members', params: [{ in: 'query', name: 'status', type: 'string', required: false, example: 'pending' }], response: '{entities.Member}[]', auth: 'Bearer(관리자)', target: '.pd-member-table' }], writes: [{ id: 'approveMember', intent: '가입 승인', method: 'POST', path: '/admin/members/{id}/approve', idempotencyKey: true, response: '{entities.Member}', errors: [{ status: 409, when: '이미 처리', message: '이미 처리된 가입이에요' }], auth: 'Bearer(member.approve)', target: '.pd-btn-approve' }, { id: 'rejectMember', intent: '가입 거부', method: 'POST', path: '/admin/members/{id}/reject', idempotencyKey: true, request: '{ reason:string(required) }', response: '{entities.Member}', errors: [{ status: 409, when: '이미 처리', message: '이미 처리됐어요' }], auth: 'Bearer(member.approve)', target: '.pd-confirm' }], events: [{ name: 'member.approved', when: '승인 시', payload: '{entities.Member}' }, { name: 'member.rejected', when: '거부 시', payload: '{ memberId, reason }' }] },
-        flow: { to: [{ screen: 'SCR-ADM-001', via: '대시보드', kind: 'auto' }] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "설교 1건+",
+            "result": "목록 표시",
+            "message": "",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /app/sermons",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "설교 0건",
+            "result": "준비중",
+            "message": "아직 등록된 설교가 없어요",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도",
+            "message": "설교를 불러오지 못했어요",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appSermons",
+              "intent": "설교 목록(YouTube 메타)",
+              "method": "GET",
+              "path": "/app/sermons",
+              "response": "{entities.Sermon}[]",
+              "auth": "Bearer",
+              "note": "tenant는 JWT",
+              "target": ".pd-list",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "설교를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-003",
+              "via": "설교 상세·재생",
+              "trigger": ".pd-row"
+            }
+          ]
+        }
       },
-      // ── 출석 관리 ──
       {
-        id: 'SCR-ADM-003', label: '출석 관리', href: 'c-attendance.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-009'],
-        context: '예배별 출석 체크·통계·장기결석 자동감지. QR/수기/온라인 인정.',
-        components: [
-          { role: '.pd-session-select', kind: 'segment', label: '예배 세션 선택' },
-          { role: '.pd-attend-table', kind: 'table', label: '출석 체크 표' },
-          { role: '.pd-longabsent', kind: 'card', label: '장기결석 알림' },
+        "id": "SCR-APP-003",
+        "label": "설교 상세",
+        "href": "a-sermon-detail.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-007"
         ],
-        description: [
-          { text: '세션 선택 — 주일 1부/2부/수요 등', target: '.pd-session-select' },
-          { text: '출석 체크 — 성도별 체크(QR/수기)', target: '.pd-attend-table' },
-          { text: '장기결석 — 4주+ 미출석 자동감지', target: '.pd-longabsent' },
+        "context": "설교 상세·YouTube 재생(pd-player)·성경본문. 자체 영상 저장 없음(임베드).",
+        "components": [
+          {
+            "role": ".pd-player",
+            "kind": "card",
+            "label": "YouTube 임베드 플레이어"
+          },
+          {
+            "role": ".pd-tabbar",
+            "kind": "tabbar",
+            "label": "하단 탭"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '세션·체크표', message: '', target: '.pd-attend-table', api: { endpoint: 'GET /admin/attendance', status: 200 } },
-          { state: '정상', trigger: '체크', guard: '', result: '출석 저장', message: '출석이 저장됐어요', placement: 'toast', target: '.pd-attend-table', api: { endpoint: 'POST /admin/attendance', status: 200 } },
-          { state: '엣지', trigger: '자동감지', guard: '4주+ 미출석', result: '장기결석 목록', message: '', target: '.pd-longabsent' },
+        "description": [
+          {
+            "text": "YouTube 플레이어 — 자체 영상 저장 없이 임베드 재생",
+            "target": ".pd-player"
+          },
+          {
+            "text": "성경본문·설교자·설명"
+          },
+          {
+            "text": "뒤로 — 설교 목록(SCR-APP-002)"
+          }
         ],
-        interface: { reads: [{ id: 'getAttendance', intent: '출석 세션', method: 'GET', path: '/admin/attendance', response: '{entities.AttendanceSession}[]', auth: 'Bearer(관리자)', target: '.pd-attend-table' }], writes: [{ id: 'checkAttendance', intent: '출석 체크', method: 'POST', path: '/admin/attendance', request: '{entities.AttendanceSession}', auth: 'Bearer(관리자)', target: '.pd-attend-table' }], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "설교 존재",
+            "result": "플레이어·본문 표시",
+            "message": "",
+            "target": ".pd-player",
+            "api": {
+              "endpoint": "GET /app/sermons/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "삭제/없음",
+            "result": "목록 복귀 안내",
+            "message": "설교를 찾을 수 없어요",
+            "placement": "inline",
+            "target": ".pd-player"
+          },
+          {
+            "state": "에러",
+            "trigger": "재생",
+            "guard": "네트워크/임베드 실패",
+            "result": "재시도",
+            "message": "영상을 재생할 수 없어요",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appSermonDetail",
+              "intent": "설교 상세",
+              "method": "GET",
+              "path": "/app/sermons/{id}",
+              "response": "{entities.Sermon}",
+              "auth": "Bearer",
+              "note": "tenant는 JWT",
+              "target": ".pd-player",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "삭제/없음",
+                  "message": "설교를 찾을 수 없어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-002",
+              "via": "목록으로 뒤로",
+              "trigger": ".pd-apptop"
+            }
+          ]
+        }
       },
-      // ── 설교 관리 ──
       {
-        id: 'SCR-ADM-004', label: '설교 관리', href: 'c-sermon.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
-        context: '설교 등록(유튜브 URL)·주일 라이브 토글·게시 관리.',
-        components: [
-          { role: '.pd-sermon-form', kind: 'form', label: '설교 등록 폼' },
-          { role: '.pd-sermon-admin-table', kind: 'table', label: '설교 목록(게시 상태)' },
-          { role: '.pd-live-toggle', kind: 'toggle', label: '주일 라이브 토글' },
+        "id": "SCR-APP-004",
+        "label": "주보",
+        "href": "a-bulletin.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-008"
         ],
-        description: [
-          { text: '설교 등록 — 제목·설교자·유튜브 URL·날짜', target: '.pd-sermon-form' },
-          { text: '주일 라이브 — 홈 노출 토글', target: '.pd-live-toggle' },
-          { text: '설교 목록 — 게시/숨김', target: '.pd-sermon-admin-table' },
+        "context": "주간 주보 열람(PDF/이미지 뷰어). 최신호+지난호.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '등록', guard: 'URL 유효', result: '게시·앱 반영', message: '설교가 등록됐어요', placement: 'toast', target: '.pd-sermon-form', api: { endpoint: 'POST /admin/sermons', status: 201 } },
-          { state: '형식오류', trigger: '등록', guard: '유튜브 URL 아님', result: '막음', message: '올바른 유튜브 주소를 입력해 주세요', placement: 'inline', target: '.pd-sermon-form', priority: 'P1' },
+        "description": [
+          {
+            "text": "최신호 — PDF/이미지 뷰어로 바로 열람"
+          },
+          {
+            "text": "지난호 — 주차(날짜)별 목록"
+          },
+          {
+            "text": "하단 탭 — 홈(SCR-APP-001)"
+          }
         ],
-        interface: { reads: [{ id: 'listSermonsAdmin', intent: '설교 목록(관리)', method: 'GET', path: '/admin/sermons', auth: 'Bearer(관리자)', target: '.pd-sermon-admin-table' }], writes: [{ id: 'createSermon', intent: '설교 등록', method: 'POST', path: '/admin/sermons', successStatus: 201, request: '{entities.Sermon}', response: '{entities.Sermon}', errors: [{ status: 422, when: 'URL 형식', message: '유튜브 주소를 확인해 주세요' }], auth: 'Bearer(관리자)', target: '.pd-sermon-form' }], events: [{ name: 'sermon.published', when: '게시 시', payload: '{entities.Sermon}' }] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "주보 1건+",
+            "result": "최신호+지난호 표시",
+            "message": "",
+            "api": {
+              "endpoint": "GET /app/bulletins",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "주보 0건",
+            "result": "준비중",
+            "message": "이번 주 주보가 아직 없어요",
+            "placement": "inline"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도",
+            "message": "주보를 불러오지 못했어요",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appBulletins",
+              "intent": "주보 목록(최신+지난호)",
+              "method": "GET",
+              "path": "/app/bulletins",
+              "response": "{entities.Bulletin}[]",
+              "auth": "Bearer",
+              "note": "tenant는 JWT, 파일은 서명 URL",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "주보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-001",
+              "via": "홈 탭",
+              "trigger": ".pd-tabbar"
+            }
+          ]
+        }
       },
-      // ── 공지·배너 관리 ──
       {
-        id: 'SCR-ADM-005', label: '공지·배너 관리', href: 'c-notice.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-001'],
-        context: '공지·홈 배너 CRUD. 노출 기간·우선순위.',
-        components: [
-          { role: '.pd-notice-form', kind: 'form', label: '공지 작성' },
-          { role: '.pd-notice-admin-table', kind: 'table', label: '공지·배너 목록' },
+        "id": "SCR-APP-005",
+        "label": "공지",
+        "href": "a-notice.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-009"
         ],
-        description: [
-          { text: '공지 작성 — 제목·내용·노출기간', target: '.pd-notice-form' },
-          { text: '목록 — 게시/숨김·배너 노출', target: '.pd-notice-admin-table' },
+        "context": "공지 목록·상세(중요/상단고정 표시). 이미지·첨부.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '등록', guard: '', result: '게시·앱 반영', message: '공지가 등록됐어요', placement: 'toast', target: '.pd-notice-form', api: { endpoint: 'POST /admin/notices', status: 201 } },
-          { state: '필수누락', trigger: '등록', guard: '제목 없음', result: '막음', message: '제목을 입력해 주세요', placement: 'inline', target: '.pd-notice-form', priority: 'P1' },
+        "description": [
+          {
+            "text": "공지 목록 — 중요·상단고정 배지 표시, 탭하면 상세"
+          },
+          {
+            "text": "공지 상세 — 본문·이미지·첨부"
+          },
+          {
+            "text": "하단 탭 — 홈(SCR-APP-001)"
+          }
         ],
-        interface: { reads: [{ id: 'listNotices', intent: '공지 목록', method: 'GET', path: '/admin/notices', auth: 'Bearer(관리자)', target: '.pd-notice-admin-table' }], writes: [{ id: 'createNotice', intent: '공지 등록', method: 'POST', path: '/admin/notices', successStatus: 201, auth: 'Bearer(관리자)', target: '.pd-notice-form' }], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "공지 1건+",
+            "result": "목록·상세 표시",
+            "message": "",
+            "api": {
+              "endpoint": "GET /app/notices",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "공지 0건",
+            "result": "준비중",
+            "message": "등록된 공지가 없어요",
+            "placement": "inline"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도",
+            "message": "공지를 불러오지 못했어요",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appNotices",
+              "intent": "공지 목록",
+              "method": "GET",
+              "path": "/app/notices",
+              "response": "{entities.Notice}[]",
+              "auth": "Bearer",
+              "note": "tenant는 JWT",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "공지를 불러오지 못했어요"
+                }
+              ]
+            },
+            {
+              "id": "appNoticeDetail",
+              "intent": "공지 상세",
+              "method": "GET",
+              "path": "/app/notices/{id}",
+              "response": "{entities.Notice}",
+              "auth": "Bearer",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "삭제/없음",
+                  "message": "공지를 찾을 수 없어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-001",
+              "via": "홈 탭",
+              "trigger": ".pd-tabbar"
+            }
+          ]
+        }
       },
-      // ── 재정(헌금) 관리 ──
       {
-        id: 'SCR-ADM-006', label: '재정 관리', href: 'c-finance.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-010'],
-        context: '헌금 집계·전자기부금영수증 발급·발급명세서. 횡령 못하는 회계(오픈뱅킹 대사·감사추적) 로드맵.',
-        components: [
-          { role: '.pd-finance-kpi', kind: 'card', label: '헌금 집계 KPI' },
-          { role: '.pd-receipt', kind: 'button', label: '기부금영수증 발급', action: { on: 'click', do: 'write:issueReceipt' } },
-          { role: '.pd-finance-table', kind: 'table', label: '헌금 내역' },
+        "id": "SCR-APP-006",
+        "label": "마이",
+        "href": "a-my.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-012"
         ],
-        description: [
-          { text: '헌금 집계 — 월별·종류별', target: '.pd-finance-kpi' },
-          { text: '기부금영수증 — 자동 발급·명세서 제출', target: '.pd-receipt' },
-          { text: '헌금 내역 — 감사추적(append-only)', target: '.pd-finance-table' },
+        "context": "마이 — 내 정보(이름·휴대전화·이메일·교회·가입상태 단순)·설정·알림설정·로그아웃. 교적/직분 없음(G2 민감정보 수집 없음).",
+        "components": [
+          {
+            "role": ".pd-avatar",
+            "kind": "card",
+            "label": "내 프로필(이름·휴대전화·이메일·교회·가입상태)"
+          },
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "내 정보 수정·알림함",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-007"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그아웃",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-009"
+            }
+          },
+          {
+            "role": ".pd-tabbar",
+            "kind": "tabbar",
+            "label": "하단 탭"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '관리자', result: '집계·내역', message: '', target: '.pd-finance-kpi', api: { endpoint: 'GET /admin/finance', status: 200 } },
-          { state: '정상', trigger: '발급', guard: '대상 성도', result: '영수증 발급', message: '기부금영수증을 발급했어요', placement: 'toast', target: '.pd-receipt', api: { endpoint: 'POST /admin/receipts', status: 201 } },
-          { state: '권한없음', trigger: '진입', guard: '재정 권한 없음', result: '차단', message: '재정 열람 권한이 필요해요', placement: 'full-page', api: { endpoint: 'GET /admin/finance', status: 403 } },
+        "description": [
+          {
+            "text": "내 프로필 — 이름·휴대전화·이메일·교회·가입상태(단순, 교적/직분 없음)",
+            "target": ".pd-avatar"
+          },
+          {
+            "text": "메뉴 — 내 정보 수정(SCR-APP-007)·알림함(SCR-APP-010)",
+            "target": ".pd-list"
+          },
+          {
+            "text": "설정(SCR-APP-012)·알림설정(SCR-APP-011)"
+          },
+          {
+            "text": "로그아웃 — 로그인 화면(SCR-APP-009)",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'getFinance', intent: '헌금 집계', method: 'GET', path: '/admin/finance', auth: 'Bearer(재정권한)', target: '.pd-finance-kpi' }], writes: [{ id: 'issueReceipt', intent: '기부금영수증 발급', method: 'POST', path: '/admin/receipts', idempotencyKey: true, successStatus: 201, response: '{entities.Receipt}', errors: [{ status: 409, when: '이미 발급(동일 성도·연도)', message: '이미 발급된 영수증이에요. 재발급할까요?' }, { status: 422, when: '주민번호 미등록', message: '영수증 발급에 필요한 정보가 없어요' }], auth: 'Bearer(재정권한)', target: '.pd-receipt' }], events: [{ name: 'receipt.issued', when: '발급 시', payload: '{entities.Receipt}' }] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "로그인·승인완료",
+            "result": "프로필·메뉴 표시",
+            "message": "",
+            "target": ".pd-avatar",
+            "api": {
+              "endpoint": "GET /app/me",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "가입상태=승인대기",
+            "result": "승인대기 배지",
+            "message": "가입 승인 대기 중이에요",
+            "placement": "inline",
+            "target": ".pd-avatar"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입",
+            "guard": "비로그인",
+            "result": "로그인 유도",
+            "message": "로그인이 필요해요",
+            "placement": "inline",
+            "target": ".pd-btn"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appMe",
+              "intent": "내 정보 조회",
+              "method": "GET",
+              "path": "/app/me",
+              "response": "{entities.Member}",
+              "auth": "Bearer",
+              "note": "tenant는 JWT",
+              "target": ".pd-avatar",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미인증",
+                  "message": "로그인이 필요해요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "appLogout",
+              "intent": "로그아웃(세션 종료)",
+              "method": "POST",
+              "path": "/app/auth/logout",
+              "auth": "Bearer",
+              "target": ".pd-btn"
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-007",
+              "via": "내 정보 수정",
+              "trigger": ".pd-list"
+            },
+            {
+              "screen": "SCR-APP-010",
+              "via": "알림함",
+              "trigger": ".pd-list"
+            },
+            {
+              "screen": "SCR-APP-012",
+              "via": "설정",
+              "trigger": ".pd-settings"
+            },
+            {
+              "screen": "SCR-APP-011",
+              "via": "알림 설정",
+              "trigger": ".pd-settings"
+            },
+            {
+              "screen": "SCR-APP-009",
+              "via": "로그아웃"
+            }
+          ]
+        }
       },
-      // ── 홈페이지·화이트라벨 설정 ──
       {
-        id: 'SCR-ADM-007', label: '홈페이지 설정', href: 'c-homepage.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-017', 'REQ-028'],
-        context: '공개홈 템플릿(환영형/말씀형 등) 선택·브랜드(색·로고)·메뉴 설정. 화이트라벨 핵심.',
-        components: [
-          { role: '.pd-concept-picker', kind: 'list', label: '공개홈 템플릿 선택' },
-          { role: '.pd-brand-form', kind: 'form', label: '브랜드(색·로고)' },
-          { role: '.pd-preview', kind: 'hero', label: '미리보기' },
+        "id": "SCR-APP-007",
+        "label": "내 정보 수정",
+        "href": "a-profile-edit.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-012"
         ],
-        description: [
-          { text: '템플릿 선택 — 환영형/말씀형/공동체형/콘텐츠형', target: '.pd-concept-picker' },
-          { text: '브랜드 — 주색·로고·교회명', target: '.pd-brand-form' },
-          { text: '미리보기 — 선택 즉시 반영', target: '.pd-preview' },
+        "context": "이름·휴대전화·이메일 수정(단순). 민감정보 수집 없음(G2). 교적/직분 없음.",
+        "components": [
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "프로필 수정 폼"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "이름·휴대전화·이메일"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-006"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '선택', guard: '', result: '템플릿 적용·미리보기', message: '적용되었어요', placement: 'toast', target: '.pd-concept-picker', api: { endpoint: 'PUT /admin/homepage', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '브랜드 미설정', result: 'placeholder', message: '로고·색을 설정하면 반영돼요', placement: 'inline', target: '.pd-brand-form' },
+        "description": [
+          {
+            "text": "프로필 폼 — 이름·휴대전화·이메일만(민감정보 수집 없음·G2)",
+            "target": ".pd-field"
+          },
+          {
+            "text": "저장 — 마이로 복귀(SCR-APP-006)",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "뒤로 — 저장 없이 마이(SCR-APP-006)"
+          }
         ],
-        interface: { reads: [{ id: 'getHomepage', intent: '홈 설정', method: 'GET', path: '/admin/homepage', response: '{entities.Church}', auth: 'Bearer(관리자)', target: '.pd-concept-picker' }], writes: [{ id: 'setHomepage', intent: '홈 설정 저장', method: 'PUT', path: '/admin/homepage', request: '{entities.Church}', auth: 'Bearer(관리자)', target: '.pd-brand-form' }], events: [] },
-        flow: { to: [] },
-      },
-      // ── 성도 상세 ──
-      {
-        id: 'SCR-ADM-008', label: '성도 상세', href: 'c-member-detail.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
-        context: '성도 카드 상세(기본정보·출석·헌금 요약). 목록(SCR-ADM-002)에서 진입. 민감정보 열람 감사로그.',
-        components: [{ role: '.pd-member-detail', kind: 'card', label: '성도 상세' }],
-        description: [{ text: '기본정보·출석/헌금 요약·수정' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '권한', result: '상세 표시', message: '' }, { state: '권한없음', trigger: '민감정보 열람', guard: '권한 부족', result: '마스킹', message: '권한이 없어요', placement: 'inline' }],
-        interface: { reads: [{ id: 'getMember', intent: '성도 상세', method: 'GET', path: '/admin/members/{id}', response: '{entities.Member}', auth: 'Bearer(관리자)' }], writes: [], events: [{ name: 'member.pii.viewed', when: '민감정보 열람', payload: '{entities.Member}' }] },
-        flow: { to: [{ screen: 'SCR-ADM-009', via: '수정', trigger: '.pd-pagehead-actions' }] },
-      },
-      // ── 성도 등록/수정 ──
-      {
-        id: 'SCR-ADM-009', label: '성도 등록/수정', href: 'c-member-form.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-008'],
-        context: '성도 신규 등록·정보 수정(이름·직분·부서·연락처·동의). 목록 "+등록"·상세 "수정"에서 진입.',
-        components: [{ role: '.pd-member-form', kind: 'form', label: '성도 폼' }],
-        description: [{ text: '이름·직분·부서·연락처·등록일·동의' }],
-        cases: [{ state: '정상', trigger: '저장', guard: '필수입력', result: '목록 반영', message: '저장됐어요', placement: 'toast' }, { state: '필수누락', trigger: '저장', guard: '이름 없음', result: '막음', message: '이름을 입력해 주세요', placement: 'inline', priority: 'P1' }],
-        interface: { reads: [], writes: [{ id: 'saveMember', intent: '성도 저장', method: 'POST', path: '/admin/members', successStatus: 201, request: '{entities.Member}', auth: 'Bearer(관리자)' }], events: [] },
-        flow: { to: [{ screen: 'SCR-ADM-002', via: '저장', kind: 'auto' }] },
-      },
-      // ── 설교 수정 ──
-      {
-        id: 'SCR-ADM-010', label: '설교 수정', href: 'c-sermon-edit.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-002'],
-        context: '설교 정보 수정(제목·설교자·URL·라이브·게시). 설교 관리(SCR-ADM-004) 목록에서 진입.',
-        components: [{ role: '.pd-sermon-edit', kind: 'form', label: '설교 수정 폼' }],
-        description: [{ text: '제목·설교자·유튜브 URL·라이브·게시' }],
-        cases: [{ state: '정상', trigger: '저장', guard: 'URL 유효', result: '목록 반영', message: '저장됐어요', placement: 'toast' }, { state: '형식오류', trigger: '저장', guard: '유튜브 URL 아님', result: '막음', message: '올바른 유튜브 주소를 입력해 주세요', placement: 'inline', priority: 'P1' }],
-        interface: { reads: [{ id: 'getSermonAdmin', intent: '설교 조회', method: 'GET', path: '/admin/sermons/{id}', auth: 'Bearer(관리자)' }], writes: [{ id: 'updateSermon', intent: '설교 수정', method: 'PUT', path: '/admin/sermons/{id}', auth: 'Bearer(관리자)' }], events: [] },
-        flow: { to: [{ screen: 'SCR-ADM-004', via: '저장', kind: 'auto' }] },
-      },
-      // ── 헌금 상세 ──
-      {
-        id: 'SCR-ADM-011', label: '헌금 상세', href: 'c-finance-detail.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-010'],
-        context: '헌금 내역 상세·기부금영수증 발급. 재정(SCR-ADM-006) 내역에서 진입.',
-        components: [{ role: '.pd-finance-detail', kind: 'card', label: '헌금 상세' }, { role: '.pd-confirm', kind: 'confirm', label: '영수증 취소(사유·확인)' }],
-        description: [{ text: '헌금 상세·영수증 발급/재발급' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '재정권한', result: '헌금 상세', message: '', target: '.pd-finance-detail' },
-          { state: '정상', trigger: '발급', guard: '대상', result: '영수증 발급', message: '발급했어요', placement: 'toast', target: '.pd-process' },
-          { state: '중복충돌', trigger: '발급', guard: '이미 발급', result: '재발급 확인', message: '이미 발급된 영수증이에요. 재발급할까요?', placement: 'inline', target: '.pd-process' },
-          { state: '필수누락', trigger: '취소', guard: '사유 없음', result: '막음', message: '취소 사유를 입력해 주세요', placement: 'inline', target: '.pd-confirm', priority: 'P1' },
-          { state: '유효', trigger: '취소', guard: '사유 입력·확인', result: '영수증 취소(canceled)·감사', message: '영수증을 취소했어요(세무 보존·감사 기록)', placement: 'toast', target: '.pd-confirm', priority: 'P0' },
-          { state: '권한없음', trigger: '진입', guard: '재정 권한 없음', result: '차단', message: '재정 열람 권한이 필요해요', placement: 'full-page' },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로그인",
+            "result": "기존값 프리필",
+            "message": "",
+            "target": ".pd-field",
+            "api": {
+              "endpoint": "GET /app/me",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "저장",
+            "guard": "유효성 통과",
+            "result": "저장·복귀",
+            "message": "저장했어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /app/me",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "저장",
+            "guard": "휴대전화 형식 오류",
+            "result": "인라인 오류",
+            "message": "휴대전화 번호를 확인해 주세요",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "에러",
+            "trigger": "저장",
+            "guard": "서버 오류",
+            "result": "재시도",
+            "message": "저장하지 못했어요",
+            "placement": "toast",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'getFinanceItem', intent: '헌금 상세', method: 'GET', path: '/admin/finance/{id}', auth: 'Bearer(finance.read)' }], writes: [{ id: 'issueReceiptDetail', intent: '영수증 발급/재발급', method: 'POST', path: '/admin/receipts', idempotencyKey: true, successStatus: 201, response: '{entities.Receipt}', auth: 'Bearer(finance.write)' }, { id: 'cancelReceipt', intent: '영수증 취소(세무 비가역)', method: 'POST', path: '/admin/receipts/{id}/cancel', idempotencyKey: true, request: '{ reason:string(required) }', response: '{entities.Receipt}', errors: [{ status: 409, when: '이미 취소/신고완료', message: '취소할 수 없는 상태예요' }], auth: 'Bearer(finance.write)', target: '.pd-confirm' }], events: [{ name: 'receipt.canceled', when: '취소', payload: '{ receiptId, reason }' }] },
-        flow: { to: [] },
+        "interface": {
+          "reads": [
+            {
+              "id": "appMePrefill",
+              "intent": "수정 폼 프리필",
+              "method": "GET",
+              "path": "/app/me",
+              "response": "{entities.Member}",
+              "auth": "Bearer",
+              "target": ".pd-field"
+            }
+          ],
+          "writes": [
+            {
+              "id": "appMeUpdate",
+              "intent": "내 정보 수정",
+              "method": "PUT",
+              "path": "/app/me",
+              "body": "{name, phone, email}",
+              "auth": "Bearer",
+              "note": "tenant는 JWT, 본인 레코드만 수정",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "유효성 오류",
+                  "message": "입력값을 확인해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-006",
+              "via": "저장/뒤로",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 문자·알림(문자지갑) · REQ-019 ──
       {
-        id: 'SCR-ADM-012', label: '문자·알림(문자지갑)', href: 'c-messaging.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-019'],
-        context: '문자/푸시 발송·문자지갑 잔액·예약발송·수신동의 관리. 수신거부 성도 자동 제외(PIPA 연동).',
-        components: [{ role: '.pd-msg-table', kind: 'table', label: '발송 내역' }, { role: '.pd-send', kind: 'button', label: '발송', action: { on: 'click', do: 'write:sendMessage' } }, { role: '.pd-confirm', kind: 'confirm', label: '발송 확인(대상수·승인메모)' }],
-        description: [{ text: '문자지갑 잔액·발송 내역·예약발송·수신동의율', target: '.pd-msg-table' }],
-        cases: [
-          { state: '필수누락', trigger: '발송', guard: '승인 메모·대상 미확인', result: '막음', message: '발송 대상(128명)과 승인 메모를 확인해 주세요', placement: 'inline', target: '.pd-confirm', priority: 'P1' },
-          { state: '차단', trigger: '발송', guard: '야간(21~08시) 문자', result: '차단(423)', message: '야간(21~08시)에는 문자를 보낼 수 없어요. 예약 발송을 이용하세요', placement: 'inline', target: '.pd-confirm', priority: 'P0' },
-          { state: '유효', trigger: '발송', guard: '대상 확인·잔액 충분·주간', result: '발송(옵트아웃 자동 제외)·감사', message: '128명에게 발송했어요(수신거부 제외)', placement: 'toast', target: '.pd-confirm', priority: 'P0' },
-          { state: '정상', trigger: '예약 취소', guard: '발송 전', result: '예약 취소', message: '예약 발송을 취소했어요', placement: 'toast' },
-          { state: '빈데이터', trigger: '진입', guard: '발송 0건', result: '안내', message: '아직 발송 내역이 없어요', placement: 'inline', target: '.pd-msg-table' },
-          { state: '범위초과', trigger: '발송', guard: '잔액 부족', result: '막음', message: '문자 잔액이 부족해요. 충전 후 발송하세요', placement: 'inline', target: '.pd-send', priority: 'P1' },
-          { state: '권한없음', trigger: '발송', guard: '권한 부족', result: '차단', message: '발송 권한이 필요해요', placement: 'inline' },
+        "id": "SCR-APP-008",
+        "label": "회원가입",
+        "href": "a-signup.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-011"
         ],
-        interface: { reads: [{ id: 'listMessages', intent: '발송 내역', method: 'GET', path: '/admin/messages', params: [{ in: 'query', name: 'cursor', type: 'string', required: false }], auth: 'Bearer(message.send)', target: '.pd-msg-table' }], writes: [{ id: 'sendMessage', intent: '문자/푸시 대량 발송', method: 'POST', path: '/admin/messages', idempotencyKey: true, confirm: true, successStatus: 201, request: '{ audience:string, channel:string, body:string, scheduledAt?:string, approveNote:string(required) }', errors: [{ status: 402, when: '잔액 부족', message: '문자 잔액이 부족합니다' }, { status: 423, when: '야간(21~08시) 문자', message: '야간 발송 제한 시간이에요' }, { status: 409, when: '동일 발송 재요청(멱등)', message: '이미 발송 처리됐어요' }], auth: 'Bearer(message.send)', target: '.pd-confirm' }, { id: 'cancelScheduled', intent: '예약 발송 취소', method: 'POST', path: '/admin/messages/{id}/cancel', idempotencyKey: true, errors: [{ status: 409, when: '이미 발송됨', message: '이미 발송돼 취소할 수 없어요' }], auth: 'Bearer(message.send)' }], events: [{ name: 'message.sent', when: '발송 시', payload: '{ count, channel, excludedOptOut }' }, { name: 'message.scheduled.cancelled', when: '예약 취소', payload: '{ messageId }' }] },
-        flow: { to: [] },
+        "context": "교회 검색 없는 가입 — 교회 URL 진입으로 church_id 자동 바인딩. 이름·휴대전화·이메일+약관 동의. 가입=승인대기.",
+        "components": [
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "가입 폼(이름·휴대전화·이메일)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "가입 신청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-009"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "교회 자동 바인딩 — 교회 검색 없음, 접속한 교회 URL이 church_id 자동 바인딩"
+          },
+          {
+            "text": "가입 폼 — 이름·휴대전화·이메일(단순, 민감정보 없음)",
+            "target": ".pd-form"
+          },
+          {
+            "text": "약관·개인정보 동의 — 필수"
+          },
+          {
+            "text": "가입 신청 — 제출 후 승인대기, 로그인(SCR-APP-009)",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "교회 URL 바인딩됨",
+            "result": "교회명 표시·church_id 세팅",
+            "message": ""
+          },
+          {
+            "state": "정상",
+            "trigger": "제출",
+            "guard": "유효성+동의 완료",
+            "result": "승인대기 생성",
+            "message": "가입 신청이 접수됐어요. 승인 후 이용할 수 있어요",
+            "placement": "inline",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /app/signup",
+              "status": 201
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "번호 중복",
+            "result": "인라인 오류",
+            "message": "이미 가입된 번호예요",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "동의 미체크",
+            "result": "인라인 오류",
+            "message": "약관에 동의해 주세요",
+            "placement": "inline"
+          }
+        ],
+        "interface": {
+          "reads": [],
+          "writes": [
+            {
+              "id": "appSignup",
+              "intent": "회원가입 신청(승인대기 생성)",
+              "method": "POST",
+              "path": "/app/signup",
+              "body": "{name, phone, email, agree}",
+              "auth": "없음(공개)",
+              "note": "church_id는 접속 host에서 서버가 자동 결정(path 비노출, tenant 격리). 비가역 생성이므로 phone 멱등키로 중복 방지, 가입=승인대기 상태",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "번호 중복",
+                  "message": "이미 가입된 번호예요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-009",
+              "via": "가입 완료→로그인"
+            }
+          ]
+        }
       },
-      // ── 개인정보 보호(PIPA) · REQ-020 ──
       {
-        id: 'SCR-ADM-013', label: '개인정보 보호(PIPA)', href: 'c-privacy.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-020'],
-        context: '개인정보 수집·이용 동의 원장, 권리요청(열람·정정·삭제·처리정지) 처리, 보관기간·파기, 처리방침. 감사추적.',
-        components: [{ role: '.pd-privacy-table', kind: 'table', label: '권리요청' }, { role: '.pd-process', kind: 'button', label: '권리요청 처리', action: { on: 'click', do: 'write:processRight' } }, { role: '.pd-confirm', kind: 'confirm', label: '권리요청 처리(사유·확인·삭제 비가역)' }],
-        description: [{ text: '동의 원장·권리요청 처리·보관/파기·처리방침', target: '.pd-privacy-table' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '개인정보취급자', result: '동의율·요청 목록', message: '', target: '.pd-privacy-table' },
-          { state: '필수누락', trigger: '처리', guard: '사유 없음', result: '막음', message: '처리 사유를 입력해 주세요', placement: 'inline', target: '.pd-confirm', priority: 'P1' },
-          { state: '유효', trigger: '승인', guard: '본인확인·사유', result: '권리요청 승인·기록', message: '처리했어요', placement: 'toast', target: '.pd-confirm', priority: 'P0' },
-          { state: '유효', trigger: '삭제 승인', guard: '삭제 권리·확인', result: '파기(비가역·법정 보존 제외)·감사', message: '삭제 처리했어요(되돌릴 수 없음)', placement: 'toast', target: '.pd-confirm', priority: 'P0' },
-          { state: '정상', trigger: '반려', guard: '본인확인 실패/부적합', result: '반려·사유 통지', message: '반려했어요', placement: 'toast', target: '.pd-confirm' },
-          { state: '엣지', trigger: '자동', guard: '보관기간 만료', result: '파기 예정 표시', message: '', placement: 'inline' },
-          { state: '권한없음', trigger: '열람', guard: '개인정보 권한 없음', result: '차단', message: '개인정보 취급 권한이 필요해요', placement: 'full-page' },
+        "id": "SCR-APP-009",
+        "label": "교인 로그인",
+        "href": "a-login.html",
+        "surface": "app",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-011"
         ],
-        interface: { reads: [{ id: 'getPrivacy', intent: '동의·권리요청', method: 'GET', path: '/admin/privacy', auth: 'Bearer(개인정보취급자)', target: '.pd-privacy-table' }], writes: [{ id: 'processRight', intent: '권리요청 처리(승인/반려)', method: 'POST', path: '/admin/privacy/requests/{id}', idempotencyKey: true, confirm: true, request: '{ decision:"approve|reject", type:"열람|정정|삭제|처리정지", reason:string(required) }', errors: [{ status: 409, when: '이미 처리', message: '이미 처리된 요청이에요' }, { status: 422, when: '삭제인데 법정 보존 항목', message: '법정 보존 의무 항목은 보존기간 경과 후 파기' }], auth: 'Bearer(pii.read)', target: '.pd-confirm' }], events: [{ name: 'privacy.right.processed', when: '처리 시', payload: '{ type, decision, memberId }' }] },
-        flow: { to: [] },
+        "context": "교인 로그인(소셜4사+아이디). 교회 URL이 Tenant 확정(교회 검색 없음). 가입 유도.",
+        "components": [
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "소셜 로그인 4사(카카오·네이버·구글·애플)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-001"
+            }
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "아이디 로그인"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "회원가입",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-008"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "교회 컨텍스트 — 접속한 교회 URL이 Tenant 확정(교회 검색 없음)"
+          },
+          {
+            "text": "소셜 4사+아이디 로그인 — 성공 시 교인 홈(SCR-APP-001)",
+            "target": ".pd-form"
+          },
+          {
+            "text": "회원가입 유도(SCR-APP-008)",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "로그인",
+            "guard": "자격증명 유효·승인완료",
+            "result": "JWT 발급·홈 이동",
+            "message": "",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /app/auth/login",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "로그인",
+            "guard": "자격증명 불일치",
+            "result": "인라인 오류",
+            "message": "아이디 또는 비밀번호를 확인해 주세요",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "로그인",
+            "guard": "가입상태=승인대기",
+            "result": "접근 차단",
+            "message": "가입 승인 대기 중이에요",
+            "placement": "inline",
+            "target": ".pd-form"
+          }
+        ],
+        "interface": {
+          "reads": [],
+          "writes": [
+            {
+              "id": "appLogin",
+              "intent": "교인 로그인(JWT 발급)",
+              "method": "POST",
+              "path": "/app/auth/login",
+              "body": "{provider|id, credential}",
+              "auth": "없음(공개)",
+              "note": "tenant는 접속 host로 확정되어 JWT에 포함(path 비노출)",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "자격증명 불일치",
+                  "message": "아이디 또는 비밀번호를 확인해 주세요"
+                },
+                {
+                  "status": 403,
+                  "when": "승인대기",
+                  "message": "가입 승인 대기 중이에요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-001",
+              "via": "로그인 성공",
+              "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-APP-008",
+              "via": "회원가입"
+            }
+          ]
+        }
       },
-    ],
+      {
+        "id": "SCR-APP-010",
+        "label": "알림",
+        "href": "a-notifications.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-015",
+          "REQ-017"
+        ],
+        "context": "알림 수신함(설교·공지·주보). 클릭 시 Deep Link로 해당 콘텐츠 이동(type+content_id).",
+        "components": [
+          {
+            "role": ".pd-list",
+            "kind": "list",
+            "label": "알림 수신함(설교·공지·주보)"
+          },
+          {
+            "role": ".pd-row",
+            "kind": "card",
+            "label": "알림 항목(Deep Link: type+content_id)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-005"
+            }
+          },
+          {
+            "role": ".pd-tabbar",
+            "kind": "tabbar",
+            "label": "하단 탭"
+          }
+        ],
+        "description": [
+          {
+            "text": "알림 수신함 — 설교·공지·주보 유형",
+            "target": ".pd-list"
+          },
+          {
+            "text": "알림 항목 — 탭 시 Deep Link(type+content_id)로 이동: 공지(SCR-APP-005)·설교(SCR-APP-002)·주보(SCR-APP-004)",
+            "target": ".pd-row"
+          },
+          {
+            "text": "설정 아이콘 — 알림 설정(SCR-APP-011)"
+          }
+        ],
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "알림 1건+",
+            "result": "수신함 표시",
+            "message": "",
+            "target": ".pd-list",
+            "api": {
+              "endpoint": "GET /app/notifications",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "알림 0건",
+            "result": "빈 상태",
+            "message": "받은 알림이 없어요",
+            "placement": "inline",
+            "target": ".pd-list"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "재시도",
+            "message": "알림을 불러오지 못했어요",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appNotifications",
+              "intent": "알림 수신함",
+              "method": "GET",
+              "path": "/app/notifications",
+              "response": "{entities.Notification}[]",
+              "auth": "Bearer",
+              "note": "tenant는 JWT, 본인 수신분만",
+              "target": ".pd-list",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "알림을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "appNotifRead",
+              "intent": "알림 읽음 처리",
+              "method": "PUT",
+              "path": "/app/notifications/{id}/read",
+              "auth": "Bearer",
+              "target": ".pd-row"
+            }
+          ],
+          "events": [
+            {
+              "id": "pushDeepLink",
+              "intent": "Web Push 클릭 시 type+content_id로 Deep Link 이동",
+              "trigger": "ServiceWorker notificationclick"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-005",
+              "via": "공지 딥링크"
+            },
+            {
+              "screen": "SCR-APP-002",
+              "via": "설교 딥링크"
+            },
+            {
+              "screen": "SCR-APP-004",
+              "via": "주보 딥링크"
+            },
+            {
+              "screen": "SCR-APP-011",
+              "via": "알림 설정",
+              "trigger": ".pd-apptop"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-APP-011",
+        "label": "알림 설정 (Web Push)",
+        "href": "a-notif-settings.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-015"
+        ],
+        "context": "Web Push 권한 요청·구독 토글. iOS 16.4+ 홈설치 PWA 안내. 카테고리별 수신설정.",
+        "components": [
+          {
+            "role": ".pd-toggle",
+            "kind": "toggle",
+            "label": "Web Push 구독 on/off"
+          },
+          {
+            "role": ".pd-toggle",
+            "kind": "toggle",
+            "label": "카테고리별 수신(설교·공지·주보)"
+          }
+        ],
+        "description": [
+          {
+            "text": "Web Push 구독 토글 — 브라우저 권한 요청 후 구독 등록",
+            "target": ".pd-toggle"
+          },
+          {
+            "text": "iOS 16.4+ 안내 — 홈 화면에 추가한 PWA에서만 Web Push 수신 가능(단계 안내)"
+          },
+          {
+            "text": "카테고리별 수신 설정 — 설교·공지·주보",
+            "target": ".pd-toggle"
+          },
+          {
+            "text": "저장 — 마이로 복귀(SCR-APP-006)"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로그인",
+            "result": "현재 구독·카테고리 상태 로드",
+            "message": "",
+            "target": ".pd-toggle",
+            "api": {
+              "endpoint": "GET /app/notif-settings",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "구독 on",
+            "guard": "권한 허용",
+            "result": "구독 등록",
+            "message": "이제 알림을 받을 수 있어요",
+            "placement": "toast",
+            "target": ".pd-toggle",
+            "api": {
+              "endpoint": "POST /app/push/subscribe",
+              "status": 201
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "구독 on",
+            "guard": "브라우저 권한 거부",
+            "result": "안내",
+            "message": "브라우저 알림 권한이 꺼져 있어요",
+            "placement": "inline",
+            "target": ".pd-toggle"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "구독 on",
+            "guard": "iOS Safari·홈 미설치",
+            "result": "설치 안내",
+            "message": "홈 화면에 추가 후 이용하세요(iOS 16.4+)",
+            "placement": "inline"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appNotifSettings",
+              "intent": "알림 설정 조회",
+              "method": "GET",
+              "path": "/app/notif-settings",
+              "response": "{subscribed, categories}",
+              "auth": "Bearer",
+              "target": ".pd-toggle"
+            }
+          ],
+          "writes": [
+            {
+              "id": "appPushSubscribe",
+              "intent": "Web Push 구독 등록",
+              "method": "POST",
+              "path": "/app/push/subscribe",
+              "body": "{endpoint, keys}",
+              "auth": "Bearer",
+              "note": "tenant는 JWT",
+              "target": ".pd-toggle"
+            },
+            {
+              "id": "appNotifSettingsUpdate",
+              "intent": "카테고리별 수신 설정 저장",
+              "method": "PUT",
+              "path": "/app/notif-settings",
+              "body": "{categories}",
+              "auth": "Bearer"
+            }
+          ],
+          "events": [
+            {
+              "id": "swRegister",
+              "intent": "ServiceWorker 등록·푸시 구독 수명주기",
+              "trigger": "navigator.serviceWorker"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-006",
+              "via": "저장/뒤로",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-APP-012",
+        "label": "설정",
+        "href": "a-settings.html",
+        "surface": "app",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-006"
+        ],
+        "context": "설정 — 글자크기·앱정보·알림설정·회원탈퇴. 단순.",
+        "components": [
+          {
+            "role": ".pd-settings",
+            "kind": "list",
+            "label": "글자크기·앱정보"
+          },
+          {
+            "role": ".pd-row",
+            "kind": "card",
+            "label": "알림 설정",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-011"
+            }
+          },
+          {
+            "role": ".pd-withdraw",
+            "kind": "button",
+            "label": "회원 탈퇴"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "뒤로",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-006"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "글자크기·앱정보(버전)",
+            "target": ".pd-settings"
+          },
+          {
+            "text": "알림 설정 — Web Push 설정(SCR-APP-011)",
+            "target": ".pd-row"
+          },
+          {
+            "text": "회원 탈퇴 — 비가역, 확인 모달 후 계정·데이터 삭제",
+            "target": ".pd-withdraw"
+          },
+          {
+            "text": "뒤로 — 마이(SCR-APP-006)",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "진입",
+            "guard": "로그인",
+            "result": "설정 항목 표시",
+            "message": "",
+            "target": ".pd-settings"
+          },
+          {
+            "state": "정상",
+            "trigger": "탈퇴 확인",
+            "guard": "확인 모달 2단계 승인",
+            "result": "계정·데이터 삭제·로그아웃",
+            "message": "탈퇴 처리됐어요",
+            "placement": "toast",
+            "target": ".pd-withdraw",
+            "api": {
+              "endpoint": "DELETE /app/me",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "탈퇴",
+            "guard": "서버 오류",
+            "result": "재시도",
+            "message": "탈퇴를 처리하지 못했어요",
+            "placement": "toast",
+            "target": ".pd-withdraw"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appSettings",
+              "intent": "설정·앱정보 로드",
+              "method": "GET",
+              "path": "/app/settings",
+              "response": "{fontSize, appVersion}",
+              "auth": "Bearer",
+              "target": ".pd-settings"
+            }
+          ],
+          "writes": [
+            {
+              "id": "appWithdraw",
+              "intent": "회원 탈퇴",
+              "method": "DELETE",
+              "path": "/app/me",
+              "auth": "Bearer",
+              "note": "비가역 삭제 — 확인 모달 2단계 필수, 멱등(재요청 시 이미 탈퇴 처리), tenant는 JWT·본인 레코드만",
+              "target": ".pd-withdraw",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "탈퇴를 처리하지 못했어요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-APP-006",
+              "via": "뒤로",
+              "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-APP-011",
+              "via": "알림 설정",
+              "trigger": ".pd-row"
+            }
+          ]
+        }
+      }
+    ]
   },
   {
-    category: '슈퍼관리자 (PC웹)',
-    pages: [
-      // ── 플랫폼 대시보드(테넌트 관리) ──
+    "category": "교회 관리자 (admin · admin.hurmate.kr · PC웹)",
+    "pages": [
       {
-        id: 'SCR-SUP-001', label: '테넌트(교회) 관리', href: 'x-tenants.html',
-        surface: 'super', entry: true, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
-        context: '플랫폼 운영자: 교회(테넌트) 생성·구독·이단심사 게이트·커스텀 도메인. 데이터 주권·격리.',
-        components: [
-          { role: '.pd-tenant-table', kind: 'table', label: '교회(테넌트) 목록' },
-          { role: '.pd-new-tenant', kind: 'button', label: '교회 추가(발행)' },
-          { role: '.pd-review-gate', kind: 'card', label: '이단심사 게이트' },
+        "id": "SCR-ADM-001",
+        "label": "관리자 로그인",
+        "href": "c-login.html",
+        "surface": "admin",
+        "entry": true,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-018"
         ],
-        description: [
-          { text: '테넌트 목록 — 교회·구독·상태·도메인', target: '.pd-tenant-table' },
-          { text: '교회 추가 — 30분 내 브랜드 앱 발행', target: '.pd-new-tenant' },
-          { text: '이단심사 게이트 — 승인 전 노출 차단', target: '.pd-review-gate' },
+        "context": "교회 관리자 로그인(테넌트 스코프). 로그인 후 설정 미완료면 개설 Wizard, 완료면 대시보드로 분기. tenant는 JWT로 확정.",
+        "components": [
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "관리자 로그인 폼"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "이메일·비밀번호 입력"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그인",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '테넌트 목록', message: '', target: '.pd-tenant-table', api: { endpoint: 'GET /super/tenants', status: 200 } },
-          { state: '정상', trigger: '교회 추가', guard: '심사 통과', result: '테넌트 발행', message: '교회가 발행됐어요', placement: 'toast', target: '.pd-new-tenant', api: { endpoint: 'POST /super/tenants', status: 201 } },
-          { state: '권한없음', trigger: '진입', guard: '슈퍼관리자 아님', result: '차단', message: '플랫폼 운영자만 접근할 수 있어요', placement: 'full-page', api: { endpoint: 'GET /super/tenants', status: 403 } },
+        "description": [
+          {
+            "text": "로그인 폼 — 테넌트 스코프 관리자 계정(이메일·비밀번호). church 선택 없이 계정에 바인딩된 교회로 진입",
+            "target": ".pd-form"
+          },
+          {
+            "text": "로그인 버튼 — 설정 미완료면 개설 Wizard(SCR-ADM-002), 완료면 대시보드(SCR-ADM-003)",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'listTenants', intent: '테넌트 목록', method: 'GET', path: '/super/tenants', response: '{entities.Church}[]', auth: 'Bearer(슈퍼)', target: '.pd-tenant-table' }], writes: [{ id: 'createTenant', intent: '교회 발행', method: 'POST', path: '/super/tenants', successStatus: 201, request: '{entities.Church}', response: '{entities.Church}', auth: 'Bearer(슈퍼)', target: '.pd-new-tenant' }], events: [{ name: 'tenant.created', when: '발행 시', payload: '{entities.Church}' }] },
-        flow: { to: [{ screen: 'SCR-SUP-002', via: '교회 발행', trigger: '.pd-new-tenant' }, { screen: 'SCR-SUP-003', via: '테넌트 상세', trigger: '.pd-tenant-table' }] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "미입력",
+            "result": "빈 로그인 폼",
+            "message": "",
+            "target": ".pd-form"
+          },
+          {
+            "state": "정상",
+            "trigger": "제출",
+            "guard": "자격증명 일치·설정 완료",
+            "result": "대시보드로 이동",
+            "message": "",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/auth/login",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "자격증명 불일치",
+            "result": "로그인 실패",
+            "message": "이메일 또는 비밀번호를 확인해 주세요",
+            "placement": "inline",
+            "target": ".pd-form"
+          }
+        ],
+        "interface": {
+          "reads": [],
+          "writes": [
+            {
+              "id": "adminLogin",
+              "intent": "관리자 로그인",
+              "method": "POST",
+              "path": "/admin/auth/login",
+              "body": "{email,password}",
+              "response": "{token, onboardingComplete:boolean}",
+              "auth": "none→Bearer",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "자격증명 불일치",
+                  "message": "이메일 또는 비밀번호를 확인해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-002",
+              "via": "설정 미완료 시 개설 Wizard"
+            },
+            {
+              "screen": "SCR-ADM-003",
+              "via": "설정 완료 시 대시보드",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 교회 발행 ──
       {
-        id: 'SCR-SUP-002', label: '교회 발행', href: 'x-tenant-new.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
-        context: '신규 교회(테넌트) 발행 폼(교회명·slug·템플릿·이단심사). 30분 내 브랜드 앱 발행.',
-        components: [{ role: '.pd-tenant-new-form', kind: 'form', label: '교회 발행 폼' }],
-        description: [{ text: '교회명·slug·템플릿·담당자·이단심사' }],
-        cases: [{ state: '정상', trigger: '발행', guard: '심사 통과·필수입력', result: '테넌트 발행', message: '교회가 발행됐어요', placement: 'toast' }, { state: '권한없음', trigger: '발행', guard: '심사 대기', result: '막음', message: '이단심사 통과 후 발행할 수 있어요', placement: 'inline', priority: 'P1' }],
-        interface: { reads: [], writes: [{ id: 'publishTenant', intent: '교회 발행', method: 'POST', path: '/super/tenants', successStatus: 201, request: '{entities.Church}', auth: 'Bearer(슈퍼)' }], events: [{ name: 'tenant.created', when: '발행', payload: '{entities.Church}' }] },
-        flow: { to: [{ screen: 'SCR-SUP-001', via: '발행', kind: 'auto' }] },
+        "id": "SCR-ADM-002",
+        "label": "개설 설정 Wizard (8STEP)",
+        "href": "c-wizard.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-004"
+        ],
+        "context": "최초 설정 Wizard 상태기계 STEP1~8: 교회명→로고→대표컬러→대표이미지→담임목사·주소·연락처·소개→예배시간→서비스 확인→OPEN. 완주 시 교회 status=활성. 단일 Design System이므로 입력은 화이트라벨 4요소+기본정보만.",
+        "components": [
+          {
+            "role": ".pd-stepper",
+            "kind": "stepper",
+            "label": "STEP 1~8 진행 표시"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "현재 단계 입력"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "교회명·로고·색·이미지·기본정보·예배시간"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "다음 단계"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "서비스 오픈(OPEN)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "진행 스테퍼 — 8단계 중 현재 위치 표시, 중단 후 재진입 시 이어쓰기",
+            "target": ".pd-stepper"
+          },
+          {
+            "text": "단계별 입력 폼 — 레이아웃/네비/타이포는 단일 DS 고정, 입력은 로고·대표색·커버·교회명·기본정보·예배시간만",
+            "target": ".pd-form"
+          },
+          {
+            "text": "OPEN 버튼 — STEP8 완주 시 교회 status=활성, 공개홈 오픈 후 대시보드(SCR-ADM-003)로 이동",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "저장값 없음",
+            "result": "STEP1(교회명)부터 시작",
+            "message": "교회 기본 정보부터 설정해요",
+            "placement": "inline",
+            "target": ".pd-stepper"
+          },
+          {
+            "state": "정상",
+            "trigger": "단계 저장·다음",
+            "guard": "필수 입력 충족",
+            "result": "다음 단계 진행·진행률 갱신",
+            "message": "",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "PUT /admin/onboarding/steps/{n}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "다음",
+            "guard": "필수 항목 누락",
+            "result": "다음 단계 차단",
+            "message": "필수 항목을 먼저 입력해 주세요",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "정상",
+            "trigger": "OPEN",
+            "guard": "STEP8 확인 완료",
+            "result": "교회 활성화·공개홈 오픈",
+            "message": "서비스가 오픈되었어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/onboarding/open",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "onboardingState",
+              "intent": "Wizard 진행상태·저장값",
+              "method": "GET",
+              "path": "/admin/onboarding",
+              "response": "{currentStep, values}",
+              "auth": "Bearer",
+              "target": ".pd-stepper",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "설정 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "saveStep",
+              "intent": "단계 저장(멱등·이어쓰기)",
+              "method": "PUT",
+              "path": "/admin/onboarding/steps/{n}",
+              "body": "{values}",
+              "response": "{nextStep}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "필수 누락",
+                  "message": "필수 항목을 먼저 입력해 주세요"
+                }
+              ]
+            },
+            {
+              "id": "openService",
+              "intent": "서비스 오픈(비가역·활성화)",
+              "method": "POST",
+              "path": "/admin/onboarding/open",
+              "body": "{Idempotency-Key}",
+              "response": "{status:'active'}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "confirm": "오픈 전 확인 모달(pd-confirm)·멱등키로 중복 활성화 차단",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "이미 활성",
+                  "message": "이미 오픈된 교회예요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "id": "onboardingCompleted",
+              "name": "onboarding.completed",
+              "when": "OPEN 성공",
+              "effect": "PwaConfig·Theme 반영·공개홈 노출"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "완주 후 대시보드"
+            }
+          ]
+        }
       },
-      // ── 테넌트 상세 ──
       {
-        id: 'SCR-SUP-003', label: '테넌트 상세', href: 'x-tenant-detail.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
-        context: '교회(테넌트) 상세(상태·구독·성도·도메인·심사이력). 목록·구독·도메인에서 진입.',
-        components: [{ role: '.pd-tenant-detail', kind: 'card', label: '테넌트 상세' }],
-        description: [{ text: '상태·구독·성도·도메인·심사이력·바로가기' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '상세 표시', message: '' },
-          { state: '권한없음', trigger: '진입', guard: '슈퍼관리자 아님', result: '차단', message: '플랫폼 운영자만 접근할 수 있어요', placement: 'full-page' },
-          { state: '빈데이터', trigger: '진입', guard: '구독/도메인 미설정', result: '설정 유도', message: '구독·도메인을 설정하면 반영돼요', placement: 'inline' },
+        "id": "SCR-ADM-003",
+        "label": "관리자 대시보드",
+        "href": "c-dashboard.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-018",
+          "REQ-022"
         ],
-        interface: { reads: [{ id: 'getTenant', intent: '테넌트 상세', method: 'GET', path: '/super/tenants/{id}', response: '{entities.Church}', auth: 'Bearer(슈퍼)' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-SUP-004', via: '심사 이력' }, { screen: 'SCR-SUP-005', via: '구독 관리' }, { screen: 'SCR-SUP-006', via: '도메인' }] },
+        "context": "대시보드 — 회원수·가입승인대기·최근 공지/설교/주보·알림 발송 수·스토리지 사용량 KPI. 본인 교회만(tenant 격리, church_id는 JWT에서). 좌측 사이드바에서 전 메뉴 분기.",
+        "components": [
+          {
+            "role": ".pd-sidebar",
+            "kind": "list",
+            "label": "좌측 메뉴(대시보드·교회설정·교회소개·설교·주보·공지·회원·알림·PWA·앱(차기)·요금제·관리자)"
+          },
+          {
+            "role": ".pd-kpi",
+            "kind": "kpi",
+            "label": "회원수·승인대기·발송수·스토리지"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "최근 공지·설교·주보 요약"
+          },
+          {
+            "role": ".pd-stat",
+            "kind": "kpi",
+            "label": "가입 승인 대기 건수",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-010"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "좌측 사이드바 — 회원(SCR-ADM-010)·설교(SCR-ADM-006)·공지(SCR-ADM-009)·알림(SCR-ADM-013) 등 전 메뉴 분기",
+            "target": ".pd-sidebar"
+          },
+          {
+            "text": "KPI 카드 — 회원수·가입승인대기·알림 발송 수·스토리지 사용량(본인 교회 집계만)",
+            "target": ".pd-kpi"
+          },
+          {
+            "text": "승인 대기 통계 — 클릭하면 회원 관리(SCR-ADM-010)로 이동",
+            "target": ".pd-stat"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "집계 로딩 중",
+            "result": "KPI 스켈레톤",
+            "message": "",
+            "target": ".pd-kpi"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "교회 활성",
+            "result": "KPI·최근 콘텐츠 요약 표시",
+            "message": "",
+            "target": ".pd-kpi",
+            "api": {
+              "endpoint": "GET /admin/dashboard",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "콘텐츠 0건(신규 개설)",
+            "result": "빈 상태·설정 유도",
+            "message": "아직 등록된 콘텐츠가 없어요. 설교·공지부터 올려보세요",
+            "placement": "inline",
+            "target": ".pd-wpanel"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입",
+            "guard": "타 테넌트 토큰",
+            "result": "접근 차단",
+            "message": "이 교회에 접근 권한이 없어요",
+            "placement": "inline",
+            "target": ".pd-kpi"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "dashboard",
+              "intent": "대시보드 집계(tenant 격리)",
+              "method": "GET",
+              "path": "/admin/dashboard",
+              "response": "{memberCount, pendingApprovals, sentCount, storageUsed, recent:{notices,sermons,bulletins}}",
+              "auth": "Bearer",
+              "target": ".pd-kpi",
+              "errors": [
+                {
+                  "status": 403,
+                  "when": "타 테넌트 접근",
+                  "message": "이 교회에 접근 권한이 없어요"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-010",
+              "via": "회원 관리",
+              "trigger": ".pd-stat"
+            },
+            {
+              "screen": "SCR-ADM-006",
+              "via": "설교 관리",
+              "trigger": ".pd-sidebar"
+            },
+            {
+              "screen": "SCR-ADM-009",
+              "via": "공지 관리",
+              "trigger": ".pd-sidebar"
+            },
+            {
+              "screen": "SCR-ADM-013",
+              "via": "알림 발송",
+              "trigger": ".pd-sidebar"
+            }
+          ]
+        }
       },
-      // ── 이단심사 게이트 ──
       {
-        id: 'SCR-SUP-004', label: '이단심사 게이트', href: 'x-review-gate.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018'],
-        context: '교리 검증 게이트. 승인 전 공개홈·앱 노출 차단. 대기/완료 심사 관리.',
-        components: [{ role: '.pd-review-list', kind: 'table', label: '심사 목록' }, { role: '.pd-confirm', kind: 'confirm', label: '반려(사유·확인)' }],
-        description: [{ text: '심사 대기·완료, 검토 진입' }, { text: '반려(사유 필수)·이의신청', target: '.pd-confirm' }],
-        cases: [{ state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '심사 목록', message: '' }, { state: '정상', trigger: '승인', guard: '검토 완료', result: '노출 허용', message: '심사 통과 처리됐어요', placement: 'toast' }, { state: '필수누락', trigger: '반려', guard: '사유 없음', result: '막음', message: '반려 사유를 입력해 주세요(종교 차별 소지·신중)', placement: 'inline', target: '.pd-confirm', priority: 'P0' }, { state: '유효', trigger: '반려', guard: '사유 입력·확인', result: '반려·통지·이의 가능', message: '반려 처리했어요. 교회에 통지되며 이의신청할 수 있어요', placement: 'toast', target: '.pd-confirm', priority: 'P0' }, { state: '정상', trigger: '이의 접수', guard: '반려 교회', result: '재검토 대기', message: '이의가 접수됐어요', placement: 'toast' }],
-        interface: { reads: [{ id: 'listReviews', intent: '심사 목록', method: 'GET', path: '/super/reviews', auth: 'Bearer(슈퍼)' }], writes: [{ id: 'approveReview', intent: '심사 승인', method: 'POST', path: '/super/reviews/{id}/approve', idempotencyKey: true, auth: 'Bearer(슈퍼)' }, { id: 'rejectReview', intent: '심사 반려(사유·이의 가능)', method: 'POST', path: '/super/reviews/{id}/reject', idempotencyKey: true, request: '{ reason:string(required) }', response: '{entities.ReviewGate}', auth: 'Bearer(슈퍼)', target: '.pd-confirm' }, { id: 'handleAppeal', intent: '이의 재검토', method: 'POST', path: '/super/reviews/{id}/appeal', auth: 'Bearer(슈퍼)' }], events: [{ name: 'tenant.review.approved', when: '승인', payload: '{entities.Church}' }, { name: 'tenant.review.rejected', when: '반려', payload: '{ churchId, reason }' }, { name: 'tenant.review.appealed', when: '이의', payload: '{ churchId }' }] },
-        flow: { to: [{ screen: 'SCR-SUP-003', via: '검토', trigger: '.pd-review-list' }] },
+        "id": "SCR-ADM-004",
+        "label": "교회 설정·브랜딩",
+        "href": "c-homepage.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-019",
+          "REQ-014"
+        ],
+        "context": "화이트라벨 4요소(로고·대표색·커버이미지·교회명) 설정 — 저장 시 즉시 반영. Layout/Nav/Grid/Typography는 단일 DS 고정(변경불가 안내). PWA 설정(SCR-ADM-014)과 연계.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "교회 설정·브랜딩"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "화이트라벨 4요소 편집"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "로고·대표색·커버이미지·교회명"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "고정 Design System 안내(변경불가)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장(즉시 반영)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "브랜딩 폼 — 로고·대표색·커버이미지·교회명 4요소만 편집, 저장 시 공개홈·교인앱·PWA에 즉시 반영",
+            "target": ".pd-form"
+          },
+          {
+            "text": "고정 DS 안내 패널 — 레이아웃·네비·그리드·타이포는 플랫폼 단일 Design System으로 변경 불가",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "저장 버튼 — 반영 후 대시보드(SCR-ADM-003)로 복귀, PWA 아이콘/테마는 SCR-ADM-014와 연계",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "기존 브랜딩 로드",
+            "result": "현재 로고·색·커버·교회명 표시",
+            "message": "",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /admin/branding",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "저장",
+            "guard": "4요소 유효",
+            "result": "즉시 반영·저장 완료",
+            "message": "브랜딩이 반영되었어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/branding",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "저장",
+            "guard": "이미지 용량/형식 초과",
+            "result": "저장 실패",
+            "message": "로고·커버는 허용된 형식과 용량으로 올려주세요",
+            "placement": "inline",
+            "target": ".pd-field"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "branding",
+              "intent": "현재 브랜딩 조회",
+              "method": "GET",
+              "path": "/admin/branding",
+              "response": "{logo, primaryColor, cover, churchName}",
+              "auth": "Bearer",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "설정을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "saveBranding",
+              "intent": "브랜딩 저장(즉시 반영)",
+              "method": "PUT",
+              "path": "/admin/branding",
+              "body": "{logo, primaryColor, cover, churchName}",
+              "response": "{applied:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "이미지 형식/용량 오류",
+                  "message": "로고·커버는 허용된 형식과 용량으로 올려주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "id": "brandingUpdated",
+              "name": "branding.updated",
+              "when": "저장 성공",
+              "effect": "공개홈·교인앱 즉시 반영·PwaConfig 아이콘/테마 재생성 유도"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "저장 후 대시보드",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 구독·과금 ──
       {
-        id: 'SCR-SUP-005', label: '구독·과금', href: 'x-subscription.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-018', 'REQ-033'],
-        context: '교회별 구독 현황·월 매출·연체 관리.',
-        components: [{ role: '.pd-sub-table', kind: 'table', label: '구독 현황' }],
-        description: [{ text: '월 매출·활성 구독·연체·교회별 플랜' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '구독 현황', message: '' },
-          { state: '빈데이터', trigger: '진입', guard: '구독 0건', result: '안내', message: '활성 구독이 없어요', placement: 'inline' },
-          { state: '엣지', trigger: '자동', guard: '결제 연체', result: '연체 표시', message: '', placement: 'inline' },
+        "id": "SCR-ADM-005",
+        "label": "교회소개 콘텐츠 관리",
+        "href": "c-site-content.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-010"
         ],
-        interface: { reads: [{ id: 'listSubscriptions', intent: '구독 현황', method: 'GET', path: '/super/subscriptions', auth: 'Bearer(슈퍼)' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-SUP-003', via: '교회', trigger: '.pd-sub-table' }] },
+        "context": "교회소개·예배시간·오시는 길 콘텐츠 편집. 섬기는사람들·소식 섹션은 봉인(5메뉴 외). 공개홈 교회소개(SCR-SITE-002)에 반영.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "교회소개 콘텐츠"
+          },
+          {
+            "role": ".pd-segment",
+            "kind": "tabbar",
+            "label": "소개·예배시간·오시는 길 탭"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "소개·비전·예배시간표·주소/교통 편집"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "섹션 세그먼트 — 교회소개·예배시간·오시는 길만 편집(섬기는사람들·소식은 봉인)",
+            "target": ".pd-segment"
+          },
+          {
+            "text": "편집 폼 — 담임목사·소개·비전·예배시간표·주소/대중교통/주차, 공개홈(SCR-SITE-002)에 반영",
+            "target": ".pd-form"
+          },
+          {
+            "text": "저장 버튼 — 저장 후 대시보드(SCR-ADM-003)로 복귀",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "기존 콘텐츠 로드",
+            "result": "현재 소개 콘텐츠 표시",
+            "message": "",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /admin/site-content",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "저장",
+            "guard": "입력 유효",
+            "result": "콘텐츠 저장·공개홈 반영",
+            "message": "교회소개가 저장되었어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/site-content",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "진입",
+            "guard": "미작성",
+            "result": "안내 플레이스홀더",
+            "message": "교회 소개를 작성하면 공개홈에 노출돼요",
+            "placement": "inline",
+            "target": ".pd-form"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "siteContent",
+              "intent": "교회소개 콘텐츠 조회",
+              "method": "GET",
+              "path": "/admin/site-content",
+              "response": "{about, vision, worshipTimes, location}",
+              "auth": "Bearer",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "콘텐츠를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "saveSiteContent",
+              "intent": "교회소개 저장",
+              "method": "PUT",
+              "path": "/admin/site-content",
+              "body": "{about, vision, worshipTimes, location}",
+              "response": "{saved:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "입력 오류",
+                  "message": "입력 내용을 확인해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "저장 후 대시보드",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 커스텀 도메인 ──
       {
-        id: 'SCR-SUP-006', label: '커스텀 도메인', href: 'x-domains.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-017'],
-        context: '교회별 독립 도메인 연결(화이트라벨). 기본 주소·커스텀 도메인·연결 상태.',
-        components: [{ role: '.pd-domain-table', kind: 'table', label: '도메인 연결' }],
-        description: [{ text: '기본 주소·커스텀 도메인·연결 상태' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '도메인 목록', message: '' },
-          { state: '빈데이터', trigger: '진입', guard: '커스텀 도메인 미연결', result: '기본주소 사용', message: '아직 연결된 커스텀 도메인이 없어요', placement: 'inline' },
-          { state: '에러', trigger: '연결', guard: 'DNS 미확인', result: '대기', message: 'DNS 확인 중이에요. 잠시 후 반영됩니다', placement: 'inline' },
+        "id": "SCR-ADM-006",
+        "label": "설교 관리",
+        "href": "c-sermon.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-007"
         ],
-        interface: { reads: [{ id: 'listDomains', intent: '도메인 목록', method: 'GET', path: '/super/domains', auth: 'Bearer(슈퍼)' }], writes: [], events: [] },
-        flow: { to: [{ screen: 'SCR-SUP-003', via: '교회', trigger: '.pd-domain-table' }] },
+        "context": "설교 CRUD — 제목·설교자·날짜·성경본문·설명·YouTube URL·썸네일. 자체 영상 저장 없음(YouTube 임베드만). 목록에서 등록/수정 폼(SCR-ADM-007) 진입.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "설교 관리"
+          },
+          {
+            "role": ".pd-pagehead-actions",
+            "kind": "button",
+            "label": "설교 등록",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-007"
+            }
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "설교 목록(제목·설교자·날짜·YouTube)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-007"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "삭제"
+          }
+        ],
+        "description": [
+          {
+            "text": "등록 버튼 — 설교 등록 폼(SCR-ADM-007)으로 이동",
+            "target": ".pd-pagehead-actions"
+          },
+          {
+            "text": "설교 테이블 — 행 클릭 시 수정 폼(SCR-ADM-007), YouTube 썸네일 자동 노출(자체 영상 저장 없음)",
+            "target": ".pd-table"
+          },
+          {
+            "text": "삭제 버튼 — 확인 모달 후 설교 삭제",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "설교 1건+",
+            "result": "설교 목록 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /admin/sermons",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "설교 0건",
+            "result": "빈 상태·등록 유도",
+            "message": "아직 등록된 설교가 없어요. 첫 설교를 올려보세요",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "삭제",
+            "guard": "서버 오류",
+            "result": "삭제 실패",
+            "message": "삭제하지 못했어요. 다시 시도해 주세요",
+            "placement": "toast",
+            "target": ".pd-btn"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "sermonList",
+              "intent": "설교 목록",
+              "method": "GET",
+              "path": "/admin/sermons",
+              "response": "{entities.Sermon}[]",
+              "auth": "Bearer",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "설교 목록을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "deleteSermon",
+              "intent": "설교 삭제(비가역)",
+              "method": "DELETE",
+              "path": "/admin/sermons/{id}",
+              "response": "{deleted:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "confirm": "삭제 확인 모달(pd-confirm)",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "이미 삭제됨",
+                  "message": "이미 삭제된 설교예요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-007",
+              "via": "설교 등록/수정",
+              "trigger": ".pd-pagehead-actions"
+            }
+          ]
+        }
       },
-
-      // ══════════ 보강 신규 화면 (교인 셀프서비스·로그인·법적문서·운영) ══════════
-      // ── 통합 검색 ──
       {
-        id: 'SCR-APP-021', label: '검색', href: 'a-search.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-030'],
-        context: '설교·공지·성도매장 통합 검색. 최근 검색어·유형별 결과. 설교(SCR-APP-003) 상단 검색 아이콘에서 진입.',
-        components: [
-          { role: '.pd-searchbar', kind: 'input', label: '검색 입력' },
-          { role: '.pd-list', kind: 'list', label: '검색 결과' },
+        "id": "SCR-ADM-007",
+        "label": "설교 수정",
+        "href": "c-sermon-edit.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-007"
         ],
-        description: [
-          { text: '검색 입력 — 설교·공지·매장 통합', target: '.pd-searchbar' },
-          { text: '결과 — 유형 뱃지로 구분', target: '.pd-list' },
+        "context": "설교 등록/수정 폼 — 제목·설교자·날짜·성경본문·설명·YouTube URL 입력. URL 입력 시 썸네일 자동 추출. 저장 후 설교 목록(SCR-ADM-006)으로.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "설교 등록/수정"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "설교 입력 폼"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "제목·설교자·날짜·성경본문·설명·YouTube URL"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-006"
+            }
+          }
         ],
-        cases: [
-          { state: '초기', trigger: '진입', guard: '', result: '최근 검색어', message: '', target: '.pd-searchbar' },
-          { state: '정상', trigger: '검색', guard: '키워드 입력', result: '결과 목록', message: '', target: '.pd-list', api: { endpoint: 'GET /app/search', status: 200 } },
-          { state: '빈데이터', trigger: '검색', guard: '결과 없음', result: '빈 상태', message: '검색 결과가 없어요', placement: 'inline', target: '.pd-list' },
-          { state: '형식오류', trigger: '검색', guard: '2자 미만', result: '막음', message: '두 글자 이상 입력해 주세요', placement: 'inline', target: '.pd-searchbar', priority: 'P2' },
+        "description": [
+          {
+            "text": "입력 폼 — YouTube URL 입력 시 썸네일 자동 추출(자체 영상 저장 없음)",
+            "target": ".pd-form"
+          },
+          {
+            "text": "저장 버튼 — 저장 후 설교 목록(SCR-ADM-006)으로 복귀",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'search', intent: '통합 검색', method: 'GET', path: '/app/search', params: [{ in: 'query', name: 'q', type: 'string', required: true, example: '로마서' }, { in: 'query', name: 'type', type: 'string', required: false, example: 'sermon|notice|store' }, { in: 'query', name: 'cursor', type: 'string', required: false }], response: '{ results: Array<{type,id,title,sub}>, nextCursor:string }', auth: 'Bearer', target: '.pd-list' }], writes: [], events: [] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입(수정)",
+            "guard": "기존 설교 로드",
+            "result": "기존 값 채움",
+            "message": "",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /admin/sermons/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "저장",
+            "guard": "필수·URL 유효",
+            "result": "설교 저장·썸네일 생성",
+            "message": "설교가 저장되었어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/sermons/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "저장",
+            "guard": "YouTube URL 형식 오류",
+            "result": "저장 차단",
+            "message": "올바른 YouTube 주소를 입력해 주세요",
+            "placement": "inline",
+            "target": ".pd-field"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "sermonDetail",
+              "intent": "설교 단건 조회(수정 시)",
+              "method": "GET",
+              "path": "/admin/sermons/{id}",
+              "response": "{entities.Sermon}",
+              "auth": "Bearer",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "없음",
+                  "message": "설교를 찾을 수 없어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "saveSermon",
+              "intent": "설교 등록/수정",
+              "method": "PUT",
+              "path": "/admin/sermons/{id}",
+              "body": "{title, preacher, date, scripture, desc, youtubeUrl}",
+              "response": "{saved:true, thumbnail}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "URL 형식 오류",
+                  "message": "올바른 YouTube 주소를 입력해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-006",
+              "via": "저장 후 설교 목록",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 기부금영수증(교인) ──
       {
-        id: 'SCR-APP-022', label: '기부금영수증', href: 'a-receipts.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-022'],
-        context: '교인 본인 기부금영수증 연도별 조회·다운로드·발급요청(연말정산). ★발급 주체=교회(수령 단체) — 교인은 발급 요청/다운로드만(세무 주체 정합·H3). 세무 이력 감사기록. 마이(SCR-APP-004)에서 진입.',
-        components: [{ role: '.pd-receipt-list', kind: 'list', label: '연도별 영수증' }],
-        description: [{ text: '연도별 합계·발급 버튼', target: '.pd-receipt-list' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '로그인 성도', result: '연도별 목록', message: '', target: '.pd-receipt-list', api: { endpoint: 'GET /app/receipts', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '헌금 내역 없음', result: '빈 상태', message: '발급 가능한 영수증이 없어요', placement: 'inline', target: '.pd-receipt-list' },
-          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '로그인 유도', message: '로그인이 필요해요', placement: 'inline', priority: 'P1' },
-          { state: '정상', trigger: '다운로드', guard: '발급 완료분', result: 'PDF 다운로드', message: '', priority: 'P0', api: { endpoint: 'GET /app/receipts/{year}/pdf', status: 200 } },
-          { state: '필수누락', trigger: '발급 요청', guard: '주민번호 미등록', result: '막음', message: '영수증 발급에 필요한 정보가 없어요. 교회에 문의해 주세요', placement: 'inline', priority: 'P1' },
-          { state: '유효', trigger: '발급 요청', guard: '미발급분', result: '교회에 발급 요청(발급 주체=교회)', message: '발급을 요청했어요. 교회 승인 후 다운로드할 수 있어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /app/receipts/{year}/request', status: 202 } },
+        "id": "SCR-ADM-008",
+        "label": "주보 관리",
+        "href": "c-bulletin.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-008"
         ],
-        interface: { reads: [{ id: 'listMyReceipts', intent: '내 영수증', method: 'GET', path: '/app/receipts', response: '{entities.Receipt}[]', auth: 'Bearer', target: '.pd-receipt-list' }, { id: 'downloadReceipt', intent: '영수증 다운로드', method: 'GET', path: '/app/receipts/{year}/pdf', response: 'application/pdf', auth: 'Bearer' }], writes: [{ id: 'requestReceipt', intent: '영수증 발급 요청(발급주체=교회)', method: 'POST', path: '/app/receipts/{year}/request', request: '{ rrnEnc:string(암호화·발급요청 시점 수집), consent:boolean }', successStatus: 202, errors: [{ status: 422, when: '주민번호 미입력/미동의', message: '주민번호 입력·동의가 필요해요(연말정산 세무)' }], auth: 'Bearer' }], events: [{ name: 'receipt.requested', when: '발급 요청', payload: '{ memberId, year }' }] },
-        flow: { to: [] },
+        "context": "주보 발행 — 주차(날짜)·파일(PDF/이미지) 업로드·대표이미지. 목록 + 업로드. 교인앱 주보(SCR-APP-004)에 노출.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "주보 관리"
+          },
+          {
+            "role": ".pd-pagehead-actions",
+            "kind": "button",
+            "label": "주보 업로드"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "주차(날짜)·파일·대표이미지 업로드"
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "주보 목록(주차·업로드일)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "업로드 폼 — 주차(날짜) 지정 후 PDF/이미지 파일·대표이미지 업로드",
+            "target": ".pd-form"
+          },
+          {
+            "text": "주보 테이블 — 발행된 주보 목록(최신호+지난호), 교인앱 주보(SCR-APP-004)에 노출",
+            "target": ".pd-table"
+          },
+          {
+            "text": "저장 버튼 — 업로드 후 대시보드(SCR-ADM-003)로 복귀",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "주보 1건+",
+            "result": "주보 목록 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /admin/bulletins",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "주보 0건",
+            "result": "빈 상태·업로드 유도",
+            "message": "아직 발행된 주보가 없어요",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "업로드",
+            "guard": "파일 형식/용량 초과",
+            "result": "업로드 실패",
+            "message": "PDF 또는 이미지 파일을 허용 용량 내로 올려주세요",
+            "placement": "inline",
+            "target": ".pd-form"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "bulletinList",
+              "intent": "주보 목록",
+              "method": "GET",
+              "path": "/admin/bulletins",
+              "response": "{entities.Bulletin}[]",
+              "auth": "Bearer",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "주보 목록을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "uploadBulletin",
+              "intent": "주보 발행(업로드)",
+              "method": "POST",
+              "path": "/admin/bulletins",
+              "body": "multipart{weekDate, file, cover}",
+              "response": "{entities.Bulletin}",
+              "auth": "Bearer",
+              "idempotent": false,
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 413,
+                  "when": "용량 초과",
+                  "message": "허용 용량을 초과했어요"
+                },
+                {
+                  "status": 422,
+                  "when": "형식 오류",
+                  "message": "PDF 또는 이미지 파일을 올려주세요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "저장 후 대시보드",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 개인정보 권리요청(교인) ──
       {
-        id: 'SCR-APP-023', label: '개인정보 권리요청', href: 'a-privacy-request.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-021'],
-        context: '교인 본인 개인정보 열람·정정·삭제·처리정지 요청(PIPA). 관리자 처리(SCR-ADM-013) 연계·결과 알림. 마이/설정에서 진입.',
-        components: [
-          { role: '.pd-right-form', kind: 'form', label: '권리요청 폼' },
-          { role: '.pd-list', kind: 'list', label: '요청 내역' },
+        "id": "SCR-ADM-009",
+        "label": "공지 관리",
+        "href": "c-notice.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-009"
         ],
-        description: [
-          { text: '요청 유형·상세·본인확인 동의', target: '.pd-right-form' },
-          { text: '내 요청 처리 상태', target: '.pd-list' },
+        "context": "공지 CRUD — 제목·본문·이미지·첨부·게시일·중요공지·상단고정·알림 발송 여부(Web Push 연동). 발송 선택 시 알림 관리(SCR-ADM-013)로 연계.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "공지 관리"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "공지 작성(제목·본문·이미지·첨부)"
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "공지 목록"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "게시",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-013"
+            }
+          }
         ],
-        cases: [
-          { state: '초기', trigger: '진입', guard: '로그인', result: '요청 폼', message: '', target: '.pd-right-form' },
-          { state: '필수누락', trigger: '제출', guard: '유형/동의 누락', result: '막음', message: '요청 유형과 본인확인 동의가 필요해요', placement: 'inline', target: '.pd-right-form', priority: 'P1' },
-          { state: '유효', trigger: '제출', guard: '정상', result: '접수', message: '요청이 접수됐어요. 처리 결과는 알림으로 안내됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /app/privacy-requests', status: 201 } },
-          { state: '중복충돌', trigger: '제출', guard: '동일 유형 처리중', result: '막음', message: '이미 처리 중인 동일 요청이 있어요', placement: 'inline', priority: 'P2' },
+        "description": [
+          {
+            "text": "공지 작성 폼 — 제목·본문·이미지·첨부·게시일",
+            "target": ".pd-form"
+          },
+          {
+            "text": "옵션 토글 — 중요공지·상단고정·알림 발송 여부(Web Push 연동)"
+          },
+          {
+            "text": "게시 버튼 — 알림 발송 선택 시 알림 관리·발송(SCR-ADM-013)으로 연계되어 Web Push 발송",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'listMyRights', intent: '내 권리요청', method: 'GET', path: '/app/privacy-requests', response: '{entities.PrivacyRequest}[]', auth: 'Bearer', target: '.pd-list' }], writes: [{ id: 'createRight', intent: '권리요청 제출', method: 'POST', path: '/app/privacy-requests', idempotencyKey: true, successStatus: 201, response: '{entities.PrivacyRequest}', errors: [{ status: 409, when: '동일 유형 처리중', message: '이미 처리 중이에요' }], auth: 'Bearer', target: '.pd-right-form' }], events: [{ name: 'privacy.request.created', when: '제출 시', payload: '{entities.PrivacyRequest}' }] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "공지 1건+",
+            "result": "공지 목록 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /admin/notices",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "공지 0건",
+            "result": "빈 상태·작성 유도",
+            "message": "아직 등록된 공지가 없어요",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "게시",
+            "guard": "제목·본문 유효",
+            "result": "공지 게시(+알림 발송 선택 시 Web Push)",
+            "message": "공지가 게시되었어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/notices",
+              "status": 201
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "게시",
+            "guard": "제목 누락",
+            "result": "게시 차단",
+            "message": "제목과 본문을 입력해 주세요",
+            "placement": "inline",
+            "target": ".pd-form"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "noticeList",
+              "intent": "공지 목록",
+              "method": "GET",
+              "path": "/admin/notices",
+              "response": "{entities.Notice}[]",
+              "auth": "Bearer",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "공지 목록을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "publishNotice",
+              "intent": "공지 게시(+선택 시 알림 발송)",
+              "method": "POST",
+              "path": "/admin/notices",
+              "body": "{title, body, images, attach, publishAt, pinned, important, pushOnPublish}",
+              "response": "{entities.Notice}",
+              "auth": "Bearer",
+              "idempotent": false,
+              "confirm": "pushOnPublish=true면 대량 Web Push 발송 확인 모달(pd-confirm)·멱등키",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "필수 누락",
+                  "message": "제목과 본문을 입력해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "id": "noticePublished",
+              "name": "notice.published",
+              "when": "게시 성공·pushOnPublish=true",
+              "effect": "Notification Gateway 경유 Web Push 발송(DeepLink=notice+id)"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-013",
+              "via": "알림 발송 연계",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 출석 체크(교인 QR/온라인) ──
       {
-        id: 'SCR-APP-024', label: '출석 체크', href: 'a-attendance.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-023'],
-        context: '교인 출석 — 현장 QR 스캔 또는 온라인 예배 시청 자동 출석. 월별 출석 현황. 관리자 출석관리(SCR-ADM-003)와 연동.',
-        components: [
-          { role: '.pd-qr-check', kind: 'button', label: 'QR 출석' },
-          { role: '.pd-online-check', kind: 'button', label: '온라인 출석' },
+        "id": "SCR-ADM-010",
+        "label": "회원 관리",
+        "href": "c-members.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-012"
         ],
-        description: [
-          { text: 'QR 출석 — 예배 시간대만 활성', target: '.pd-qr-check' },
-          { text: '온라인 출석 — 설교 시청 연계', target: '.pd-online-check' },
+        "context": "회원(교인) 목록 — 이름·휴대전화·이메일·가입상태. 가입 승인/대기 처리. 교적/직분 없음(단순). 상세(SCR-ADM-011)·등록/수정(SCR-ADM-012) 진입.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "회원 관리"
+          },
+          {
+            "role": ".pd-pagehead-actions",
+            "kind": "button",
+            "label": "회원 등록",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-012"
+            }
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "회원 목록(이름·휴대전화·이메일·가입상태)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-011"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "가입 승인"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: 'QR 스캔', guard: '예배 시간대·유효 QR', result: '출석 기록', message: '출석됐어요', placement: 'toast', target: '.pd-qr-check', api: { endpoint: 'POST /app/attendance', status: 201 } },
-          { state: '권한없음', trigger: '진입', guard: '비로그인', result: '로그인 유도', message: '로그인이 필요해요', placement: 'inline', priority: 'P1' },
-          { state: '에러', trigger: 'QR 스캔', guard: '시간대 아님', result: '막음', message: '지금은 출석 체크 시간이 아니에요', placement: 'inline', priority: 'P2' },
-          { state: '중복충돌', trigger: 'QR 스캔', guard: '이미 출석', result: '안내', message: '이미 출석 처리됐어요', placement: 'inline', priority: 'P2' },
+        "description": [
+          {
+            "text": "상태 세그먼트 — 전체·승인대기·승인완료로 필터"
+          },
+          {
+            "text": "회원 테이블 — 행 클릭 시 회원 상세(SCR-ADM-011), 교적/직분 없는 단순 정보",
+            "target": ".pd-table"
+          },
+          {
+            "text": "승인 버튼 — 대기 회원 가입 승인(확인 후 처리), 등록 버튼은 회원 등록/수정(SCR-ADM-012)",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'myAttendance', intent: '내 출석 현황', method: 'GET', path: '/app/attendance', response: '{ month:string, present:number, absent:number }', auth: 'Bearer' }], writes: [{ id: 'checkIn', intent: '출석 체크', method: 'POST', path: '/app/attendance', idempotencyKey: true, successStatus: 201, errors: [{ status: 409, when: '이미 출석', message: '이미 출석했어요' }, { status: 422, when: '시간대 아님', message: '출석 시간이 아니에요' }], auth: 'Bearer', target: '.pd-qr-check' }], events: [{ name: 'attendance.checked', when: '출석 시', payload: '{ memberId, service, at }' }] },
-        flow: { to: [{ screen: 'SCR-APP-011', via: '온라인 예배 출석', trigger: '.pd-online-check' }] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "회원 1명+",
+            "result": "회원 목록·상태 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /admin/members",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "회원 0명",
+            "result": "빈 상태",
+            "message": "아직 가입한 교인이 없어요",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "승인",
+            "guard": "대기 회원 선택",
+            "result": "가입상태=승인 전환",
+            "message": "가입을 승인했어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PATCH /admin/members/{id}/status",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "memberList",
+              "intent": "회원 목록(tenant 격리)",
+              "method": "GET",
+              "path": "/admin/members",
+              "query": "status",
+              "response": "{entities.Member}[]",
+              "auth": "Bearer",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "회원 목록을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "approveMember",
+              "intent": "가입 승인",
+              "method": "PATCH",
+              "path": "/admin/members/{id}/status",
+              "body": "{status:'approved'}",
+              "response": "{updated:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "confirm": "승인 확인(pd-confirm)·멱등 처리로 중복 승인 무해",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "이미 승인됨",
+                  "message": "이미 승인된 회원이에요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-011",
+              "via": "회원 상세",
+              "trigger": ".pd-table"
+            },
+            {
+              "screen": "SCR-ADM-012",
+              "via": "회원 등록",
+              "trigger": ".pd-pagehead-actions"
+            }
+          ]
+        }
       },
-      // ── 알림 수신설정(교인) ──
       {
-        id: 'SCR-APP-025', label: '알림 설정', href: 'a-notif-settings.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-024'],
-        context: '교인 알림 수신 설정 — 종류별(설교·공지·댓글)·채널별(푸시·문자) 토글. 수신동의·야간발송 제한(21~08시) 연계.',
-        components: [{ role: '.pd-toggle', kind: 'toggle', label: '알림 토글' }],
-        description: [{ text: '종류별·채널별 수신 토글', target: '.pd-toggle' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '로그인', result: '현재 설정 로드', message: '', api: { endpoint: 'GET /app/notification-settings', status: 200 } },
-          { state: '정상', trigger: '토글 변경', guard: '', result: '저장', message: '알림 설정을 저장했어요', placement: 'toast', api: { endpoint: 'PATCH /app/notification-settings', status: 200 } },
-          { state: '에러', trigger: '푸시 켜기', guard: '브라우저 권한 거부', result: '안내', message: '브라우저 알림 권한을 허용해 주세요', placement: 'inline', priority: 'P2' },
+        "id": "SCR-ADM-011",
+        "label": "회원 상세",
+        "href": "c-member-detail.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-012"
         ],
-        interface: { reads: [{ id: 'getNotifSettings', intent: '알림 설정', method: 'GET', path: '/app/notification-settings', response: '{ sermon:boolean, notice:boolean, comment:boolean, push:boolean, sms:boolean }', auth: 'Bearer' }], writes: [{ id: 'updateNotifSettings', intent: '알림 설정 저장', method: 'PATCH', path: '/app/notification-settings', auth: 'Bearer', target: '.pd-toggle' }], events: [] },
-        flow: { to: [] },
+        "context": "회원 상세(단순 정보) · 가입상태 변경(승인). 민감정보 없음(이름·휴대전화·이메일·가입상태만). 수정(SCR-ADM-012)·목록(SCR-ADM-010) 이동.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "회원 상세"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "회원 정보(이름·휴대전화·이메일·가입상태)"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "card",
+            "label": "가입상태 배지(승인/대기)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "가입 승인"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "수정",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-012"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "정보 패널 — 이름·휴대전화·이메일·가입상태(교적/직분 등 민감정보 없음)",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "승인 버튼 — 대기 상태면 가입 승인 처리",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "수정 버튼 — 회원 등록/수정 폼(SCR-ADM-012)으로, 목록은 SCR-ADM-010",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "회원 존재",
+            "result": "회원 정보 표시",
+            "message": "",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /admin/members/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "진입",
+            "guard": "회원 없음",
+            "result": "조회 실패",
+            "message": "회원을 찾을 수 없어요",
+            "placement": "inline",
+            "target": ".pd-wpanel"
+          },
+          {
+            "state": "정상",
+            "trigger": "승인",
+            "guard": "대기 상태",
+            "result": "가입상태=승인",
+            "message": "가입을 승인했어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PATCH /admin/members/{id}/status",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "memberDetail",
+              "intent": "회원 단건 조회",
+              "method": "GET",
+              "path": "/admin/members/{id}",
+              "response": "{entities.Member}",
+              "auth": "Bearer",
+              "target": ".pd-wpanel",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "없음",
+                  "message": "회원을 찾을 수 없어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "changeMemberStatus",
+              "intent": "가입상태 변경(승인)",
+              "method": "PATCH",
+              "path": "/admin/members/{id}/status",
+              "body": "{status}",
+              "response": "{updated:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "confirm": "승인 확인(pd-confirm)·멱등",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "이미 처리됨",
+                  "message": "이미 처리된 회원이에요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-010",
+              "via": "목록 복귀",
+              "trigger": ".pd-pagehead"
+            },
+            {
+              "screen": "SCR-ADM-012",
+              "via": "회원 수정"
+            }
+          ]
+        }
       },
-      // ── 설정·회원탈퇴(교인) ──
       {
-        id: 'SCR-APP-026', label: '설정', href: 'a-settings.html',
-        surface: 'app', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-029'],
-        context: '앱 설정 허브 — 알림·글자크기·권리요청·약관·로그아웃·회원탈퇴(개인정보 파기·확인 2단계).',
-        components: [
-          { role: '.pd-settings', kind: 'list', label: '설정 목록' },
-          { role: '.pd-withdraw', kind: 'button', label: '회원 탈퇴' },
-          { role: '.pd-confirm', kind: 'confirm', label: '탈퇴 2단계 확인(사유)' },
+        "id": "SCR-ADM-012",
+        "label": "회원 등록/수정",
+        "href": "c-member-form.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-012"
         ],
-        description: [
-          { text: '설정 항목 — 알림·글자크기·권리요청·약관', target: '.pd-settings' },
-          { text: '회원 탈퇴 — 개인정보 파기(확인 2단계·기부금영수증 등 법정 보존 항목 예외)', target: '.pd-withdraw' },
+        "context": "회원 등록/수정 폼(이름·휴대전화·이메일·가입상태). 단순. 민감정보 수집 없음. 저장 후 회원 목록(SCR-ADM-010)으로.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "회원 등록/수정"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "회원 입력 폼"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "이름·휴대전화·이메일·가입상태"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-010"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '로그인', result: '설정 목록', message: '', target: '.pd-settings' },
-          { state: '유효', trigger: '탈퇴', guard: '확인 2단계', result: '탈퇴·파기(법정 보존 예외)', message: '탈퇴 처리됐어요. 개인정보는 파기되며, 기부금영수증 등 법정 보존 항목은 보존기간 경과 후 파기됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'DELETE /app/account', status: 200 } },
-          { state: '권한없음', trigger: '탈퇴', guard: '미확인', result: '막음', message: '탈퇴 확인이 필요해요', placement: 'inline', target: '.pd-withdraw', priority: 'P1' },
+        "description": [
+          {
+            "text": "입력 폼 — 이름·휴대전화·이메일·가입상태(교적/직분 등 민감정보 없음)",
+            "target": ".pd-form"
+          },
+          {
+            "text": "저장 버튼 — 저장 후 회원 목록(SCR-ADM-010)으로 복귀",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [], writes: [{ id: 'withdraw', intent: '회원 탈퇴·파기(법정 보존 예외)', method: 'DELETE', path: '/app/account', confirm: true, note: '기부금영수증 등 법정 보존 의무 항목은 보존기간까지 분리보관 후 파기(H2 세무 정합)', errors: [{ status: 409, when: '미처리 요청 존재', message: '처리 중인 요청이 있어요' }], auth: 'Bearer', target: '.pd-withdraw' }], events: [{ name: 'member.withdrawn', when: '탈퇴 시', payload: '{ memberId, purgedAt, retainedForLegal:["receipt"] }' }] },
-        flow: { to: [{ screen: 'SCR-APP-025', via: '알림 설정' }, { screen: 'SCR-APP-023', via: '권리요청' }, { screen: 'SCR-SITE-011', via: '약관' }] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입(수정)",
+            "guard": "기존 회원 로드",
+            "result": "기존 값 채움",
+            "message": "",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /admin/members/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "저장",
+            "guard": "필수 유효",
+            "result": "회원 저장",
+            "message": "회원 정보가 저장되었어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/members/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "저장",
+            "guard": "휴대전화/이메일 형식 오류",
+            "result": "저장 차단",
+            "message": "휴대전화·이메일 형식을 확인해 주세요",
+            "placement": "inline",
+            "target": ".pd-field"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "memberForm",
+              "intent": "회원 단건(수정 시)",
+              "method": "GET",
+              "path": "/admin/members/{id}",
+              "response": "{entities.Member}",
+              "auth": "Bearer",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "없음",
+                  "message": "회원을 찾을 수 없어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "saveMember",
+              "intent": "회원 등록/수정",
+              "method": "PUT",
+              "path": "/admin/members/{id}",
+              "body": "{name, phone, email, status}",
+              "response": "{saved:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "형식 오류",
+                  "message": "휴대전화·이메일 형식을 확인해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-010",
+              "via": "저장 후 회원 목록",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 약관·개인정보처리방침(공개홈) ──
       {
-        id: 'SCR-SITE-011', label: '약관·개인정보처리방침', href: 's-terms.html',
-        surface: 'site', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-026'],
-        context: '이용약관·개인정보처리방침 법적 고지(공개). 공개홈·앱 설정·가입 동의에서 참조. PIPA 수집항목·목적·보유기간·권리행사 고지.',
-        components: [{ role: '.pd-legal', kind: 'doc', label: '법적 문서 본문' }],
-        description: [{ text: '이용약관/처리방침 탭·조항', target: '.pd-legal' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '', result: '약관 본문', message: '' },
-          { state: '정상', trigger: '탭 전환', guard: '', result: '처리방침 본문', message: '' },
+        "id": "SCR-ADM-013",
+        "label": "알림 관리·발송",
+        "href": "c-messaging.html",
+        "surface": "admin",
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-016"
         ],
-        interface: { reads: [{ id: 'getLegal', intent: '법적 문서', method: 'GET', path: '/site/legal', params: [{ in: 'query', name: 'doc', type: 'string', required: false, example: 'terms|privacy' }], response: '{ terms:string, privacy:string, updatedAt:string }', auth: 'None', target: '.pd-legal' }], writes: [], events: [] },
-        flow: { to: [] },
+        "context": "Notification Gateway 경유 알림 발송 — MVP=Web Push. 대상=전체회원 broadcast. 즉시/예약. 대량발송은 비가역이므로 확인·멱등키 필수. SMS/Kakao 슬롯은 비활성.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "알림 관리·발송"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "알림 작성(제목·본문·연결 콘텐츠)"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "card",
+            "label": "채널(Web Push 활성 / SMS·Kakao 비활성)"
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "발송 이력"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "전체 발송",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "알림 작성 폼 — 제목·본문·연결 콘텐츠(설교/공지/주보 DeepLink), 대상=전체회원 broadcast",
+            "target": ".pd-form"
+          },
+          {
+            "text": "채널 배지 — MVP는 Web Push만 활성, SMS·Kakao는 비활성 슬롯 표시",
+            "target": ".pd-badge"
+          },
+          {
+            "text": "전체 발송 버튼 — 대량발송(비가역) 확인 모달 후 Gateway 경유 발송, 완료 시 대시보드(SCR-ADM-003)",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "발송 이력 로드",
+            "result": "대상 수·최근 발송 이력 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /admin/notifications",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "전체 발송",
+            "guard": "제목·본문 유효·확인 완료",
+            "result": "Web Push broadcast 발송",
+            "message": "전체 회원에게 알림을 발송했어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/notifications/broadcast",
+              "status": 202
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "진입",
+            "guard": "구독 회원 0명",
+            "result": "발송 대상 없음",
+            "message": "아직 Web Push를 구독한 교인이 없어요",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "에러",
+            "trigger": "전체 발송",
+            "guard": "Gateway 오류",
+            "result": "발송 실패",
+            "message": "발송에 실패했어요. 잠시 후 다시 시도해 주세요",
+            "placement": "toast",
+            "target": ".pd-btn"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "notifHistory",
+              "intent": "발송 이력·대상 수",
+              "method": "GET",
+              "path": "/admin/notifications",
+              "response": "{history:[], subscriberCount}",
+              "auth": "Bearer",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "발송 이력을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "broadcast",
+              "intent": "전체 Web Push 발송(비가역·대량)",
+              "method": "POST",
+              "path": "/admin/notifications/broadcast",
+              "body": "{title, body, deepLink, scheduleAt, Idempotency-Key}",
+              "response": "{accepted:true, estTargets}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "confirm": "대량발송 확인 모달(pd-confirm)·멱등키로 중복 발송 차단·취소 불가 고지",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 502,
+                  "when": "Gateway 오류",
+                  "message": "발송에 실패했어요. 잠시 후 다시 시도해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "id": "notificationSent",
+              "name": "notification.sent",
+              "when": "발송 접수",
+              "effect": "Notification Gateway→Web Push 전달·DeepLink로 교인앱 콘텐츠 이동(SCR-APP-010)"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "발송 후 대시보드",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 관리자 로그인 ──
       {
-        id: 'SCR-ADM-014', label: '관리자 로그인', href: 'c-login.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-025'],
-        context: '교회 관리자 콘솔 로그인(PC웹). 실패 5회 잠금·비밀번호 재설정. 관리자 권한은 담임목사가 위임(RBAC). 대시보드(SCR-ADM-001) 진입.',
-        components: [{ role: '.pd-auth-form', kind: 'form', label: '로그인 폼' }],
-        description: [{ text: '아이디·비밀번호·비번재설정', target: '.pd-auth-form' }],
-        cases: [
-          { state: '초기', trigger: '진입', guard: '', result: '로그인 폼', message: '', target: '.pd-auth-form' },
-          { state: '필수누락', trigger: '로그인', guard: '미입력', result: '막음', message: '아이디와 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-auth-form', priority: 'P1' },
-          { state: '권한없음', trigger: '로그인', guard: '자격 불일치', result: '막음', message: '아이디 또는 비밀번호를 확인해 주세요', placement: 'inline', priority: 'P1' },
-          { state: '잠금', trigger: '로그인', guard: '5회 실패', result: '계정 잠금', message: '로그인을 5회 실패해 잠겼어요. 잠시 후 다시 시도해 주세요', placement: 'inline', priority: 'P1' },
-          { state: '유효', trigger: '로그인', guard: '정상', result: '대시보드 이동', message: '', priority: 'P0', api: { endpoint: 'POST /admin/auth/login', status: 200 } },
+        "id": "SCR-ADM-014",
+        "label": "PWA 관리",
+        "href": "c-pwa.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-014"
         ],
-        interface: { reads: [], writes: [{ id: 'adminLogin', intent: '관리자 로그인', method: 'POST', path: '/admin/auth/login', response: '{ token:string, member:{entities.Member} }', errors: [{ status: 401, when: '자격 불일치', message: '아이디 또는 비밀번호를 확인해 주세요' }, { status: 423, when: '5회 실패 잠금', message: '계정이 잠겼어요' }], auth: 'None', target: '.pd-auth-form' }], events: [{ name: 'admin.login', when: '로그인 성공', payload: '{ memberId, tenantId, at }' }] },
-        flow: { to: [{ screen: 'SCR-ADM-001', via: '로그인', trigger: '.pd-btn' }] },
+        "context": "PwaConfig 편집 — PWA 이름·Short Name·아이콘(로고→192/512)·테마컬러·start_url. 교회 기본정보/브랜딩에서 자동 생성 후 보정. 미리보기 제공.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "PWA 관리"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "PwaConfig 편집"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "form",
+            "label": "이름·Short Name·아이콘·테마컬러·start_url"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "홈 화면 설치 미리보기"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "저장",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "PwaConfig 폼 — 브랜딩 로고에서 192/512 아이콘 자동 생성 후 이름·Short Name·테마컬러·start_url 보정",
+            "target": ".pd-form"
+          },
+          {
+            "text": "미리보기 패널 — 홈 화면 설치 시 아이콘(교회 로고+교회명) 모습 확인",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "저장 버튼 — 저장 후 대시보드(SCR-ADM-003)로 복귀, 설치 안내는 공개홈(SCR-SITE-007)에서 노출",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "브랜딩 기반 자동 생성값",
+            "result": "자동 생성된 PwaConfig 표시",
+            "message": "교회 정보에서 자동으로 만들었어요. 필요하면 보정하세요",
+            "placement": "inline",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "GET /admin/pwa-config",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "저장",
+            "guard": "아이콘·start_url 유효",
+            "result": "PwaConfig 저장",
+            "message": "PWA 설정이 저장되었어요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/pwa-config",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "저장",
+            "guard": "아이콘 규격 미달",
+            "result": "저장 차단",
+            "message": "아이콘은 192·512 규격 이미지가 필요해요",
+            "placement": "inline",
+            "target": ".pd-field"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "pwaConfig",
+              "intent": "PwaConfig 조회(자동 생성 포함)",
+              "method": "GET",
+              "path": "/admin/pwa-config",
+              "response": "{name, shortName, icons, themeColor, startUrl}",
+              "auth": "Bearer",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "PWA 설정을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "savePwaConfig",
+              "intent": "PwaConfig 저장",
+              "method": "PUT",
+              "path": "/admin/pwa-config",
+              "body": "{name, shortName, icons, themeColor, startUrl}",
+              "response": "{saved:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "아이콘 규격 오류",
+                  "message": "아이콘은 192·512 규격 이미지가 필요해요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "id": "pwaConfigUpdated",
+              "name": "pwaconfig.updated",
+              "when": "저장 성공",
+              "effect": "manifest 갱신·홈 화면 설치 아이콘 반영"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "저장 후 대시보드"
+            }
+          ]
+        }
       },
-      // ── 공개홈 콘텐츠 관리(관리자) ──
       {
-        id: 'SCR-ADM-015', label: '공개홈 콘텐츠 관리', href: 'c-site-content.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-027'],
-        context: '공개홈에 노출되는 예배시간·교회소개·교역자·오시는길·소식을 관리자가 직접 관리(content.edit 권한). 공개홈(SCR-SITE) 렌더에 반영.',
-        components: [
-          { role: '.pd-segment', kind: 'tab', label: '콘텐츠 영역 탭' },
-          { role: '.pd-wpanel', kind: 'panel', label: '편집 패널' },
+        "id": "SCR-ADM-015",
+        "label": "앱(Native) 관리 (차기)",
+        "href": "c-app.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-025"
         ],
-        description: [
-          { text: '영역 탭 — 예배/소개/교역자/위치/소식', target: '.pd-segment' },
-          { text: '예배 시간표 등 편집 테이블', target: '.pd-wpanel' },
+        "context": "[차기·Premium Add-on] AppConfig — iOS 번들ID·Android 패키지명·스토어 상태·버전. 'APP 상품 구매 교회 전용·준비 중'(Phase6) 안내. V1에서는 비활성·조회만.",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "앱(Native) 관리"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "준비 중 안내 배너(차기 Premium Add-on)"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "AppConfig(iOS 번들ID·Android 패키지명·스토어·버전) — 비활성"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "card",
+            "label": "상태 배지(준비 중)"
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: 'content.edit 권한', result: '콘텐츠 로드', message: '', api: { endpoint: 'GET /admin/site-content', status: 200 } },
-          { state: '권한없음', trigger: '진입', guard: '권한 없음', result: '막음', message: '콘텐츠 편집 권한이 없어요', placement: 'inline', priority: 'P1' },
-          { state: '필수누락', trigger: '저장', guard: '필수 항목 누락', result: '막음', message: '필수 항목을 입력해 주세요', placement: 'inline', priority: 'P1' },
-          { state: '유효', trigger: '저장', guard: '정상', result: '공개홈 반영', message: '저장했어요. 공개홈에 반영됩니다', placement: 'toast', priority: 'P0', api: { endpoint: 'PUT /admin/site-content', status: 200 } },
+        "description": [
+          {
+            "text": "준비 중 안내 배너 — Native App은 차기 Premium Add-on, APP 상품 구매 교회 전용(Phase6)이라고 고지",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "AppConfig 폼 — iOS 번들ID·Android 패키지명·스토어 상태·버전 필드는 V1에서 비활성(조회만)",
+            "target": ".pd-form"
+          },
+          {
+            "text": "상태 배지 — '준비 중' 표시, 활성화는 APP 상품 구매 후",
+            "target": ".pd-badge"
+          }
         ],
-        interface: { reads: [{ id: 'getSiteContent', intent: '공개홈 콘텐츠', method: 'GET', path: '/admin/site-content', response: '{entities.SiteContent}', auth: 'Bearer(content.edit)', target: '.pd-wpanel' }], writes: [{ id: 'saveSiteContent', intent: '콘텐츠 저장', method: 'PUT', path: '/admin/site-content', response: '{entities.SiteContent}', auth: 'Bearer(content.edit)', target: '.pd-wpanel' }], events: [{ name: 'site.content.updated', when: '저장 시', payload: '{entities.SiteContent}' }] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "APP 상품 미구매",
+            "result": "준비 중 안내·폼 비활성",
+            "message": "Native 앱은 차기 Premium Add-on이에요. 준비 중입니다",
+            "placement": "inline",
+            "target": ".pd-wpanel"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입",
+            "guard": "APP 상품 미포함 플랜",
+            "result": "구매 안내",
+            "message": "APP 상품을 이용하는 교회에서만 설정할 수 있어요",
+            "placement": "inline",
+            "target": ".pd-badge"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "appConfig",
+              "intent": "AppConfig 상태 조회(차기·조회만)",
+              "method": "GET",
+              "path": "/admin/app-config",
+              "response": "{status:'preparing', iosBundleId, androidPackage, storeStatus, version}",
+              "auth": "Bearer",
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "APP 상품 미구매",
+                  "message": "APP 상품을 이용하는 교회에서만 설정할 수 있어요"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "대시보드 복귀",
+              "trigger": ".pd-pagehead"
+            }
+          ]
+        }
       },
-      // ── UGC 모더레이션(관리자) ──
       {
-        id: 'SCR-ADM-016', label: 'UGC 모더레이션', href: 'c-moderation.html',
-        surface: 'admin', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-031'],
-        context: '커뮤니티·아나바다 신고 게시물 숨김/무시, 성도 매장 승인/반려(moderate 권한). 사용자 생성 콘텐츠 운영.',
-        components: [
-          { role: '.pd-report-table', kind: 'table', label: '신고 목록' },
-          { role: '.pd-wpanel', kind: 'panel', label: '매장 승인' },
+        "id": "SCR-ADM-016",
+        "label": "요금제·사용현황",
+        "href": "c-billing.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-024"
         ],
-        description: [
-          { text: '신고 게시물 — 숨김/무시', target: '.pd-report-table' },
-          { text: '성도 매장 승인/반려', target: '.pd-wpanel' },
+        "context": "현재 요금제(WEB/WEB+APP)·결제 상태·사용현황(회원수·스토리지·발송 수). 금액은 미확정 placeholder. 플랜 변경 요청 가능(슈퍼 처리).",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "요금제·사용현황"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "현재 요금제·결제 상태(금액 미확정)"
+          },
+          {
+            "role": ".pd-kpi",
+            "kind": "kpi",
+            "label": "사용현황(회원수·스토리지·발송 수)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "플랜 변경 요청",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-003"
+            }
+          }
         ],
-        cases: [
-          { state: '정상', trigger: '진입', guard: 'moderate 권한', result: '신고/승인대기 목록', message: '', api: { endpoint: 'GET /admin/moderation', status: 200 } },
-          { state: '빈데이터', trigger: '진입', guard: '신고 없음', result: '빈 상태', message: '처리할 신고가 없어요', placement: 'inline', target: '.pd-report-table' },
-          { state: '권한없음', trigger: '진입', guard: '권한 없음', result: '막음', message: '모더레이션 권한이 없어요', placement: 'inline', priority: 'P1' },
-          { state: '유효', trigger: '숨김', guard: '정상', result: '게시물 숨김', message: '숨김 처리했어요', placement: 'toast', priority: 'P0', api: { endpoint: 'POST /admin/moderation/{id}/hide', status: 200 } },
-          { state: '중복충돌', trigger: '숨김', guard: '이미 처리', result: '안내', message: '이미 처리된 항목이에요', placement: 'inline', priority: 'P2' },
+        "description": [
+          {
+            "text": "요금제 패널 — 현재 플랜(WEB/WEB+APP)·결제 상태, 금액은 '시장검증 후 확정(미확정)' placeholder 표기",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "사용현황 KPI — 회원수·스토리지·알림 발송 수(본인 교회만)",
+            "target": ".pd-kpi"
+          },
+          {
+            "text": "플랜 변경 요청 버튼 — 요청 접수 후 슈퍼 처리, 대시보드(SCR-ADM-003)로 복귀",
+            "target": ".pd-btn"
+          }
         ],
-        interface: { reads: [{ id: 'listReports', intent: '신고/승인대기', method: 'GET', path: '/admin/moderation', response: '{ reports:{entities.Post}[], storeApprovals:{entities.Store}[] }', auth: 'Bearer(moderate)', target: '.pd-report-table' }], writes: [{ id: 'hidePost', intent: '게시물 숨김', method: 'POST', path: '/admin/moderation/{id}/hide', idempotencyKey: true, errors: [{ status: 409, when: '이미 처리', message: '이미 처리됐어요' }], auth: 'Bearer(moderate)', target: '.pd-report-table' }, { id: 'approveStore', intent: '매장 승인', method: 'POST', path: '/admin/stores/{id}/approve', response: '{entities.Store}', auth: 'Bearer(moderate)', target: '.pd-wpanel' }], events: [{ name: 'ugc.hidden', when: '숨김 시', payload: '{ postId, by, at }' }] },
-        flow: { to: [] },
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "플랜 존재",
+            "result": "요금제·사용현황 표시",
+            "message": "요금은 시장검증 후 확정 예정이에요(미확정)",
+            "placement": "inline",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /admin/billing",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "변경 요청",
+            "guard": "요청 유효",
+            "result": "플랜 변경 요청 접수",
+            "message": "플랜 변경을 요청했어요. 확인 후 안내드릴게요",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/billing/plan-change-request",
+              "status": 202
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "조회 실패",
+            "message": "요금제 정보를 불러오지 못했어요",
+            "placement": "inline",
+            "target": ".pd-kpi"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "billing",
+              "intent": "요금제·사용현황 조회",
+              "method": "GET",
+              "path": "/admin/billing",
+              "response": "{plan, paymentStatus, priceTBD:true, usage:{members,storage,sent}}",
+              "auth": "Bearer",
+              "target": ".pd-wpanel",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "요금제 정보를 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "planChangeRequest",
+              "intent": "플랜 변경 요청",
+              "method": "POST",
+              "path": "/admin/billing/plan-change-request",
+              "body": "{targetPlan, note}",
+              "response": "{requested:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "진행 중 요청 존재",
+                  "message": "이미 처리 중인 요청이 있어요"
+                }
+              ]
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "요청 후 대시보드",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
       },
-      // ── 운영자 로그인(슈퍼) ──
       {
-        id: 'SCR-SUP-007', label: '운영자 로그인', href: 'x-login.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-025'],
-        context: '플랫폼 슈퍼관리자 로그인(PC웹). 2단계 인증(OTP)·비밀번호 재설정. 교차테넌트 접근 권한이므로 보안 강화. 테넌트 관리(SCR-SUP-001) 진입.',
-        components: [{ role: '.pd-auth-form', kind: 'form', label: '운영자 로그인 폼' }],
-        description: [{ text: '이메일·비밀번호·OTP', target: '.pd-auth-form' }],
-        cases: [
-          { state: '초기', trigger: '진입', guard: '', result: '로그인 폼', message: '', target: '.pd-auth-form' },
-          { state: '필수누락', trigger: '로그인', guard: '미입력', result: '막음', message: '이메일과 비밀번호를 입력해 주세요', placement: 'inline', target: '.pd-auth-form', priority: 'P1' },
-          { state: '권한없음', trigger: '로그인', guard: 'OTP 불일치', result: '막음', message: '인증 코드를 확인해 주세요', placement: 'inline', priority: 'P1' },
-          { state: '유효', trigger: '로그인', guard: '정상+OTP', result: '테넌트 관리 이동', message: '', priority: 'P0', api: { endpoint: 'POST /super/auth/login', status: 200 } },
+        "id": "SCR-ADM-017",
+        "label": "관리자 계정 관리",
+        "href": "c-admins.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-018"
         ],
-        interface: { reads: [], writes: [{ id: 'superLogin', intent: '운영자 로그인', method: 'POST', path: '/super/auth/login', response: '{ token:string }', errors: [{ status: 401, when: '자격/OTP 불일치', message: '인증 정보를 확인해 주세요' }], auth: 'None', target: '.pd-auth-form' }], events: [{ name: 'super.login', when: '로그인 성공', payload: '{ superId, at }' }] },
-        flow: { to: [{ screen: 'SCR-SUP-001', via: '로그인', trigger: '.pd-btn' }] },
-      },
-      // ── 감사로그(슈퍼) ──
-      {
-        id: 'SCR-SUP-008', label: '감사로그', href: 'x-audit.html',
-        surface: 'super', entry: false, status: 'confirmed', designed: false, figmaLink: '', reqIds: ['REQ-032'],
-        context: '슈퍼관리자의 교차테넌트 접근·민감정보(pii.read) 열람·중요 변경·대량발송 전수 기록(보존 3년). 멀티테넌트 격리 계약의 감사 축.',
-        components: [{ role: '.pd-audit-table', kind: 'table', label: '접근 기록' }],
-        description: [{ text: '시각·운영자·교회·액션·대상', target: '.pd-audit-table' }],
-        cases: [
-          { state: '정상', trigger: '진입', guard: '슈퍼관리자', result: '로그 목록', message: '', api: { endpoint: 'GET /super/audit', status: 200 } },
-          { state: '빈데이터', trigger: '필터', guard: '해당 로그 없음', result: '빈 상태', message: '조건에 맞는 기록이 없어요', placement: 'inline', target: '.pd-audit-table' },
-          { state: '권한없음', trigger: '진입', guard: '슈퍼 아님', result: '막음', message: '접근 권한이 없어요', placement: 'inline', priority: 'P1' },
+        "context": "교회 관리자 계정 목록·권한(admin). 담임목사가 위임(초대). 로그아웃. tenant 격리(본인 교회 관리자만).",
+        "components": [
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "관리자 계정 관리"
+          },
+          {
+            "role": ".pd-pagehead-actions",
+            "kind": "button",
+            "label": "관리자 초대"
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "관리자 목록(이름·이메일·권한)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "권한 해제"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그아웃",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-001"
+            }
+          }
         ],
-        interface: { reads: [{ id: 'listAudit', intent: '감사로그', method: 'GET', path: '/super/audit', params: [{ in: 'query', name: 'action', type: 'string', required: false, example: 'pii.read|tenant.create|message.send' }, { in: 'query', name: 'tenantId', type: 'string', required: false }, { in: 'query', name: 'cursor', type: 'string', required: false }], response: '{ logs: Array<{at,actor,tenant,action,target}>, nextCursor:string }', auth: 'Bearer(슈퍼)', target: '.pd-audit-table' }], writes: [], events: [] },
-        flow: { to: [] },
-      },
-    ],
+        "description": [
+          {
+            "text": "초대 버튼 — 담임목사가 관리자 권한 위임(이메일 초대)",
+            "target": ".pd-pagehead-actions"
+          },
+          {
+            "text": "관리자 테이블 — 본인 교회 관리자 목록·권한(tenant 격리)",
+            "target": ".pd-table"
+          },
+          {
+            "text": "로그아웃 버튼 — 세션 종료 후 관리자 로그인(SCR-ADM-001)으로 이동",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "관리자 1명+",
+            "result": "관리자 목록 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /admin/admins",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "초대",
+            "guard": "이메일 유효",
+            "result": "초대 메일 발송",
+            "message": "관리자 초대를 보냈어요",
+            "placement": "toast",
+            "target": ".pd-pagehead-actions",
+            "api": {
+              "endpoint": "POST /admin/admins/invite",
+              "status": 202
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "권한 해제",
+            "guard": "본인 계정 해제 시도",
+            "result": "해제 차단",
+            "message": "본인 계정의 권한은 해제할 수 없어요",
+            "placement": "inline",
+            "target": ".pd-btn"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "adminList",
+              "intent": "관리자 목록(tenant 격리)",
+              "method": "GET",
+              "path": "/admin/admins",
+              "response": "{admins:[]}",
+              "auth": "Bearer",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "관리자 목록을 불러오지 못했어요"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "inviteAdmin",
+              "intent": "관리자 초대(위임)",
+              "method": "POST",
+              "path": "/admin/admins/invite",
+              "body": "{email, role:'admin'}",
+              "response": "{invited:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-pagehead-actions",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "이메일 형식 오류",
+                  "message": "올바른 이메일을 입력해 주세요"
+                }
+              ]
+            },
+            {
+              "id": "revokeAdmin",
+              "intent": "관리자 권한 해제(비가역)",
+              "method": "DELETE",
+              "path": "/admin/admins/{id}",
+              "response": "{revoked:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "confirm": "권한 해제 확인 모달(pd-confirm)·본인 계정 해제 차단",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "본인 계정",
+                  "message": "본인 계정의 권한은 해제할 수 없어요"
+                }
+              ]
+            },
+            {
+              "id": "adminLogout",
+              "intent": "로그아웃",
+              "method": "POST",
+              "path": "/admin/auth/logout",
+              "response": "{ok:true}",
+              "auth": "Bearer",
+              "idempotent": true,
+              "target": ".pd-btn",
+              "errors": []
+            }
+          ],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-003",
+              "via": "대시보드 복귀",
+              "trigger": ".pd-pagehead"
+            },
+            {
+              "screen": "SCR-ADM-001",
+              "via": "로그아웃",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
+      }
+    ]
   },
+  {
+    "category": "슈퍼관리자 (super · console.hurmate.kr · PC웹)",
+    "pages": [
+      {
+        "id": "SCR-SUP-001",
+        "label": "운영자 로그인",
+        "href": "x-login.html",
+        "surface": "super",
+        "entry": true,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-020"
+        ],
+        "context": "HurMate Super Admin 로그인(플랫폼 운영자 전용). 인증 성공 시 Super 대시보드.",
+        "components": [
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "운영자 로그인"
+          },
+          {
+            "role": ".pd-field",
+            "kind": "field",
+            "label": "운영자 ID·비밀번호"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "로그인",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-002"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "운영자 ID·비밀번호 입력 — 플랫폼 운영자 계정만 접근",
+            "target": ".pd-field"
+          },
+          {
+            "text": "로그인 — 인증 성공 시 Super 대시보드(SCR-SUP-002)",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "운영자 전용 콘솔임을 표시(교회 관리자 콘솔과 분리)"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "미입력",
+            "result": "빈 로그인 폼",
+            "message": "",
+            "target": ".pd-form"
+          },
+          {
+            "state": "정상",
+            "trigger": "제출",
+            "guard": "자격 일치",
+            "result": "세션 발급·대시보드 이동",
+            "message": "",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /super/auth/login",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "자격 불일치",
+            "result": "로그인 실패",
+            "message": "아이디 또는 비밀번호가 올바르지 않습니다",
+            "placement": "inline",
+            "target": ".pd-field"
+          },
+          {
+            "state": "권한없음",
+            "trigger": "제출",
+            "guard": "비운영자 계정",
+            "result": "접근 거부",
+            "message": "플랫폼 운영자만 접근할 수 있습니다",
+            "placement": "inline",
+            "target": ".pd-form"
+          }
+        ],
+        "interface": {
+          "reads": [],
+          "writes": [
+            {
+              "id": "superLogin",
+              "intent": "운영자 인증",
+              "method": "POST",
+              "path": "/super/auth/login",
+              "request": "{email,password}",
+              "response": "{token}",
+              "auth": "none",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "자격 불일치",
+                  "message": "아이디 또는 비밀번호가 올바르지 않습니다"
+                },
+                {
+                  "status": 403,
+                  "when": "비운영자 계정",
+                  "message": "플랫폼 운영자만 접근할 수 있습니다"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "super.login.success",
+              "when": "인증 성공"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-002",
+              "via": "로그인 성공"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-002",
+        "label": "Super 대시보드",
+        "href": "x-dashboard.html",
+        "surface": "super",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-020"
+        ],
+        "context": "플랫폼 대시보드 — 전체 교회 수·신규 개설 신청(처리대기)·활성/일시정지/해지·결제 현황·서비스 상태 KPI.",
+        "components": [
+          {
+            "role": ".pd-kpi",
+            "kind": "kpi",
+            "label": "전체 교회·활성·일시정지·해지"
+          },
+          {
+            "role": ".pd-stat",
+            "kind": "stat",
+            "label": "신규 개설 신청(처리대기)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-004"
+            }
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "서비스 상태 모니터",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-008"
+            }
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "전체 교회 현황",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-003"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "전체 교회·상태 집계 KPI(활성·일시정지·해지)",
+            "target": ".pd-kpi"
+          },
+          {
+            "text": "신규 개설 신청(처리대기) — 클릭 시 개설 검토·승인(SCR-SUP-004)",
+            "target": ".pd-stat"
+          },
+          {
+            "text": "서비스 상태 모니터 — 서비스 콘솔(SCR-SUP-008)",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "전체 교회 현황 테이블 — 전체 교회 관리(SCR-SUP-003)",
+            "target": ".pd-table"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "KPI 스켈레톤",
+            "message": "",
+            "target": ".pd-kpi"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "교회 1곳+",
+            "result": "집계·처리대기·서비스 상태 표시",
+            "message": "",
+            "target": ".pd-kpi",
+            "api": {
+              "endpoint": "GET /super/dashboard",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "교회 0곳",
+            "result": "개설 신청 유도",
+            "message": "아직 개설된 교회가 없습니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "집계 실패",
+            "message": "현황을 불러오지 못했습니다",
+            "placement": "inline",
+            "target": ".pd-kpi"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "superDashboard",
+              "intent": "플랫폼 집계",
+              "method": "GET",
+              "path": "/super/dashboard",
+              "response": "{tenants,pendingApplications,billing,serviceStatus}",
+              "auth": "Bearer(Super)",
+              "target": ".pd-kpi",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "현황을 불러오지 못했습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-003",
+              "via": "전체 교회 관리",
+              "trigger": ".pd-table"
+            },
+            {
+              "screen": "SCR-SUP-004",
+              "via": "개설 검토·승인",
+              "trigger": ".pd-stat"
+            },
+            {
+              "screen": "SCR-SUP-008",
+              "via": "서비스 콘솔",
+              "trigger": ".pd-wpanel"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-003",
+        "label": "전체 교회 관리",
+        "href": "x-tenants.html",
+        "surface": "super",
+        "entry": false,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-020"
+        ],
+        "context": "전체 교회 목록 — 교회명·Tenant ID·도메인·가입일·요금제·회원수·관리자수·PWA·App·서비스 상태·결제 상태. 상태 전이(활성↔일시정지→해지).",
+        "components": [
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "전체 교회 목록(Tenant)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-005"
+            }
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "서비스 상태·결제 상태"
+          }
+        ],
+        "description": [
+          {
+            "text": "교회 행 클릭 — 테넌트 상세(SCR-SUP-005)",
+            "target": ".pd-table"
+          },
+          {
+            "text": "상태 필터 — 활성·일시정지·해지로 교회 목록 좁히기"
+          },
+          {
+            "text": "서비스·결제 상태 뱃지",
+            "target": ".pd-badge"
+          },
+          {
+            "text": "상태 전이(일시정지·해지)는 비가역이므로 확인 모달 + 멱등 처리"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "테이블 스켈레톤",
+            "message": "",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "교회 1곳+",
+            "result": "교회 목록·상태 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/tenants",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "교회 0곳",
+            "result": "빈 목록",
+            "message": "조건에 맞는 교회가 없습니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "전이",
+            "guard": "해지 실패",
+            "result": "상태 미변경",
+            "message": "상태를 변경하지 못했습니다",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "tenantList",
+              "intent": "전체 교회 조회",
+              "method": "GET",
+              "path": "/super/tenants",
+              "response": "{tenants}[]",
+              "auth": "Bearer(Super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "교회 목록을 불러오지 못했습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "tenantStatus",
+              "intent": "서비스 상태 전이",
+              "method": "PATCH",
+              "path": "/super/tenants/{tenantId}/status",
+              "request": "{status}",
+              "idempotency": "Idempotency-Key(멱등)",
+              "confirm": "일시정지·해지는 pd-confirm 확인 필수(비가역)",
+              "auth": "Bearer(Super)",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "전이 불가 상태",
+                  "message": "현재 상태에서는 변경할 수 없습니다"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "tenant.status.changed",
+              "when": "상태 전이 확정"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-005",
+              "via": "테넌트 상세",
+              "trigger": ".pd-table"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-004",
+        "label": "개설 검토·승인",
+        "href": "x-tenant-new.html",
+        "surface": "super",
+        "entry": false,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-003"
+        ],
+        "context": "신규 개설 신청 검토·승인/반려. 승인 시 Tenant·Church·Admin User·Domain·Storage·Theme·ChannelConfig·PwaConfig·Notification Setting 자동 생성 + 관리자 초대 이메일. 이단심사 게이트는 봉인·개설 승인으로 대체.",
+        "components": [
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "신청 상세(교회정보·요금제·희망slug)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "반려(사유 입력)"
+          }
+        ],
+        "description": [
+          {
+            "text": "처리대기 신청 목록 — 행 선택 시 신청 상세 패널 열림"
+          },
+          {
+            "text": "신청 상세 — 교회명·대표자·담당자·연락처·규모·희망 slug·요금제(WEB/WEB+APP)",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "승인 — 확인 후 Tenant·Church·Admin·Domain·Storage·Theme·ChannelConfig·PwaConfig·Notification 자동 생성 + 관리자 초대 이메일, 완료 시 테넌트 상세(SCR-SUP-005). 비가역·멱등키"
+          },
+          {
+            "text": "반려 — 사유 입력 후 신청자에게 통지",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "대기 신청 로드",
+            "message": ""
+          },
+          {
+            "state": "정상",
+            "trigger": "승인",
+            "guard": "slug 미중복",
+            "result": "Tenant 일괄 생성·관리자 초대",
+            "message": "개설이 승인되어 교회 서비스가 생성되었습니다",
+            "placement": "toast",
+            "api": {
+              "endpoint": "POST /super/applications/{applicationId}/approve",
+              "status": 201
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "대기 0건",
+            "result": "처리할 신청 없음",
+            "message": "처리 대기 중인 개설 신청이 없습니다",
+            "placement": "inline"
+          },
+          {
+            "state": "에러",
+            "trigger": "승인",
+            "guard": "slug 중복",
+            "result": "생성 중단",
+            "message": "희망 주소(slug)가 이미 사용 중입니다",
+            "placement": "inline"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "applicationList",
+              "intent": "개설 신청 조회",
+              "method": "GET",
+              "path": "/super/applications?status=pending",
+              "response": "{applications}[]",
+              "auth": "Bearer(Super)",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "신청 목록을 불러오지 못했습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "approveApplication",
+              "intent": "승인→Tenant 자동 생성",
+              "method": "POST",
+              "path": "/super/applications/{applicationId}/approve",
+              "idempotency": "Idempotency-Key(중복 승인·중복 생성 방지)",
+              "confirm": "pd-confirm 확인 필수(비가역: Tenant·Admin·Domain·Storage·Theme·ChannelConfig·PwaConfig·Notification 일괄 생성)",
+              "auth": "Bearer(Super)",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "slug 중복",
+                  "message": "희망 주소(slug)가 이미 사용 중입니다"
+                }
+              ]
+            },
+            {
+              "id": "rejectApplication",
+              "intent": "반려",
+              "method": "POST",
+              "path": "/super/applications/{applicationId}/reject",
+              "request": "{reason}",
+              "auth": "Bearer(Super)",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "사유 누락",
+                  "message": "반려 사유를 입력해 주세요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "application.approved",
+              "when": "승인 확정"
+            },
+            {
+              "name": "tenant.provisioned",
+              "when": "Tenant 일괄 생성 완료"
+            },
+            {
+              "name": "admin.invited.email",
+              "when": "관리자 초대 이메일 발송"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-005",
+              "via": "승인·테넌트 생성 완료",
+              "trigger": ".pd-confirm"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-005",
+        "label": "테넌트 상세",
+        "href": "x-tenant-detail.html",
+        "surface": "super",
+        "entry": false,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-020",
+          "REQ-021"
+        ],
+        "context": "교회(테넌트) 상세 — 정보·서비스 상태·ChannelConfig(web/pwa/ios/android/webpush/nativepush on/off)·요금제·도메인·콘솔 링크.",
+        "components": [
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "교회 정보·서비스 상태"
+          },
+          {
+            "role": ".pd-stat",
+            "kind": "stat",
+            "label": "요금제·결제 상태",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-006"
+            }
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "서비스 상태(활성·일시정지·해지)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "도메인 관리",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-007"
+            }
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "서비스 콘솔",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-008"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "교회 정보·서비스 상태 패널(활성·일시정지·해지)",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "ChannelConfig 토글 — web·pwa·webpush on/off(즉시 반영). ios·android·nativepush는 차기 Native Add-on으로 비활성"
+          },
+          {
+            "text": "요금제·결제 상태 — 요금제·결제(SCR-SUP-006)",
+            "target": ".pd-stat"
+          },
+          {
+            "text": "도메인 관리(SCR-SUP-007) / 서비스 콘솔(SCR-SUP-008)",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "상세 스켈레톤",
+            "message": "",
+            "target": ".pd-wpanel"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "테넌트 존재",
+            "result": "정보·상태·ChannelConfig 표시",
+            "message": "",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /super/tenants/{tenantId}",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "테넌트 없음",
+            "result": "상세 미표시",
+            "message": "해당 교회를 찾을 수 없습니다",
+            "placement": "inline",
+            "target": ".pd-wpanel"
+          },
+          {
+            "state": "엣지",
+            "trigger": "토글",
+            "guard": "ios·android·nativepush",
+            "result": "토글 비활성(변경 불가)",
+            "message": "Native 채널은 차기 Add-on으로 준비 중입니다",
+            "placement": "tooltip"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "tenantDetail",
+              "intent": "테넌트 상세 조회",
+              "method": "GET",
+              "path": "/super/tenants/{tenantId}",
+              "response": "{tenant,channels,subscription,domains}",
+              "auth": "Bearer(Super)",
+              "target": ".pd-wpanel",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "테넌트 없음",
+                  "message": "해당 교회를 찾을 수 없습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "channelToggle",
+              "intent": "ChannelConfig on/off 처리",
+              "method": "PATCH",
+              "path": "/super/tenants/{tenantId}/channels",
+              "request": "{channel,enabled}",
+              "idempotency": "동일 상태 재요청 멱등",
+              "auth": "Bearer(Super)",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "차기 채널(native) 변경 시도",
+                  "message": "Native 채널은 차기 Add-on으로 준비 중입니다"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "channel.toggled",
+              "when": "채널 on/off 반영"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-006",
+              "via": "요금제·결제",
+              "trigger": ".pd-stat"
+            },
+            {
+              "screen": "SCR-SUP-007",
+              "via": "도메인 관리"
+            },
+            {
+              "screen": "SCR-SUP-008",
+              "via": "서비스 콘솔"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-006",
+        "label": "요금제·결제",
+        "href": "x-subscription.html",
+        "surface": "super",
+        "entry": false,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-024"
+        ],
+        "context": "요금제(WEB/WEB+APP)·결제 상태·연체 관리. APP은 BASIC 미포함(과금 분리). 금액 미확정. 연체 30일+→일시정지 연동.",
+        "components": [
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "교회별 요금제·결제·연체 현황"
+          },
+          {
+            "role": ".pd-stat",
+            "kind": "stat",
+            "label": "요금제(WEB / WEB+APP)·금액 미확정"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "결제 상태(정상·연체·미납)"
+          }
+        ],
+        "description": [
+          {
+            "text": "교회별 요금제·결제·연체일 현황 테이블",
+            "target": ".pd-table"
+          },
+          {
+            "text": "요금제 — WEB / WEB+APP. APP은 BASIC 미포함(과금 분리). 금액은 시장검증 후 확정(미확정 placeholder)",
+            "target": ".pd-stat"
+          },
+          {
+            "text": "결제 상태 뱃지 — 정상·연체·미납",
+            "target": ".pd-badge"
+          },
+          {
+            "text": "연체 30일+ — 일시정지 전환 확인(비가역·멱등), 테넌트 상세(SCR-SUP-005) 상태와 연동"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "테이블 스켈레톤",
+            "message": "",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "결제 레코드 1건+",
+            "result": "요금제·결제·연체 표시(금액은 미확정 표기)",
+            "message": "금액은 시장검증 후 확정 예정입니다",
+            "placement": "inline",
+            "target": ".pd-stat",
+            "api": {
+              "endpoint": "GET /super/billing",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "결제 0건",
+            "result": "빈 현황",
+            "message": "결제 내역이 없습니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "전환",
+            "guard": "일시정지 실패",
+            "result": "상태 미변경",
+            "message": "일시정지로 전환하지 못했습니다",
+            "placement": "toast"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "billingList",
+              "intent": "요금제·결제 조회",
+              "method": "GET",
+              "path": "/super/billing",
+              "response": "{subscriptions,overdue}[]",
+              "auth": "Bearer(Super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "결제 현황을 불러오지 못했습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "changeSubscription",
+              "intent": "요금제 변경",
+              "method": "PATCH",
+              "path": "/super/tenants/{tenantId}/subscription",
+              "request": "{plan}",
+              "idempotency": "동일 플랜 재요청 멱등",
+              "auth": "Bearer(Super)",
+              "target": ".pd-stat",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "변경 불가",
+                  "message": "현재 상태에서는 요금제를 변경할 수 없습니다"
+                }
+              ]
+            },
+            {
+              "id": "suspendOverdue",
+              "intent": "연체 일시정지 전환",
+              "method": "POST",
+              "path": "/super/tenants/{tenantId}/suspend",
+              "idempotency": "Idempotency-Key(멱등)",
+              "confirm": "pd-confirm 확인 필수(비가역: 서비스 일시정지)",
+              "auth": "Bearer(Super)",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "이미 일시정지",
+                  "message": "이미 일시정지된 교회입니다"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "subscription.changed",
+              "when": "요금제 변경"
+            },
+            {
+              "name": "tenant.suspended.overdue",
+              "when": "연체 일시정지 전환"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-005",
+              "via": "일시정지 전환·테넌트 상세",
+              "trigger": ".pd-confirm"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-007",
+        "label": "도메인",
+        "href": "x-domains.html",
+        "surface": "super",
+        "entry": false,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-023"
+        ],
+        "context": "기본 {slug}.hurmate.kr + Premium 커스텀 도메인·DNS 확인.",
+        "components": [
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "교회별 도메인(기본·커스텀)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-005"
+            }
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "DNS 상태(확인·대기·실패)"
+          }
+        ],
+        "description": [
+          {
+            "text": "도메인 목록 — 행 클릭 시 테넌트 상세(SCR-SUP-005)",
+            "target": ".pd-table"
+          },
+          {
+            "text": "기본 도메인 {slug}.hurmate.kr은 개설 승인 시 자동 발급, 커스텀은 Premium 등록"
+          },
+          {
+            "text": "DNS 상태 뱃지 — 확인·대기·실패",
+            "target": ".pd-badge"
+          },
+          {
+            "text": "DNS 확인 — 커스텀 도메인 레코드 검증 재시도"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "도메인 목록 로드",
+            "message": "",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "도메인 1건+",
+            "result": "기본·커스텀 도메인·DNS 상태 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/domains",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "커스텀 0건",
+            "result": "기본 도메인만 표시",
+            "message": "등록된 커스텀 도메인이 없습니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "DNS 확인",
+            "guard": "레코드 미설정",
+            "result": "검증 대기",
+            "message": "DNS 레코드가 아직 확인되지 않았습니다",
+            "placement": "inline"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "domainList",
+              "intent": "도메인 조회",
+              "method": "GET",
+              "path": "/super/domains",
+              "response": "{domains}[]",
+              "auth": "Bearer(Super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "도메인 목록을 불러오지 못했습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "registerDomain",
+              "intent": "커스텀 도메인 등록",
+              "method": "POST",
+              "path": "/super/tenants/{tenantId}/domains",
+              "request": "{domain}",
+              "idempotency": "동일 도메인 재등록 멱등",
+              "auth": "Bearer(Super)",
+              "errors": [
+                {
+                  "status": 409,
+                  "when": "도메인 중복",
+                  "message": "이미 사용 중인 도메인입니다"
+                }
+              ]
+            },
+            {
+              "id": "verifyDomain",
+              "intent": "DNS 확인",
+              "method": "POST",
+              "path": "/super/tenants/{tenantId}/domains/{domainId}/verify",
+              "auth": "Bearer(Super)",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "레코드 미설정",
+                  "message": "DNS 레코드가 아직 확인되지 않았습니다"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "domain.verified",
+              "when": "DNS 확인 성공"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-005",
+              "via": "테넌트 상세",
+              "trigger": ".pd-table"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-008",
+        "label": "서비스 콘솔 (PWA·App·Notification·Storage)",
+        "href": "x-console.html",
+        "surface": "super",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-021"
+        ],
+        "context": "플랫폼 서비스 콘솔 — 테넌트별 PWA·App(차기)·Notification Gateway·Storage 상태 모니터. 채널 운영.",
+        "components": [
+          {
+            "role": ".pd-kpi",
+            "kind": "kpi",
+            "label": "PWA·Notification·Storage 집계"
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "테넌트별 서비스 상태(PWA·App·Notification·Storage)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-005"
+            }
+          },
+          {
+            "role": ".pd-stat",
+            "kind": "stat",
+            "label": "Notification Gateway 발송량·Storage 사용량"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "App=차기(비활성)·채널 상태"
+          }
+        ],
+        "description": [
+          {
+            "text": "PWA·Notification·Storage 플랫폼 집계 KPI",
+            "target": ".pd-kpi"
+          },
+          {
+            "text": "테넌트별 서비스 상태 — 행 클릭 시 테넌트 상세(SCR-SUP-005). App(Native)은 차기로 비활성 표기",
+            "target": ".pd-table"
+          },
+          {
+            "text": "Notification Gateway 발송량·Storage 사용량 모니터",
+            "target": ".pd-stat"
+          },
+          {
+            "text": "채널 상태 뱃지 — App(Native)은 차기 Add-on 비활성",
+            "target": ".pd-badge"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "콘솔 스켈레톤",
+            "message": "",
+            "target": ".pd-kpi"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "테넌트 1곳+",
+            "result": "PWA·Notification·Storage 상태 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/console",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "테넌트 0곳",
+            "result": "모니터 대상 없음",
+            "message": "모니터할 서비스가 없습니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "Gateway 장애",
+            "result": "일부 상태 표시 불가",
+            "message": "일부 서비스 상태를 불러오지 못했습니다",
+            "placement": "toast",
+            "target": ".pd-stat"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "consoleStatus",
+              "intent": "서비스 상태 모니터",
+              "method": "GET",
+              "path": "/super/console",
+              "response": "{pwa,notification,storage,app}[]",
+              "auth": "Bearer(Super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 503,
+                  "when": "Gateway 장애",
+                  "message": "일부 서비스 상태를 불러오지 못했습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-005",
+              "via": "테넌트 상세",
+              "trigger": ".pd-table"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-009",
+        "label": "운영 로그",
+        "href": "x-audit.html",
+        "surface": "super",
+        "entry": false,
+        "status": "confirmed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-020"
+        ],
+        "context": "운영 로그·감사 — 교차테넌트 접근·상태 전이·승인 기록.",
+        "components": [
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "운영·감사 로그(접근·상태전이·승인)"
+          }
+        ],
+        "description": [
+          {
+            "text": "감사 로그 테이블 — 교차테넌트 접근·상태 전이·승인 기록(읽기 전용)",
+            "target": ".pd-table"
+          },
+          {
+            "text": "유형 필터·기간/키워드 검색으로 로그 조회"
+          },
+          {
+            "text": "로그 유형 뱃지(접근·상태·승인)"
+          },
+          {
+            "text": "대시보드 복귀(SCR-SUP-002)"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "로딩",
+            "result": "로그 스켈레톤",
+            "message": "",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "응답",
+            "guard": "로그 1건+",
+            "result": "감사 로그 표시",
+            "message": "",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/audit",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "응답",
+            "guard": "조건 결과 0건",
+            "result": "빈 로그",
+            "message": "조건에 맞는 로그가 없습니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "에러",
+            "trigger": "응답",
+            "guard": "서버 오류",
+            "result": "로그 조회 실패",
+            "message": "운영 로그를 불러오지 못했습니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "auditLog",
+              "intent": "운영·감사 로그 조회",
+              "method": "GET",
+              "path": "/super/audit",
+              "response": "{logs}[]",
+              "auth": "Bearer(Super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "운영 로그를 불러오지 못했습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-002",
+              "via": "대시보드 복귀",
+              "trigger": ".pd-btn"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "category": "봉인 (V1 제외 · feature-flag OFF · 삭제 아님 · 향후 Add-on 자산)",
+    "pages": [
+      {
+        "id": "SCR-SEAL-A01",
+        "label": "[봉인] 헌금 안내",
+        "href": "a-giving.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A02",
+        "label": "[봉인] 커뮤니티",
+        "href": "a-community.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-apptop-title",
+            "kind": "group",
+            "label": "apptop-title 영역"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "group",
+            "label": "btn 영역"
+          },
+          {
+            "role": ".pd-write",
+            "kind": "group",
+            "label": "write 영역"
+          },
+          {
+            "role": ".pd-sec-head",
+            "kind": "group",
+            "label": "sec-head 영역"
+          },
+          {
+            "role": ".pd-section-title",
+            "kind": "group",
+            "label": "section-title 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A03",
+        "label": "[봉인] 나눔 글",
+        "href": "a-community-detail.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A04",
+        "label": "[봉인] 글쓰기",
+        "href": "a-community-write.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A05",
+        "label": "[봉인] 아나바다",
+        "href": "a-market.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-apptop-title",
+            "kind": "group",
+            "label": "apptop-title 영역"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "group",
+            "label": "btn 영역"
+          },
+          {
+            "role": ".pd-register",
+            "kind": "group",
+            "label": "register 영역"
+          },
+          {
+            "role": ".pd-wf-text",
+            "kind": "group",
+            "label": "wf-text 영역"
+          },
+          {
+            "role": ".pd-item-grid",
+            "kind": "group",
+            "label": "item-grid 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A06",
+        "label": "[봉인] 나눔물품 상세",
+        "href": "a-market-detail.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A07",
+        "label": "[봉인] 물품 등록",
+        "href": "a-market-register.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A08",
+        "label": "[봉인] 교회학교",
+        "href": "a-edu.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A09",
+        "label": "[봉인] 교회학교 공지",
+        "href": "a-edu-detail.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A10",
+        "label": "[봉인] 성도 매장",
+        "href": "a-stores.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A11",
+        "label": "[봉인] 성도 매장 상세",
+        "href": "a-store-detail.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A12",
+        "label": "[봉인] 검색",
+        "href": "a-search.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A13",
+        "label": "[봉인] 기부금영수증",
+        "href": "a-receipts.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A14",
+        "label": "[봉인] 개인정보 권리요청",
+        "href": "a-privacy-request.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-A15",
+        "label": "[봉인] 출석 체크",
+        "href": "a-attendance.html",
+        "surface": "app",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-S01",
+        "label": "[봉인] 섬기는 사람들",
+        "href": "s-staff.html",
+        "surface": "site",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-S02",
+        "label": "[봉인] 새가족 안내",
+        "href": "s-newcomer.html",
+        "surface": "site",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-S03",
+        "label": "[봉인] 교회 소식",
+        "href": "s-news.html",
+        "surface": "site",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-S04",
+        "label": "[봉인] 소식 상세",
+        "href": "s-news-detail.html",
+        "surface": "site",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-appbar",
+            "kind": "group",
+            "label": "appbar 영역"
+          },
+          {
+            "role": ".pd-ab-btn",
+            "kind": "group",
+            "label": "ab-btn 영역"
+          },
+          {
+            "role": ".pd-back",
+            "kind": "group",
+            "label": "back 영역"
+          },
+          {
+            "role": ".pd-ab-title",
+            "kind": "group",
+            "label": "ab-title 영역"
+          },
+          {
+            "role": ".pd-ab-spacer",
+            "kind": "group",
+            "label": "ab-spacer 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-C01",
+        "label": "[봉인] 출석 관리",
+        "href": "c-attendance.html",
+        "surface": "admin",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-iconbtn",
+            "kind": "group",
+            "label": "iconbtn 영역"
+          },
+          {
+            "role": ".pd-nav-members",
+            "kind": "group",
+            "label": "nav-members 영역"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "group",
+            "label": "pagehead 영역"
+          },
+          {
+            "role": ".pd-breadcrumb",
+            "kind": "group",
+            "label": "breadcrumb 영역"
+          },
+          {
+            "role": ".pd-wf-title",
+            "kind": "group",
+            "label": "wf-title 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-C02",
+        "label": "[봉인] 재정 관리",
+        "href": "c-finance.html",
+        "surface": "admin",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-iconbtn",
+            "kind": "group",
+            "label": "iconbtn 영역"
+          },
+          {
+            "role": ".pd-nav-members",
+            "kind": "group",
+            "label": "nav-members 영역"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "group",
+            "label": "pagehead 영역"
+          },
+          {
+            "role": ".pd-breadcrumb",
+            "kind": "group",
+            "label": "breadcrumb 영역"
+          },
+          {
+            "role": ".pd-wf-title",
+            "kind": "group",
+            "label": "wf-title 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-C03",
+        "label": "[봉인] 헌금 상세",
+        "href": "c-finance-detail.html",
+        "surface": "admin",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-iconbtn",
+            "kind": "group",
+            "label": "iconbtn 영역"
+          },
+          {
+            "role": ".pd-nav-members",
+            "kind": "group",
+            "label": "nav-members 영역"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "group",
+            "label": "pagehead 영역"
+          },
+          {
+            "role": ".pd-breadcrumb",
+            "kind": "group",
+            "label": "breadcrumb 영역"
+          },
+          {
+            "role": ".pd-wf-title",
+            "kind": "group",
+            "label": "wf-title 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-C04",
+        "label": "[봉인] 개인정보 보호(PIPA)",
+        "href": "c-privacy.html",
+        "surface": "admin",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-iconbtn",
+            "kind": "group",
+            "label": "iconbtn 영역"
+          },
+          {
+            "role": ".pd-nav-members",
+            "kind": "group",
+            "label": "nav-members 영역"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "group",
+            "label": "pagehead 영역"
+          },
+          {
+            "role": ".pd-breadcrumb",
+            "kind": "group",
+            "label": "breadcrumb 영역"
+          },
+          {
+            "role": ".pd-wf-title",
+            "kind": "group",
+            "label": "wf-title 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-C05",
+        "label": "[봉인] UGC 모더레이션",
+        "href": "c-moderation.html",
+        "surface": "admin",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-iconbtn",
+            "kind": "group",
+            "label": "iconbtn 영역"
+          },
+          {
+            "role": ".pd-nav-members",
+            "kind": "group",
+            "label": "nav-members 영역"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "group",
+            "label": "pagehead 영역"
+          },
+          {
+            "role": ".pd-breadcrumb",
+            "kind": "group",
+            "label": "breadcrumb 영역"
+          },
+          {
+            "role": ".pd-wf-title",
+            "kind": "group",
+            "label": "wf-title 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      },
+      {
+        "id": "SCR-SEAL-X01",
+        "label": "[봉인] 이단심사 게이트",
+        "href": "x-review-gate.html",
+        "surface": "super",
+        "entry": false,
+        "status": "draft",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-SEAL"
+        ],
+        "context": "[봉인·V1 제외·feature-flag OFF·삭제 아님] 향후 Add-on 자산으로 보존. V2.0 MVP에서 비노출. 재개 시 J-게이트 검토.",
+        "components": [
+          {
+            "role": ".pd-iconbtn",
+            "kind": "group",
+            "label": "iconbtn 영역"
+          },
+          {
+            "role": ".pd-review-gate",
+            "kind": "group",
+            "label": "review-gate 영역"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "group",
+            "label": "badge 영역"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "group",
+            "label": "pagehead 영역"
+          },
+          {
+            "role": ".pd-breadcrumb",
+            "kind": "group",
+            "label": "breadcrumb 영역"
+          }
+        ],
+        "description": [
+          {
+            "text": "V1 제외 기능(§60). 삭제가 아닌 봉인 — 향후 Add-on 자산으로 보존."
+          }
+        ],
+        "cases": [],
+        "interface": {
+          "reads": [],
+          "writes": [],
+          "events": []
+        },
+        "flow": {
+          "to": []
+        }
+      }
+    ]
+  }
 ];
 window.PDK_SCREENS = window.PLANDECK_SCREENS;
