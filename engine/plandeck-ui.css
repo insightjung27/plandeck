@@ -291,8 +291,8 @@ a.pd-wpanel-sub { text-decoration: none; }
 /* 상단 GNB */
 .pd-gnb { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--w-line); display: flex; align-items: center; gap: 24px; padding: 0 24px; background: var(--w-white); }
 .pd-gnb .logo { font-size: 17px; font-weight: 800; color: var(--w-ink); }
-.pd-gnb .menu { display: flex; gap: 20px; flex: 1; }
-.pd-gnb .menu a { font-size: 14px; font-weight: 600; color: var(--w-sub); text-decoration: none; }
+.pd-gnb .menu { display: flex; gap: 8px; flex: 1; align-items: center; }
+.pd-gnb .menu a { font-size: 14px; font-weight: 600; color: var(--w-sub); text-decoration: none; padding: 8px 10px; border-radius: 6px; }
 .pd-gnb .menu a.is-active { color: var(--w-ink); }
 .pd-gnb .gnb-right { display: flex; align-items: center; gap: 12px; }
 

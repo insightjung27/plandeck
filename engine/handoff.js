@@ -66,7 +66,11 @@
     });
   }
   function explicitParams(o) {
-    return (o.params || []).map(function (pm) {
+    // params는 구조화 배열일 때만 OpenAPI 파라미터로 전개한다.
+    // 일부 프로젝트는 params를 사람이 읽는 자유텍스트 문자열(예: "없음(...)", "path: id(...)")로 쓰며,
+    // 그 경우 String.map이 없어 렌더가 전체 중단된다(핸드오프 빈화면). 경로 파라미터는 pathParamsOf가 별도 추출.
+    if (!Array.isArray(o.params)) return [];
+    return o.params.map(function (pm) {
       var schema = { type: pm.type || 'string' };
       if (pm.format) schema.format = pm.format;
       if (pm.enum) schema.enum = pm.enum;
