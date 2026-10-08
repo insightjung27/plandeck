@@ -4,6 +4,8 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+# 로컬 백업 스냅샷(배포 불필요)
+projects/*/_backups/
 # 로컬 산출물(핸드오프 내려받기 등)은 커밋하지 않음
 *.openapi.json
 *.bundle.json
