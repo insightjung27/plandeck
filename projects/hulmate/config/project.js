@@ -3,6 +3,11 @@ window.PLANDECK_PROJECT = {
   description: '소규모 교회용 멀티테넌트 교회 플랫폼. 하나의 플랫폼으로 교회마다 독립 Web + PWA(+ Web Push)를 설정값(Config)만으로 발행 — 교회·교인에게는 "우리 교회 전용 디지털 서비스"처럼 보이게 한다. 기본 상품 = Responsive Web + PWA, Native App은 필요한 교회에만 Premium Add-on(차기).',
   version: '2.0.0',
   updatedAt: '2026-10-08',
+  // 버전(브랜치) 레지스트리 — 같은 프로젝트의 여러 버전을 페이지 상단 ⎇ 스위처로 전환.
+  versions: [
+    { id: '2.0.0', label: '최신 · 5채널', path: '../hulmate/', current: true },
+    { id: '1.1.4', label: '아카이브', path: '../hulmate-v1/' },
+  ],
   changelog: [
     { version: '2.0.0', date: '2026-10-08', note: 'V2.0 재기준화(re-baseline) — 정본 PRD V2.0(76섹션)+작업계획(재기준화 v1) 반영. ① 단일 통합앱+교회검색(V1) 폐기 → 교회별 독립 Web/PWA 기본 상품(교회 URL/PWA 진입이 Tenant 결정·church_id 자동바인딩). ② 기본 상품 = Responsive Web + PWA + Web Push, Native App은 선택형 Premium Add-on(차기·Phase6). ③ 대표사이트(www.hurmate.kr)·교회 개설 Wizard(8STEP)·Web Push·Notification Gateway·ChannelConfig/PwaConfig/AppConfig 신설. ④ 교인 메뉴 5개 고정(HOME·교회소개·설교·주보·공지), V1의 넓은 기능셋(커뮤니티·아나바다·성도매장·교회학교·출석·헌금 실결제·전자기부금영수증 등)은 삭제 아닌 feature-flag OFF 봉인(향후 Add-on 자산). ⑤ 디자인 = 교회별 4요소(로고·대표색·커버·교회명)만 변경하는 단일 Design System(템플릿 선택 폐기). ⑥ 개발 순서 강제 Backend→Admin→Web→PWA→Web Push→Native, 1차 검증 3~5교회(Native 제외). 가격은 구조(WEB vs APP)만 확정·금액 미확정(§66). surface 재편(대표사이트 신설·4채널 종단). ★추출→합성→적대 충실도검증(13에이전트) 거쳐 원문 충실화(월 3~5만 등 비근거 수치 미확정 처리).' },
     { version: '1.1.4', date: '2026-10-03', note: '[V1] 3차 재검수 조건부 해소(→통과) — M3 .pd-process 컴포넌트 고아 해소, SSOT↔DOM 정합. 적대검수 3R 통과.' },

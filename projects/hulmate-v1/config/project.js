@@ -3,6 +3,11 @@ window.PLANDECK_PROJECT = {
   description: '[v1.1 아카이브 — v2.0 「교회 멀티테넌트 플랫폼(Web+PWA·대표사이트·개설 Wizard·Web Push)」으로 대체됨] 소규모 교회용 화이트라벨 멀티테넌트 PWA — 4서피스 61화면(교인앱·공개홈·관리자콘솔·슈퍼관리자)·요구사항 33/33. 버전 비교·보존용으로 동결.',
   version: '1.1.4',
   updatedAt: '2026-10-08',
+  // 버전(브랜치) 레지스트리 — 같은 프로젝트의 여러 버전을 페이지 상단 ⎇ 스위처로 전환.
+  versions: [
+    { id: '2.0.0', label: '최신 · 5채널', path: '../hulmate/' },
+    { id: '1.1.4', label: '아카이브', path: '../hulmate-v1/', current: true },
+  ],
   changelog: [
     { version: '1.1.4-archive', date: '2026-10-08', note: '[아카이브 동결] v2.0 재기준화(교회별 독립 Web/PWA·대표사이트·개설 Wizard·Web Push·린 MVP)로 대체되어 이 버전은 `hulmate` 슬롯에서 분리·보존. V1 전체(61화면·33요구사항·22엔티티)를 버전 비교용으로 동결. 최신본=projects/hulmate(V2.0).' },
     { version: '1.1.4', date: '2026-10-03', note: '3차 재검수 조건부 해소(→통과) — M3 .pd-process 컴포넌트 고아(screens.js 선언 vs DOM 미존재·불변식4 SSOT↔DOM 불일치) 해소: c-privacy 승인/반려 버튼에 pd-process 훅 부여 + c-members .pd-member-table 타깃 슬리피지 정렬(wrap+table). H1~H5+M1·M3·M4 전수 닫힘·SSOT↔DOM 정합. 적대검수 3R 통과.' },
