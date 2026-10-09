@@ -1345,7 +1345,12 @@
       if (!el) return;
       if (el.tagName === 'A' && el.getAttribute('href')) return; // 정적 href 우선 — 런타임 덮어쓰기 방지(v2 클릭 프로토타입)
       el.style.cursor = 'pointer';
-      el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); location.href = target.href; });
+      el.addEventListener('click', function (e) {
+        // 컨테이너 go: 보다 내부의 실제 링크(a[href])가 우선 — GNB 메뉴·CTA 버튼 등 자기 목적지를 가진 요소는 하이재킹하지 않음(invariant #3: 누르면 예상 화면으로)
+        var inner = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+        if (inner && inner !== el && el.contains(inner)) return;
+        e.preventDefault(); e.stopPropagation(); location.href = target.href;
+      });
     });
   }
 
