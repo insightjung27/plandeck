@@ -6201,7 +6201,7 @@ window.PLANDECK_SCREENS = [
             "target": ".pd-row"
           },
           {
-            "text": "하단 탭 — 홈(SCR-APP-001) · 설교(현재) · 주보(SCR-APP-004) · 공지(SCR-APP-005) · 마이(SCR-APP-006)",
+            "text": "하단 탭 — 홈(SCR-APP-001) · 설교(현재) · 주보(SCR-APP-004) · 공지(SCR-APP-015) · 마이(SCR-APP-006)",
             "target": ".pd-tabbar"
           }
         ],
@@ -6388,7 +6388,7 @@ window.PLANDECK_SCREENS = [
             "text": "'같은 시리즈' 목록 — '로마서 강해 11·10' 등 다른 설교를 탭하면 해당 설교 상세로 이동(SCR-APP-003)"
           },
           {
-            "text": "뒤로는 설교 목록(SCR-APP-002)으로, 하단 탭은 홈(SCR-APP-001)·설교(SCR-APP-002)·주보(SCR-APP-004)·공지(SCR-APP-005)·마이(SCR-APP-006)로 이동",
+            "text": "뒤로는 설교 목록(SCR-APP-002)으로, 하단 탭은 홈(SCR-APP-001)·설교(SCR-APP-002)·주보(SCR-APP-004)·공지(SCR-APP-015)·마이(SCR-APP-006)로 이동",
             "target": ".pd-tabbar"
           }
         ],
@@ -8183,7 +8183,7 @@ window.PLANDECK_SCREENS = [
             "target": ".pd-row"
           },
           {
-            "text": "하단 탭 — 홈(SCR-APP-001)·설교(SCR-APP-002)·주보(SCR-APP-004)·공지(SCR-APP-005)·마이(SCR-APP-006)로 이동",
+            "text": "하단 탭 — 홈(SCR-APP-001)·설교(SCR-APP-002)·주보(SCR-APP-004)·공지(SCR-APP-015)·마이(SCR-APP-006)로 이동",
             "target": ".pd-tabbar"
           },
           {
