@@ -13,7 +13,7 @@
       { name: 'searchbar', desc: '검색 입력', preview: function () { return PD.searchbar('설교·공지 검색'); } },
     ]},
     { group: '리스트·카드', items: [
-      { name: 'row', desc: '목록 행(설교·공지)', preview: function () { return PD.list([PD.row({ thumb: 'md', title: '로마서 강해 12', sub: '조정표 담임목사 · 2026-10-05', to: '#' }), PD.row({ icon: I.bell, title: '추수감사주일 안내', sub: '10/20(주일) 전교인 예배', to: '#' })]); } },
+      { name: 'row', desc: '목록 행(설교·공지)', preview: function () { return PD.list([PD.row({ thumb: 'md', title: '로마서 강해 12', sub: '조정표 담임목사 · 2026-09-27', to: '#' }), PD.row({ icon: I.bell, title: '추수감사주일 안내', sub: '10/18(주일) 전교인 예배', to: '#' })]); } },
       { name: 'tiles', desc: '교인 바로가기 타일', preview: function () { return PD.tiles([{ ic: I.doc, label: '주보', to: '#' }, { ic: I.doc, label: '설교', to: '#' }], 'cols-2'); } },
       { name: 'feature', desc: '피처 카드(이번 주 설교)', preview: function () { return PD.feature('이번 주 설교 · 로마서 강해 12', '조정표 담임목사 · 주일 10:00 · YouTube', '#'); } },
     ]},

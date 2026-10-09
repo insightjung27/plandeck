@@ -47,7 +47,7 @@ window.PLANDECK_FLOWS = [
   {
     id: 'FLOW-MEMBER-SELF', name: '교인 셀프서비스', surface: '교인 Web·PWA',
     desc: '교인 홈 → 마이 → 내 정보 수정 → 알림 설정(Web Push)',
-    steps: [{ screen: 'SCR-APP-001' }, { screen: 'SCR-APP-004', via: '마이' }, { screen: 'SCR-APP-007', via: '내 정보 수정' }, { screen: 'SCR-APP-011', via: '알림 설정' }],
+    steps: [{ screen: 'SCR-APP-001' }, { screen: 'SCR-APP-006', via: '마이' }, { screen: 'SCR-APP-007', via: '내 정보 수정' }, { screen: 'SCR-APP-011', via: '알림 설정' }],
   },
   // ── 교회 관리자 ──
   {
