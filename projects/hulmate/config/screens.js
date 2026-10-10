@@ -2090,7 +2090,7 @@ window.PLANDECK_SCREENS = [
               "intent": "희망 주소(slug) 사용 가능 여부 확인",
               "method": "GET",
               "path": "/onboarding/slug-availability?slug={desiredSlug}",
-              "response": "{ available: boolean } — '{entities.OnboardingApplication}'.desiredSlug / '{entities.Church}'.slug 중복 검사",
+              "response": "{ available: boolean } — '{entities.OnboardingApplication}'.desiredSlug / '{entities.Church}'.slug 중복 + 예약어(시스템 서브도메인) 검사",
               "auth": "Bearer(로그인 신청자)",
               "target": ".pd-field",
               "errors": [
@@ -2103,6 +2103,11 @@ window.PLANDECK_SCREENS = [
                   "status": 409,
                   "when": "slug 중복",
                   "message": "이미 사용 중인 주소예요. 다른 slug를 입력해주세요"
+                },
+                {
+                  "status": 409,
+                  "when": "slug 예약어(시스템 서브도메인: www·api·church·console·admin 등)",
+                  "message": "사용할 수 없는 주소예요. 다른 slug를 입력해주세요"
                 }
               ]
             },
