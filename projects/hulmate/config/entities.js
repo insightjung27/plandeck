@@ -8,7 +8,7 @@ window.PLANDECK_ENTITIES = {
     name: '교회(Tenant 겸용)', description: '화이트라벨 테넌트 — 교회별 독립 브랜드·설정. 모든 데이터의 격리 단위(tenant_id = church.id). ★V2.0: homeConcept 4종 선택 폐기→단일 Design System, features 플래그는 ChannelConfig로 이관, status는 서비스 상태 6단계(§47)',
     fields: [
       { name: 'id', type: 'string', format: 'uuid', required: true, example: 'chr_eunsung', note: 'tenant_id 겸용(§54·O1 2계층 분리는 확장 시점)' },
-      { name: 'slug', type: 'string', required: true, example: 'eunsung', note: '기본 도메인 {slug}.hurmate.kr — 진입이 Tenant 결정(§35·56)' },
+      { name: 'slug', type: 'string', required: true, example: 'eunsung', note: '기본 도메인 {slug}.hurmate.com — 진입이 Tenant 결정(§35·56)' },
       { name: 'name', type: 'string', required: true, example: '은성교회' },
       { name: 'logo', type: 'string', format: 'uri', note: '교회별 변경 4요소 ①' },
       { name: 'primaryColor', type: 'string', example: '#53634b', note: '교회별 변경 4요소 ②(대표색)' },
@@ -38,7 +38,7 @@ window.PLANDECK_ENTITIES = {
       { name: 'icon', type: 'string', format: 'uri', note: '192/512/maskable 파이프라인' },
       { name: 'themeColor', type: 'string', example: '#53634b' },
       { name: 'backgroundColor', type: 'string', example: '#faf9f5' },
-      { name: 'startUrl', type: 'string', example: 'https://eunsung.hurmate.kr/' },
+      { name: 'startUrl', type: 'string', example: 'https://eunsung.hurmate.com/' },
       { name: 'manifestId', type: 'string', note: '동적 생성 manifest 식별자' },
     ],
   },
@@ -48,8 +48,8 @@ window.PLANDECK_ENTITIES = {
       { name: 'tenantId', type: 'string', format: 'uuid', required: true },
       { name: 'appName', type: 'string', example: '은성교회' },
       { name: 'appIcon', type: 'string', format: 'uri' },
-      { name: 'bundleIdIos', type: 'string', example: 'kr.hurmate.eunsung' },
-      { name: 'packageNameAndroid', type: 'string', example: 'kr.hurmate.eunsung' },
+      { name: 'bundleIdIos', type: 'string', example: 'com.hurmate.eunsung' },
+      { name: 'packageNameAndroid', type: 'string', example: 'com.hurmate.eunsung' },
       { name: 'iosStatus', type: 'string', enum: ['none', 'building', 'review', 'live'], example: 'none' },
       { name: 'androidStatus', type: 'string', enum: ['none', 'building', 'review', 'live'], example: 'none' },
       { name: 'currentVersion', type: 'string', example: '1.0.0' },
@@ -98,7 +98,7 @@ window.PLANDECK_ENTITIES = {
     ],
   },
   PlatformAdmin: {
-    name: '플랫폼 운영자(슈퍼)', description: 'HurMate Super Admin(console.hurmate.kr) 콘솔 주체 — 테넌트 무관. 교차테넌트 접근은 감사로그 필수.',
+    name: '플랫폼 운영자(슈퍼)', description: 'HurMate Super Admin(console.hurmate.com) 콘솔 주체 — 테넌트 무관. 교차테넌트 접근은 감사로그 필수.',
     fields: [
       { name: 'id', type: 'string', format: 'uuid', required: true },
       { name: 'email', type: 'string', format: 'email', required: true },
@@ -106,11 +106,11 @@ window.PLANDECK_ENTITIES = {
     ],
   },
   Domain: {
-    name: '도메인', description: '기본 {slug}.hurmate.kr + Premium 커스텀 도메인(§56). DNS 확인.',
+    name: '도메인', description: '기본 {slug}.hurmate.com + Premium 커스텀 도메인(§56). DNS 확인.',
     fields: [
       { name: 'id', type: 'string', format: 'uuid', required: true },
       { name: 'tenantId', type: 'string', format: 'uuid', required: true },
-      { name: 'baseDomain', type: 'string', example: 'eunsung.hurmate.kr', note: '기본 서브도메인' },
+      { name: 'baseDomain', type: 'string', example: 'eunsung.hurmate.com', note: '기본 서브도메인' },
       { name: 'custom', type: 'string', example: 'eunsung.or.kr', note: 'Premium 유료 옵션' },
       { name: 'dnsStatus', type: 'string', enum: ['pending', 'verified', 'failed'], required: true },
     ],

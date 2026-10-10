@@ -11,7 +11,7 @@
 ---
 
 ## ① 배경
-소규모 교회는 재정·인력난으로 자체 앱·홈페이지를 개별 개발(SI)하기 어렵고, 공용 입주형 교회앱은 교회 고유 브랜드를 담지 못한다. 훌메이트는 교회마다 시스템을 따로 개발하지 않고, **하나의 멀티테넌트 SaaS 플랫폼**(단일 Backend·단일 Design System·단일 코드베이스) 위에서 각 교회가 교회명·로고·대표컬러·대표이미지·콘텐츠·도메인 등 **설정값(Config)만으로** 자기 교회만의 디지털 서비스를 운영하게 한다. 기본 제품은 **Responsive Web + PWA**(홈 화면 설치·Web Push)이며, 교인은 각 교회 독립 URL(`{slug}.hurmate.kr`)로 들어와 "우리 교회 전용 앱"처럼 쓴다. Native App은 앱이 꼭 필요한 교회에만 추가 판매하는 **Premium Add-on(차기)**.
+소규모 교회는 재정·인력난으로 자체 앱·홈페이지를 개별 개발(SI)하기 어렵고, 공용 입주형 교회앱은 교회 고유 브랜드를 담지 못한다. 훌메이트는 교회마다 시스템을 따로 개발하지 않고, **하나의 멀티테넌트 SaaS 플랫폼**(단일 Backend·단일 Design System·단일 코드베이스) 위에서 각 교회가 교회명·로고·대표컬러·대표이미지·콘텐츠·도메인 등 **설정값(Config)만으로** 자기 교회만의 디지털 서비스를 운영하게 한다. 기본 제품은 **Responsive Web + PWA**(홈 화면 설치·Web Push)이며, 교인은 각 교회 독립 URL(`{slug}.hurmate.com`)로 들어와 "우리 교회 전용 앱"처럼 쓴다. Native App은 앱이 꼭 필요한 교회에만 추가 판매하는 **Premium Add-on(차기)**.
 
 V1 구조에서 재기준화하되 코어(테넌트격리·인증·콘텐츠·개설승인·빌링·스토리지·디자인토큰)는 **계승**, V1 제외 모듈은 **봉인(삭제 아닌 feature-flag OFF)**, 전무한 4대 공백(ChannelConfig/PwaConfig·Web Push·Notification Gateway·개설 Wizard)만 **신규 구축**한다.
 
@@ -89,7 +89,7 @@ V1 구조에서 재기준화하되 코어(테넌트격리·인증·콘텐츠·�
 
 ## ⑨ 멀티테넌트 격리 계약 (§54·55)
 - **격리**: 모든 데이터 tenant_id 귀속 + 모든 API tenant 검증 → A교회↔B교회 완전 격리(논리적 격리, 물리 분리 아님). 앱레벨 필터 + 가능 시 DB RLS 이중 방어
-- **식별**: 교회별 독립 URL(`{slug}.hurmate.kr`)/PWA/App 진입이 Tenant 결정 → 교인 회원가입 시 교회 검색 없이 church_id 자동 바인딩(§35)
+- **식별**: 교회별 독립 URL(`{slug}.hurmate.com`)/PWA/App 진입이 Tenant 결정 → 교인 회원가입 시 교회 검색 없이 church_id 자동 바인딩(§35)
 - **채널**: ChannelConfig로 테넌트별 채널(web/pwa/ios/android/web_push/native_push) on/off(§51)
 - **교차접근**: 슈퍼관리자만 가능, 모든 접근은 감사로그
 - **정체성**: Church가 Tenant 겸함(tenant_id = church.id). 2계층 분리는 커스텀도메인·다채널 확장 시점(작업계획 O1)
@@ -110,7 +110,7 @@ V1 구조에서 재기준화하되 코어(테넌트격리·인증·콘텐츠·�
 - **Phase 0 — 착수 전 게이트**: G1~G4 선행 결정 · O1·O2·O4·O5 확정 · docs 재인벤토리
 - **Phase 1 — Core Platform(Backend)**: 멀티테넌트 백본·인증·Church·권한·Super Admin 재정렬 · ChannelConfig·billing_plan 신설 · 제외 7모듈 flag OFF(import 잔존 0) · Theme 손실 마이그레이션(백업) · 개설 승인 시 ChannelConfig/PwaConfig 자동생성
 - **Phase 2 — Church Admin**: 개설 Wizard 8STEP 상태기계 · Admin(Dashboard·설정·공지·설교·주보·회원·알림·관리자) · 회원 모델 단순화 · PwaConfig 편집 골격 · 승인 알림(이메일)
-- **Phase 3 — Web(PC+Mobile 반응형)**: 공개홈+교인 Web 고정 5메뉴·단일 DS · `{slug}.hurmate.kr` 라우팅·guard(교회검색·switchChurch 제거) · 대표사이트 개설 퍼널 · 제외 화면 strip+아카이브
+- **Phase 3 — Web(PC+Mobile 반응형)**: 공개홈+교인 Web 고정 5메뉴·단일 DS · `{slug}.hurmate.com` 라우팅·guard(교회검색·switchChurch 제거) · 대표사이트 개설 퍼널 · 제외 화면 strip+아카이브
 - **Phase 4 — PWA(교회별 독립 설치)**: PwaConfig 소비 manifest 동적 생성 · 아이콘 파이프라인(192/512/maskable) · 설치 유도(교회명·iOS16.4+ 분기) · Super Admin PWA 콘솔 · SW·push 핸들러 설계
 - **Phase 5 — Notification(Web Push) ★MVP 완성·1차 시장검증(3~5교회)**: PushSubscription·VAPID·구독/해지·권한 UI · SW push/notificationclick·발송 워커 · Notification Gateway(InApp+WebPush 어댑터, Native/Kakao/SMS 슬롯) · 구조화 Deep Link(type+content_id) · 즉시/예약/전체회원 fan-out
 - **Phase 6 — Native App Factory(차기·Premium Add-on)**: AppConfig 실사용 · One codebase+Tenant Config+Automated Build · FCM·APNs · Android/iOS 빌드·서명·스토어·심사·배포 · App Console · 교회 소유 개발자계정 운영대행·CI/CD
@@ -124,7 +124,7 @@ V1 구조에서 재기준화하되 코어(테넌트격리·인증·콘텐츠·�
 대표사이트 방문→개설 신청 · 개설 승인→Tenant 자동 프로비저닝 · 관리자 최초 Wizard→오픈 · 교인 진입→가입(교회검색 없음) · PWA 설치(교회 전용 앱처럼) · 공지 작성→Web Push→교인 확인(Deep Link) · 슈퍼관리자 통합 운영
 
 ## ⑭ 확정된 결정 (요지)
-플랫폼=Multi-Tenant SaaS(논리격리) · 기본=Web+PWA+Web Push · Native=Premium Add-on(Phase6) · 브랜딩 4+3요소만 변경 · 관리자 2종(admin/console) · MVP 기능 6개(교회소개·설교·주보·공지·회원·알림) · 앱=One Codebase+Config(No-Fork) · 교회검색 제거(church_id 자동) · 교인 메뉴 5개 고정·단일 Design System · 개발 순서 강제 · 1차 검증 3~5교회(Native 제외) · 서비스 상태 6단계 · 알림=Gateway(Web Push) · 봉인=flag OFF · 도메인 hurmate.kr 통일 · 재기준화 권장안 A(코어 KEEP + 봉인 + 4대 공백 BUILD) · Church=Tenant 겸함
+플랫폼=Multi-Tenant SaaS(논리격리) · 기본=Web+PWA+Web Push · Native=Premium Add-on(Phase6) · 브랜딩 4+3요소만 변경 · 관리자 2종(church/console) · MVP 기능 6개(교회소개·설교·주보·공지·회원·알림) · 앱=One Codebase+Config(No-Fork) · 교회검색 제거(church_id 자동) · 교인 메뉴 5개 고정·단일 Design System · 개발 순서 강제 · 1차 검증 3~5교회(Native 제외) · 서비스 상태 6단계 · 알림=Gateway(Web Push) · 봉인=flag OFF · 도메인 hurmate.com 통일 · 재기준화 권장안 A(코어 KEEP + 봉인 + 4대 공백 BUILD) · Church=Tenant 겸함
 
 **가격 구조(§66~68)**: 상품 구조(WEB vs APP)만 분리·금액 미확정 · WEB=초기 등록비+월 이용료(Web/Mobile/PWA/WebPush/Admin 포함) · APP=WEB+구축비+스토어 등록·관리비+유지비(BASIC 미포함) · 커스텀 도메인=Premium · 추천 과금=예시(미확정)
 

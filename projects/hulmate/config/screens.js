@@ -4,7 +4,7 @@
  * 기본은 흑백 와이어프레임. screens.js↔HTML·flow·REQ 추적성 정합. /pd-scaffold·/pd-wireframe */
 window.PLANDECK_SCREENS = [
   {
-    "category": "대표사이트 (landing · www.hurmate.kr · PC웹)",
+    "category": "대표사이트 (landing · www.hurmate.com · PC웹)",
     "pages": [
       {
         "id": "SCR-LND-001",
@@ -2407,7 +2407,7 @@ window.PLANDECK_SCREENS = [
               "idempotency": true,
               "idempotencyNote": "Idempotency-Key 헤더로 더블클릭·재전송 중복 접수 방지(409). 비파괴 공개 리드이므로 별도 확인(confirm) 모달 없음 — 제출 즉시 접수·토스트 안내.",
               "confirm": false,
-              "note": "플랫폼(hurmate.kr) 레벨 공개 도입 문의 리드 — tenant 스코프·church_id 없음(교회 검색 없음). 모델 코어 엔티티 아님이며, 담당자 확인·승인 시 '{entities.OnboardingApplication}'(교회 개설 신청) 퍼널로 승계될 수 있음. PIPA 최소수집(교회명·연락처만, 민감정보 미수집) — 동의 원장은 '{entities.Consent}'와 무관한 공개 리드 동의로 별도 보관.",
+              "note": "플랫폼(hurmate.com) 레벨 공개 도입 문의 리드 — tenant 스코프·church_id 없음(교회 검색 없음). 모델 코어 엔티티 아님이며, 담당자 확인·승인 시 '{entities.OnboardingApplication}'(교회 개설 신청) 퍼널로 승계될 수 있음. PIPA 최소수집(교회명·연락처만, 민감정보 미수집) — 동의 원장은 '{entities.Consent}'와 무관한 공개 리드 동의로 별도 보관.",
               "errors": [
                 {
                   "status": 400,
@@ -2552,7 +2552,7 @@ window.PLANDECK_SCREENS = [
           },
           {
             "target": ".pd-cta",
-            "text": "하단 복귀·문의 — 홈으로 돌아가기(SCR-LND-001)와 문의하기. 담당자 연락처는 교회 확인 후 게재(정직성), 문의는 support@hurmate.kr 메일"
+            "text": "하단 복귀·문의 — 홈으로 돌아가기(SCR-LND-001)와 문의하기. 담당자 연락처는 교회 확인 후 게재(정직성), 문의는 support@hurmate.com 메일"
           }
         ],
         "cases": [
@@ -3442,7 +3442,7 @@ window.PLANDECK_SCREENS = [
             "target": ".pd-gnb"
           },
           {
-            "text": "안내 상태 영역 — www.hurmate.kr 플랫폼 공용 폴백으로, 없는 페이지(404)·오프라인(네트워크 끊김)·서버 오류(500)를 하나의 화면에서 공통으로 안내한다. church_id·테넌트와 무관한 대표사이트(landing) 레벨 화면이며, 과장 없이 원인(주소 변경·삭제·연결 끊김·일시 서버 문제) 가능성을 정직하게 알린다.",
+            "text": "안내 상태 영역 — www.hurmate.com 플랫폼 공용 폴백으로, 없는 페이지(404)·오프라인(네트워크 끊김)·서버 오류(500)를 하나의 화면에서 공통으로 안내한다. church_id·테넌트와 무관한 대표사이트(landing) 레벨 화면이며, 과장 없이 원인(주소 변경·삭제·연결 끊김·일시 서버 문제) 가능성을 정직하게 알린다.",
             "target": ".pd-empty-state"
           },
           {
@@ -3543,7 +3543,7 @@ window.PLANDECK_SCREENS = [
               "response": "{status:'ok', time}",
               "auth": "none(공개)",
               "target": ".pd-fallback-retry",
-              "note": "플랫폼(hurmate.kr) 레벨 경량 헬스 프로브 — 비인증 공개 읽기. 테넌트·church_id와 무관하며 공개 콘텐츠만. '다시 시도'는 이 확인이 200이면 원래 요청을 재시도하고, 실패(5xx/네트워크)면 안내를 유지한다. 비가역 쓰기 아님(멱등·확인 모달 불필요).",
+              "note": "플랫폼(hurmate.com) 레벨 경량 헬스 프로브 — 비인증 공개 읽기. 테넌트·church_id와 무관하며 공개 콘텐츠만. '다시 시도'는 이 확인이 200이면 원래 요청을 재시도하고, 실패(5xx/네트워크)면 안내를 유지한다. 비가역 쓰기 아님(멱등·확인 모달 불필요).",
               "errors": [
                 {
                   "status": 500,
@@ -3633,7 +3633,7 @@ window.PLANDECK_SCREENS = [
     ]
   },
   {
-    "category": "교회 공개홈 (site · {slug}.hurmate.kr · 방문자)",
+    "category": "교회 공개홈 (site · {slug}.hurmate.com · 방문자)",
     "pages": [
       {
         "id": "SCR-SITE-001",
@@ -10205,7 +10205,7 @@ window.PLANDECK_SCREENS = [
     ]
   },
   {
-    "category": "교회 관리자 (admin · admin.hurmate.kr · PC웹)",
+    "category": "교회 관리자 (admin · church.hurmate.com · PC웹)",
     "pages": [
       {
         "id": "SCR-ADM-001",
@@ -10813,7 +10813,7 @@ window.PLANDECK_SCREENS = [
               "name": "church.opened",
               "intent": "서비스 오픈 완료",
               "when": "서비스 오픈(OPEN) 성공",
-              "effect": "'{entities.Church}'.status=활성 · '{entities.ChannelConfig}'(web/pwa/webPush) 활성 · '{entities.PwaConfig}' manifest 생성 · 공개홈({slug}.hurmate.kr) 노출 · 관리자 대시보드(SCR-ADM-003) 이동"
+              "effect": "'{entities.Church}'.status=활성 · '{entities.ChannelConfig}'(web/pwa/webPush) 활성 · '{entities.PwaConfig}' manifest 생성 · 공개홈({slug}.hurmate.com) 노출 · 관리자 대시보드(SCR-ADM-003) 이동"
             }
           ]
         },
@@ -15843,12 +15843,12 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-wpanel",
             "kind": "panel",
-            "label": "교인에게 공유할 공개홈 주소 — ○○.hurmate.kr"
+            "label": "교인에게 공유할 공개홈 주소 — ○○.hurmate.com"
           },
           {
             "role": ".pd-field",
             "kind": "field",
-            "label": "공개홈 URL — ○○.hurmate.kr (읽기 전용 표시)"
+            "label": "공개홈 URL — ○○.hurmate.com (읽기 전용 표시)"
           },
           {
             "role": ".pd-btn",
@@ -15931,7 +15931,7 @@ window.PLANDECK_SCREENS = [
             "target": ".pd-done"
           },
           {
-            "text": "공개홈 주소 패널(.pd-wpanel) — 교인에게 공유할 공개홈 URL({slug}.hurmate.kr, 목업=○○.hurmate.kr)을 표시하고 '주소 복사'(클립보드)·'공개홈 열기'(공개홈 SCR-SITE-001) 액션과 접속 QR을 함께 제공한다. 미확보 교회 소개·오시는 길 항목은 '교회 확인 후 게재'로 정직하게 안내한다",
+            "text": "공개홈 주소 패널(.pd-wpanel) — 교인에게 공유할 공개홈 URL({slug}.hurmate.com, 목업=○○.hurmate.com)을 표시하고 '주소 복사'(클립보드)·'공개홈 열기'(공개홈 SCR-SITE-001) 액션과 접속 QR을 함께 제공한다. 미확보 교회 소개·오시는 길 항목은 '교회 확인 후 게재'로 정직하게 안내한다",
             "target": ".pd-wpanel"
           },
           {
@@ -15978,7 +15978,7 @@ window.PLANDECK_SCREENS = [
             "state": "정상",
             "trigger": "오픈 요약 조회 성공",
             "guard": "church.status=활성 · ChannelConfig(web/pwa/webPush) 활성 · PwaConfig manifest 생성",
-            "result": "공개홈 URL(○○.hurmate.kr)·QR·설치 안내·체크리스트 정상 노출",
+            "result": "공개홈 URL(○○.hurmate.com)·QR·설치 안내·체크리스트 정상 노출",
             "message": "",
             "placement": "inline",
             "target": ".pd-wpanel",
@@ -15991,7 +15991,7 @@ window.PLANDECK_SCREENS = [
             "state": "정상",
             "trigger": "'주소 복사' 클릭",
             "guard": "브라우저 Clipboard API 지원",
-            "result": "공개홈 URL({slug}.hurmate.kr) 클립보드 복사(클라이언트 액션·서버 쓰기 없음)",
+            "result": "공개홈 URL({slug}.hurmate.com) 클립보드 복사(클라이언트 액션·서버 쓰기 없음)",
             "message": "공개홈 주소를 복사했어요",
             "placement": "toast",
             "target": ".pd-btn"
@@ -16071,7 +16071,7 @@ window.PLANDECK_SCREENS = [
               "method": "GET",
               "path": "/admin/church/overview",
               "params": "tenantId=JWT(path 비노출·본인 교회 스코프)",
-              "response": "{ church: '{entities.Church}'(slug·name·status), publicUrl: '{slug}.hurmate.kr', qrImageUrl, channel: '{entities.ChannelConfig}'(web/pwa/webPush), pwa: '{entities.PwaConfig}'(name·icon), counts: { sermon, bulletin, notice } }",
+              "response": "{ church: '{entities.Church}'(slug·name·status), publicUrl: '{slug}.hurmate.com', qrImageUrl, channel: '{entities.ChannelConfig}'(web/pwa/webPush), pwa: '{entities.PwaConfig}'(name·icon), counts: { sermon, bulletin, notice } }",
               "auth": "Bearer(admin)",
               "target": ".pd-wpanel",
               "errors": [
@@ -16106,14 +16106,14 @@ window.PLANDECK_SCREENS = [
               "name": "church.opened.landed",
               "intent": "서비스 오픈 완료 진입",
               "when": "선행 church.opened 성공 후 완료 화면 리다이렉트",
-              "effect": "'{entities.Church}'.status=활성 확인 · 공개홈({slug}.hurmate.kr) 노출 상태 표시 · 온보딩 완료 화면 노출"
+              "effect": "'{entities.Church}'.status=활성 확인 · 공개홈({slug}.hurmate.com) 노출 상태 표시 · 온보딩 완료 화면 노출"
             },
             {
               "id": "shareLinkCopied",
               "name": "share.link.copied",
               "intent": "공개홈 주소 복사",
               "when": "'주소 복사' 버튼 클릭",
-              "effect": "공개홈 URL({slug}.hurmate.kr)을 클립보드에 복사(클라이언트) · '공개홈 주소를 복사했어요' 토스트"
+              "effect": "공개홈 URL({slug}.hurmate.com)을 클립보드에 복사(클라이언트) · '공개홈 주소를 복사했어요' 토스트"
             },
             {
               "id": "onboardingChecklistClicked",
@@ -16152,7 +16152,7 @@ window.PLANDECK_SCREENS = [
     ]
   },
   {
-    "category": "슈퍼관리자 (super · console.hurmate.kr · PC웹)",
+    "category": "슈퍼관리자 (super · console.hurmate.com · PC웹)",
     "pages": [
       {
         "id": "SCR-SUP-001",
@@ -17452,7 +17452,7 @@ window.PLANDECK_SCREENS = [
             "target": ".pd-badge"
           },
           {
-            "text": "바로가기 — 도메인 관리(SCR-SUP-007). 기본 {slug}.hurmate.kr 및 커스텀 도메인 연결 상태 확인",
+            "text": "바로가기 — 도메인 관리(SCR-SUP-007). 기본 {slug}.hurmate.com 및 커스텀 도메인 연결 상태 확인",
             "target": ".pd-btn"
           },
           {
@@ -17916,7 +17916,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-023"
         ],
-        "context": "기본 {slug}.hurmate.kr + Premium 커스텀 도메인·DNS 확인.",
+        "context": "기본 {slug}.hurmate.com + Premium 커스텀 도메인(교회 등록→훌메이트 서버 IP 안내→교회 DNS 연결→SSL 자동발급)·DNS 확인.",
         "components": [
           {
             "role": ".pd-table",
@@ -17939,7 +17939,7 @@ window.PLANDECK_SCREENS = [
             "target": ".pd-table"
           },
           {
-            "text": "기본 주소는 {slug}.hurmate.kr 형식으로 개설 승인 시 자동 발급(예: eunsung.hurmate.kr), 커스텀 도메인은 화이트라벨로 교회 고유 주소를 연결(예: eunsung.or.kr)",
+            "text": "기본 주소는 {slug}.hurmate.com 형식으로 개설 승인 시 자동 발급(예: eunsung.hurmate.com), 커스텀 도메인은 화이트라벨로 교회 고유 주소를 연결(예: eunsung.or.kr) — 교회가 도메인을 직접 등록하면 훌메이트가 연결용 서버 IP를 안내하고, 교회가 DNS(A/CNAME)를 훌메이트 서버로 연결한 뒤 SSL을 자동 발급한다",
             "target": ".pd-table"
           },
           {
