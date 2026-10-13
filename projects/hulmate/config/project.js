@@ -9,6 +9,7 @@ window.PLANDECK_PROJECT = {
     { id: '1.1.4', label: '아카이브', path: '../hulmate-v1/' },
   ],
   changelog: [
+    { version: '2.0.1', date: '2026-10-13', note: 'J 선행게이트 결정 반영(church-service PRD V2.0 PART B·의사결정 문서·작업계획 v2와 동기화) — G1 §57=A안(브랜드·콘텐츠·메뉴 On/Off만·레이아웃 영구 불변)·G2=CI 미수집(소셜 4사 동일인 식별 = 가입 시 휴대폰 SMS 인증 번호 기준키 + ★AuthIdentity 엔티티 신설로 카카오·네이버·구글·애플 계정 연결, CI는 구글·애플 없음·카카오 저장금지로 부적합)·G3=네이버 지도 API·G4=초기 무료→추후 유료(결제는 연동·확인). 데이터모델에 AuthIdentity 추가, Member는 CI·민감 PII 미수집(§34) + phone 암호화·유니크.' },
     { version: '2.0.0', date: '2026-10-08', note: 'V2.0 재기준화(re-baseline) — 정본 PRD V2.0(76섹션)+작업계획(재기준화 v1) 반영. ① 단일 통합앱+교회검색(V1) 폐기 → 교회별 독립 Web/PWA 기본 상품(교회 URL/PWA 진입이 Tenant 결정·church_id 자동바인딩). ② 기본 상품 = Responsive Web + PWA + Web Push, Native App은 선택형 Premium Add-on(차기·Phase6). ③ 대표사이트(www.hurmate.com)·교회 개설 Wizard(8STEP)·Web Push·Notification Gateway·ChannelConfig/PwaConfig/AppConfig 신설. ④ 교인 메뉴 5개 고정(HOME·교회소개·설교·주보·공지), V1의 넓은 기능셋(커뮤니티·아나바다·성도매장·교회학교·출석·헌금 실결제·전자기부금영수증 등)은 삭제 아닌 feature-flag OFF 봉인(향후 Add-on 자산). ⑤ 디자인 = 교회별 4요소(로고·대표색·커버·교회명)만 변경하는 단일 Design System(템플릿 선택 폐기). ⑥ 개발 순서 강제 Backend→Admin→Web→PWA→Web Push→Native, 1차 검증 3~5교회(Native 제외). 가격은 구조(WEB vs APP)만 확정·금액 미확정(§66). surface 재편(대표사이트 신설·4채널 종단). ★추출→합성→적대 충실도검증(13에이전트) 거쳐 원문 충실화(월 3~5만 등 비근거 수치 미확정 처리).' },
     { version: '1.1.4', date: '2026-10-03', note: '[V1] 3차 재검수 조건부 해소(→통과) — M3 .pd-process 컴포넌트 고아 해소, SSOT↔DOM 정합. 적대검수 3R 통과.' },
     { version: '1.1.0', date: '2026-10-03', note: '[V1] 완결성 보강 — 4서피스 61화면·요구사항 33/33 커버·데이터모델 22엔티티·RBAC·멀티테넌트 격리계약·NFR·대체재WTP·J게이트.' },

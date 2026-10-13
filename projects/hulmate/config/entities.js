@@ -129,16 +129,27 @@ window.PLANDECK_ENTITIES = {
 
   // ══════════ 2) 교회 사용자·콘텐츠 (교인 5메뉴 기반) ══════════
   Member: {
-    name: '회원(교인)', description: '교회 소속 회원 — 테넌트 격리. ★V2.0 단순화: 이름·휴대전화·이메일·교회·가입상태만(교적·직분 체계 봉인, §34). church_id 자동 바인딩(교회검색 없음·§35). 민감정보(ci·생년 등)는 G2 보류.',
+    name: '회원(교인)', description: '교회 소속 회원 — 테넌트 격리. ★V2.0 단순화: 이름·휴대전화·이메일·교회·가입상태만(교적·직분 체계 봉인, §34). church_id 자동 바인딩(교회검색 없음·§35). ★G2 결정(2026-10-13): CI·민감 PII 미수집. 소셜 4사 동일인 식별 = 휴대폰 SMS 인증 번호(암호화·유니크)를 기준키로 + AuthIdentity로 계정 연결.',
     fields: [
       { name: 'id', type: 'string', format: 'uuid', required: true },
       { name: 'tenantId', type: 'string', format: 'uuid', required: true, note: '교회(church_id) 자동 바인딩(§35)' },
       { name: 'name', type: 'string', required: true, example: '김성도' },
-      { name: 'phone', type: 'string', example: '010-0000-0000' },
+      { name: 'phone', type: 'string', example: '010-0000-0000', note: 'SMS 인증·암호화·unique — 소셜 4사 동일인 식별 기준키(G2·AuthIdentity)' },
       { name: 'email', type: 'string', format: 'email' },
       { name: 'role', type: 'string', enum: ['member', 'admin'], required: true, example: 'member', note: 'RBAC(직분 체계는 봉인)' },
       { name: 'status', type: 'string', enum: ['pending', 'active', 'withdrawn'], required: true, example: 'pending', note: '가입=승인대기 흐름' },
-      { name: 'sensitive', type: 'object', note: '[G2 보류] ci·gender·birthDate 수집중단 vs 암호화는 security-review 결론에 종속' },
+      { name: 'sensitive', type: 'object', note: '[G2 결정: 미수집] ci 미수집(동일인은 phone 인증으로 해결). gender·birthDate는 교회 요구 시 소셜 동의로만(옵션)' },
+    ],
+  },
+  AuthIdentity: {
+    name: '소셜 로그인 연결 (V2 신규·G2)', description: '소셜 4사(카카오·네이버·구글·애플)+LOCAL 로그인 간 동일인 식별·계정 연결(G2 결정 2026-10-13). 한 Member에 여러 AuthIdentity. 동일인 기준키 = Member.phone(SMS 인증). CI 미사용 — 구글·애플은 한국 CI 없음, 카카오 CI는 "비교식별만·저장 금지". 새 provider 로그인 시 번호(보조로 이메일) 일치하면 계정 연결 UX.',
+    fields: [
+      { name: 'id', type: 'string', format: 'uuid', required: true },
+      { name: 'memberId', type: 'string', format: 'uuid', required: true },
+      { name: 'provider', type: 'string', enum: ['kakao', 'naver', 'google', 'apple', 'local'], required: true },
+      { name: 'providerUserId', type: 'string', required: true, note: 'kakao id / naver id / google sub / apple sub — unique(provider, providerUserId)' },
+      { name: 'email', type: 'string', format: 'email', note: '애플 Hide My Email 가능 → 보조 매칭만' },
+      { name: 'linkedAt', type: 'string', format: 'date-time' },
     ],
   },
   Sermon: {
