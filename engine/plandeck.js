@@ -1203,9 +1203,120 @@
     } catch (e) {}
   }
 
-  // ═══ IA(정보구조) — config/screens.js 에서 화면 계층·연결·요구사항을 자동 생성 ═══
+  // ═══ IA(정보구조) — config/ia.js(PLANDECK_IA: 메뉴 depth 모델)로 계층 트리 + 화면 표현방식을 렌더. 없으면 자동 도출(legacy) 폴백 ═══
+  var PRESENT_KO = { page: '전체 페이지', modal: '모달', sheet: '바텀시트', popover: '팝오버', alert: '알림·확인', toast: '토스트', step: '단계 플로우', tab: '화면 내 탭', drawer: '드로어' };
+  var PRESENT_ORDER = ['page', 'modal', 'sheet', 'drawer', 'step', 'tab', 'alert', 'popover', 'toast'];
+  // 표현방식 추론(모델에 present 없을 때 폴백): 주 컴포넌트 kind + cases.placement + 라벨 키워드
+  function inferPresent(p) {
+    if (!p) return 'page';
+    var k = (p.components && p.components[0] && p.components[0].kind) || '';
+    var pls = {}; (p.cases || []).forEach(function (c) { if (c.placement) pls[c.placement] = 1; });
+    var txt = (p.label || '') + ' ' + (p.context || '');
+    if (pls.modal || /모달|팝업|다이얼로그/.test(txt)) return 'modal';
+    if (k === 'confirm') return 'modal';
+    if (k === 'stepper' || k === 'consent' || /\(\s*\d+\s*\/\s*\d+\s*\)/.test(p.label || '')) return 'step';
+    if (/완료|전송\s*완료|접수\s*완료/.test(p.label || '')) return 'alert';
+    if (k === 'panel') return (p.surface === 'admin' || /데스크톱|desktop/i.test(txt)) ? 'drawer' : 'sheet';
+    return 'page';
+  }
+
   function renderIA() {
     var el = document.getElementById('pd-ia-root'); if (!el) return;
+    var IA = window.PLANDECK_IA || window.PDK_IA;
+    if (!IA || !Array.isArray(IA.placements) || !IA.placements.length) { return renderIALegacy(el); }
+    el.className = 'pd-appshell';
+    var byId = {}; flatPages().forEach(function (p) { byId[p.id] = p; });
+    var allIds = flatPages().map(function (p) { return p.id; });
+
+    // 1) placements 정규화(유효 id·1회만) + 미배치(완결성 게이트)
+    var place = {};
+    IA.placements.forEach(function (pl) { if (pl && pl.screen && byId[pl.screen] && !place[pl.screen]) place[pl.screen] = pl; });
+    var unplaced = allIds.filter(function (id) { return !place[id]; });
+
+    // 2) 채널 순서(모델 우선 + placements 보강)
+    var chMeta = {}; (IA.channels || []).forEach(function (c) { if (c && c.key) chMeta[c.key] = c; });
+    var chOrder = (IA.channels || []).map(function (c) { return c.key; });
+    Object.keys(place).forEach(function (id) { var ch = place[id].channel || '(기타)'; if (chOrder.indexOf(ch) < 0) chOrder.push(ch); });
+
+    // 3) parent 정규화(유효·동일채널·무사이클) + 자식 인덱스
+    var kids = {};
+    Object.keys(place).forEach(function (id) {
+      var pl = place[id], par = pl.parent;
+      if (!(par && place[par] && par !== id && place[par].channel === pl.channel)) par = null;
+      if (par) { var seen = {}, cur = par; while (cur) { if (cur === id || seen[cur]) { par = null; break; } seen[cur] = 1; cur = (place[cur] && place[cur].parent) || null; } }
+      pl._parent = par;
+    });
+    Object.keys(place).forEach(function (id) { var par = place[id]._parent; if (par) (kids[par] = kids[par] || []).push(id); });
+    function sortIds(ids) { return ids.slice().sort(function (a, b) { return ((place[a].order || 0) - (place[b].order || 0)) || String(a).localeCompare(b); }); }
+    function depthOf(id) { var d = 1, cur = place[id] && place[id]._parent, g = 0; while (cur && g++ < 16) { d++; cur = place[cur] && place[cur]._parent; } return d; }
+
+    // 4) 노드(재귀)
+    function badge(pl, p) { var t = (pl && pl.present) || inferPresent(p); return '<span class="pd-present pd-present--' + esc(t) + '">' + esc(PRESENT_KO[t] || t) + '</span>'; }
+    function renderNode(id, depth) {
+      var pl = place[id], p = byId[id] || {};
+      var ck = kids[id] || [];
+      var reqs = (p.reqIds || []).map(function (r) { return '<span class="pd-req">' + esc(r) + '</span>'; }).join('');
+      var outs = ((p.flow && p.flow.to) || []).map(function (t) { var tp = byId[t.screen]; return tp ? '<a class="pd-ia-edge" href="' + esc(tp.href) + '">' + esc(t.via || tp.label) + '</a>' : ''; }).filter(Boolean).join('');
+      var row = '<div class="pd-ian-row">' +
+        '<a class="pd-ian-label" href="' + esc(p.href || '#') + '">' + esc(pl.label || p.label || id) + '</a>' +
+        badge(pl, p) +
+        '<span class="pd-dim pd-ian-id">' + esc(id) + '</span>' +
+        (p.entry ? '<span class="pd-tag">진입</span>' : '') +
+        (ck.length ? '<span class="pd-ian-count">하위 ' + ck.length + '</span>' : '') +
+        (reqs ? '<span class="pd-ian-reqs">' + reqs + '</span>' : '') +
+        '</div>' +
+        (pl.note ? '<div class="pd-ian-note">' + esc(pl.note) + '</div>' : '') +
+        (outs ? '<div class="pd-ian-edges"><span class="pd-ia-arrow">→</span>' + outs + '</div>' : '');
+      var sub = ck.length ? '<ul class="pd-ia-tree">' + sortIds(ck).map(function (c) { return renderNode(c, depth + 1); }).join('') + '</ul>' : '';
+      return '<li class="pd-ian" data-depth="' + depth + '">' + row + sub + '</li>';
+    }
+
+    // 5) 채널 → 섹션 → 최상위(parent=null) → 트리
+    var channelsHtml = chOrder.map(function (ck) {
+      var ids = Object.keys(place).filter(function (id) { return (place[id].channel || '(기타)') === ck; });
+      if (!ids.length) return '';
+      var tops = sortIds(ids.filter(function (id) { return !place[id]._parent; }));
+      var secOrder = [], secMap = {};
+      tops.forEach(function (id) { var s = place[id].section || ''; if (secOrder.indexOf(s) < 0) { secOrder.push(s); secMap[s] = []; } secMap[s].push(id); });
+      var secHtml = secOrder.map(function (s) {
+        var tree = '<ul class="pd-ia-tree pd-ia-tree--root">' + secMap[s].map(function (id) { return renderNode(id, 1); }).join('') + '</ul>';
+        return s ? '<div class="pd-ia-section"><h3 class="pd-ia-sec-head">' + esc(s) + '</h3>' + tree + '</div>' : tree;
+      }).join('');
+      var meta = chMeta[ck] || {};
+      var dev = meta.device ? ' <span class="pd-ia-chan-dev">' + esc(meta.device) + '</span>' : '';
+      return '<section class="pd-ia-channel"><h2 class="pd-ia-chan-head">' + esc(meta.label || ck) + ' <span class="pd-dim">(' + ids.length + ')</span>' + dev + '</h2>' + secHtml + '</section>';
+    }).join('');
+
+    // 6) 범례 + 통계
+    var presCount = {}; Object.keys(place).forEach(function (id) { var t = place[id].present || inferPresent(byId[id]); presCount[t] = (presCount[t] || 0) + 1; });
+    var legend = '<div class="pd-ia-legend"><span class="pd-ia-legend-t">표현 방식</span>' + PRESENT_ORDER.filter(function (t) { return presCount[t]; }).map(function (t) { return '<span class="pd-present pd-present--' + t + '">' + esc(PRESENT_KO[t]) + ' <b>' + presCount[t] + '</b></span>'; }).join('') + '</div>';
+    var head = '<div class="pd-prd-head"><h1>정보 구조 (IA)</h1>' +
+      '<div class="pd-prd-sub">채널별 <b>메뉴 depth 계층</b> · 화면 <b>표현 방식</b> · 화면 간 연결(→) · 요구사항 — 전 <b>' + allIds.length + '</b>개 화면' + (unplaced.length ? ' (배치 ' + (allIds.length - unplaced.length) + ' · 미배치 ' + unplaced.length + ')' : '') + '. <code>config/ia.js</code> 메뉴 모델 + <code>config/screens.js</code> 로 생성됩니다.</div>' +
+      legend + '</div>';
+
+    var unplacedHtml = unplaced.length ? '<section class="pd-ia-channel pd-ia-unplaced"><h2 class="pd-ia-chan-head">미배치 화면 <span class="pd-dim">(' + unplaced.length + ') — 메뉴 모델 검수 필요</span></h2><ul class="pd-ia-tree pd-ia-tree--root">' + unplaced.map(function (id) { var p = byId[id] || {}; return '<li class="pd-ian" data-depth="1"><div class="pd-ian-row"><a class="pd-ian-label" href="' + esc(p.href || '#') + '">' + esc(p.label || id) + '</a><span class="pd-present pd-present--' + inferPresent(p) + '">' + esc(PRESENT_KO[inferPresent(p)]) + '</span><span class="pd-dim pd-ian-id">' + esc(id) + '</span></div></li>'; }).join('') + '</ul></section>' : '';
+
+    var iaActions = '<button class="pd-side-action pd-dl" type="button">⬇ 엑셀(IA)</button><a class="pd-side-action" href="#" onclick="window.print();return false;">🖨 PDF로 저장</a>';
+    el.innerHTML = pageShell('ia', '<div class="pd-ia pd-prd">' + head + channelsHtml + unplacedHtml + '</div>', iaActions, 'pd-prd-doc pd-ia-doc');
+
+    (function () {
+      var dl = el.querySelector('.pd-dl'); if (!dl) return;
+      function pathOf(id) { var names = [], cur = id, g = 0; while (cur && g++ < 16) { names.unshift((byId[cur] && byId[cur].label) || cur); cur = place[cur] && place[cur]._parent; } var s = place[id] && place[id].section; return (s ? s + ' > ' : '') + names.join(' > '); }
+      dl.addEventListener('click', function () {
+        var rows = [['화면ID', '화면명', '채널', '섹션', 'depth', '표현방식', '상위화면', '메뉴경로', '진입', '요구사항', '연결(flow)']];
+        allIds.forEach(function (id) {
+          var p = byId[id] || {}, pl = place[id];
+          if (pl) rows.push([id, p.label || '', pl.channel || '', pl.section || '', depthOf(id), PRESENT_KO[pl.present || inferPresent(p)] || '', pl._parent || '', pathOf(id), p.entry ? '진입' : '', (p.reqIds || []).join(' '), ((p.flow && p.flow.to) || []).map(function (t) { return t.screen; }).join(' ')]);
+          else rows.push([id, p.label || '', '(미배치)', '', '', PRESENT_KO[inferPresent(p)] || '', '', '', p.entry ? '진입' : '', (p.reqIds || []).join(' '), '']);
+        });
+        downloadCSV(exportName('화면목록_IA'), rows);
+      });
+    })();
+  }
+
+  // 폴백: config/ia.js(PLANDECK_IA) 없는 프로젝트 — 서피스별 자동 도출(기존 동작 유지)
+  function renderIALegacy(el) {
+    el.className = 'pd-appshell';
     var byId = {}; flatPages().forEach(function (p) { byId[p.id] = p; });
     var totalScreens = flatPages().length;
     var entryList = flatPages().filter(function (p) { return p.entry; });
@@ -1218,6 +1329,7 @@
         var reqs = (p.reqIds || []).map(function (r) { return '<span class="pd-req">' + esc(r) + '</span>'; }).join(' ');
         return '<li class="pd-ia-node">' +
           '<div class="pd-ia-node-head"><a class="pd-ia-screen" href="' + esc(p.href) + '">' + esc(p.label) + '</a>' +
+          '<span class="pd-present pd-present--' + inferPresent(p) + '">' + esc(PRESENT_KO[inferPresent(p)]) + '</span>' +
           '<span class="pd-dim pd-ia-id">' + esc(p.id) + '</span>' + (p.entry ? ' <span class="pd-tag">진입</span>' : '') +
           (reqs ? ' <span class="pd-ia-reqs">' + reqs + '</span>' : '') + '</div>' +
           (outs.length ? '<div class="pd-ia-edges"><span class="pd-ia-arrow">→</span> ' + outs.join(' ') + '</div>' : '') +
@@ -1225,15 +1337,15 @@
       }).join('');
       return '<section class="pd-ia-cat"><h2>' + esc(cat.category) + ' <span class="pd-dim">(' + (cat.pages || []).length + ')</span></h2><ul class="pd-ia-list">' + nodes + '</ul></section>';
     }).join('');
-    var head = '<div class="pd-prd-head"><h1>정보 구조 (IA)</h1><div class="pd-prd-sub">서피스별 화면 계층 · 화면 간 연결(→) · 요구사항 매핑 — <b>' + totalScreens + '</b>개 화면. <code>config/screens.js</code> 에서 자동 생성됩니다.</div>' +
+    var head = '<div class="pd-prd-head"><h1>정보 구조 (IA)</h1><div class="pd-prd-sub">서피스별 화면 계층 · 화면 간 연결(→) · 요구사항 매핑 — <b>' + totalScreens + '</b>개 화면. <code>config/screens.js</code> 에서 자동 생성됩니다. (메뉴 depth 모델 <code>config/ia.js</code> 추가 시 계층 트리로 승격)</div>' +
       (entryList.length ? '<div class="pd-ia-entries">진입점: ' + entryList.map(function (p) { return '<a href="' + esc(p.href) + '">' + esc(p.label) + '</a>'; }).join(' · ') + '</div>' : '') + '</div>';
     var iaActions = '<button class="pd-side-action pd-dl" type="button">⬇ 엑셀(화면목록)</button><a class="pd-side-action" href="#" onclick="window.print();return false;">🖨 PDF로 저장</a>';
-    el.innerHTML = pageShell('ia', '<div class="pd-ia pd-prd">' + head + body + '</div>', iaActions);
+    el.innerHTML = pageShell('ia', '<div class="pd-ia pd-prd">' + head + body + '</div>', iaActions, 'pd-prd-doc pd-ia-doc');
     (function () {
       var dl = el.querySelector('.pd-dl');
       if (dl) dl.addEventListener('click', function () {
-        var rows = [['화면ID', '화면명', '서피스', '진입', '요구사항', '연결(flow.to)', '설명']];
-        flatPages().forEach(function (p) { rows.push([p.id, p.label, p.surface || '', p.entry ? '진입' : '', (p.reqIds || []).join(' '), ((p.flow && p.flow.to) || []).map(function (t) { return t.screen; }).join(' '), p.context || '']); });
+        var rows = [['화면ID', '화면명', '서피스', '표현방식', '진입', '요구사항', '연결(flow.to)', '설명']];
+        flatPages().forEach(function (p) { rows.push([p.id, p.label, p.surface || '', PRESENT_KO[inferPresent(p)] || '', p.entry ? '진입' : '', (p.reqIds || []).join(' '), ((p.flow && p.flow.to) || []).map(function (t) { return t.screen; }).join(' '), p.context || '']); });
         downloadCSV(exportName('화면목록_IA'), rows);
       });
     })();
@@ -1242,6 +1354,7 @@
   // ═══ 기능 정의서 — 화면 interface(조회·액션·이벤트)와 요구사항을 기능 목록으로 자동 생성 ═══
   function renderFeatures() {
     var el = document.getElementById('pd-features-root'); if (!el) return;
+    el.className = 'pd-appshell';
     var feats = [];
     flatPages().forEach(function (p) {
       var itf = p.interface || {};
@@ -1266,7 +1379,7 @@
     var nE = feats.filter(function (f) { return f.type === '이벤트'; }).length;
     var head = '<div class="pd-prd-head"><h1>기능 정의서</h1><div class="pd-prd-sub">화면별 기능(조회·액션·이벤트)과 API·요구사항 매핑 — <b>' + feats.length + '</b>개 기능(액션 ' + nW + ' · 조회 ' + nR + ' · 이벤트 ' + nE + '). <code>config/screens.js</code> 의 interface 에서 자동 생성됩니다.</div></div>';
     var featActions = '<button class="pd-side-action pd-dl" type="button">⬇ 엑셀(CSV)</button><a class="pd-side-action" href="#" onclick="window.print();return false;">🖨 PDF로 저장</a>';
-    el.innerHTML = pageShell('features', '<div class="pd-prd">' + head + '<div class="pd-table-wrap"><table class="pd-table pd-feat-table"><thead><tr><th>기능ID</th><th>기능명</th><th>화면</th><th>유형</th><th>API/시점</th><th>요구사항</th></tr></thead><tbody>' + trs + '</tbody></table></div></div>', featActions);
+    el.innerHTML = pageShell('features', '<div class="pd-prd">' + head + '<div class="pd-table-wrap"><table class="pd-table pd-feat-table"><thead><tr><th>기능ID</th><th>기능명</th><th>화면</th><th>유형</th><th>API/시점</th><th>요구사항</th></tr></thead><tbody>' + trs + '</tbody></table></div></div>', featActions, 'pd-prd-doc pd-feat-doc');
     (function () {
       var dl = el.querySelector('.pd-dl');
       if (dl) dl.addEventListener('click', function () {
@@ -1280,9 +1393,10 @@
   // ═══ 9.5 컴포넌트 라이브러리 뷰 (#pd-components-root) — 피그마 컴포넌트 패널 ═══
   function renderComponents() {
     var el = document.getElementById('pd-components-root'); if (!el) return;
+    el.className = 'pd-appshell';
     var C = window.PD || window.PDK_COMPONENTS;
     var head = '<div class="pd-prd-head"><h1>🧩 컴포넌트 라이브러리</h1><div class="pd-prd-sub">각 화면은 이 공통 컴포넌트를 <b>가져다 조립</b>합니다. 컴포넌트 하나를 고치면(<code>engine/pd-components.js</code> 마크업 · <code>engine/plandeck-ui.css</code> 스타일) 그 컴포넌트를 쓰는 <b>전 화면·전 프로젝트가 한꺼번에</b> 바뀝니다. 피그마 디자인 컴포넌트와 동일 구조입니다.</div></div>';
-    if (!C || !C.CATALOG) { el.innerHTML = pageShell('components', '<div class="pd-prd">' + head + '<div class="pd-empty"><div class="pd-empty-icon">🧩</div><div class="pd-empty-title">컴포넌트 라이브러리를 불러올 수 없습니다</div><div class="pd-empty-sub">이 페이지는 <code>engine/pd-components.js</code> 를 로드해야 합니다.</div></div></div>'); return; }
+    if (!C || !C.CATALOG) { el.innerHTML = pageShell('components', '<div class="pd-prd">' + head + '<div class="pd-empty"><div class="pd-empty-icon">🧩</div><div class="pd-empty-title">컴포넌트 라이브러리를 불러올 수 없습니다</div><div class="pd-empty-sub">이 페이지는 <code>engine/pd-components.js</code> 를 로드해야 합니다.</div></div></div>', null, 'pd-prd-doc pd-catalog-doc'); return; }
     var groups = C.CATALOG.map(function (g) {
       var items = g.items.map(function (it) {
         var html = ''; try { html = it.preview(); } catch (e) { html = '<span class="pd-dim">미리보기 오류</span>'; }
@@ -1290,7 +1404,7 @@
       }).join('');
       return '<section class="pd-comp-group"><h2>' + esc(g.group) + '</h2><div class="pd-comp-grid">' + items + '</div></section>';
     }).join('');
-    el.innerHTML = pageShell('components', '<div class="pd-prd pd-catalog">' + head + groups + '</div>');
+    el.innerHTML = pageShell('components', '<div class="pd-prd pd-catalog">' + head + groups + '</div>', null, 'pd-prd-doc pd-catalog-doc');
   }
 
   // ═══ 10. 검토 모드 (의사결정자) — sessionStorage 로 이동해도 유지 ═══

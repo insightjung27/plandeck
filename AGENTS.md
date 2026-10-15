@@ -16,6 +16,7 @@
 2. **컴포넌트 라이브러리만 사용** — 마크업은 `engine/plandeck-ui.css`의 공통 컴포넌트 클래스만 조립한다. 인라인 스타일·즉석 CSS 금지. 새 요소가 필요하면 먼저 `plandeck-ui.css`에 **additive(삭제 0)로 추가**하고 재사용한다.
 3. **클릭 가능해야 한다** — 목록행·카드·버튼·타일·뒤로·탭·사이드 등 모든 인터랙션은 실제 `href`로 연결한다. 누르면 예상 화면으로 이동해야 한다(의사결정자 신뢰도).
 4. **SSOT 정합** — `projects/<name>/config/screens.js`(화면 메타: id·label·href·surface·components·description·cases·interface·flow)와 화면 HTML을 **항상 일치**시킨다. 화면을 추가/수정/삭제하면 screens.js도 같이 고친다.
+   - **IA 메뉴 모델** `projects/<name>/config/ia.js`(선택·additive) — IA(정보구조) 화면이 이 모델로 **메뉴 depth 계층 + 화면 표현방식**을 렌더한다. `window.PLANDECK_IA = { channels:[{key,label,device}], placements:[{screen,channel,parent|null,order,present,section?,label?,note?}] }`. `present` ∈ `page`(전체페이지)·`modal`·`sheet`(바텀시트)·`popover`·`alert`(알림·확인)·`step`(단계플로우)·`tab`·`drawer`·`toast`. parent 체인이 depth(최대 4)를 만들고, section 은 L1 메뉴 묶음이다. **화면을 추가/삭제하면 ia.js 의 placements 도 전수 동기화**(미배치=치명). ia.js 가 없으면 renderIA 는 서피스별 자동 도출(legacy)로 폴백한다. ia.html 은 `config/ia.js` 를 `screens.js` 뒤에 로드해야 한다.
 5. **아이콘 = 아웃라인 SVG** (이모지 금지).
 6. **엔진 변경은 additive** — `engine/*`는 모든 프로젝트 공유이므로 삭제 0, 타 프로젝트 무회귀를 보장한다.
 7. **병렬 작업 안전(Orca 등 ADE)** — 여러 에이전트가 병렬 worktree에서 동시에 작업할 수 있다. 변경은 화면·파일 단위로 독립적이고 머지 가능하게 유지하고, 공유 파일(`engine/*`·`config/screens.js`)의 동시 대규모 수정은 피한다. 로컬 전용을 가정하지 말 것(SSH/원격 worktree 가능).
@@ -31,6 +32,7 @@
 - `docs/figma-integration-design.md` — Figma 2-트랙(기본 와이어, 옵션 승격)
 - `.claude/commands/pd-*.md` — 기획 파이프라인 커맨드(Claude Code 전용; 다른 도구는 이 문서의 규칙을 따르면 동일 결과)
 - `tools/verify-links.js` — 링크 무결성 검증 게이트
+- `tools/verify-ia.js` — IA 메뉴 모델(config/ia.js) ↔ screens.js 정합(전수 배치·유효 id·parent 동일채널·무사이클·present enum). ia.js 없으면 스킵.
 - `docs/컴포넌트_관리.md` — 공통 컴포넌트 생성·변형·신규·거버넌스(공용 SSOT 2파일·modifier 규칙·verify-components)
 
 ## 완료 전 체크리스트
@@ -43,3 +45,4 @@
 - [ ] **CSS 충돌 0** — 컴포넌트 추가 시 기존 베이스 클래스를 덮어쓰지 않았는가 (`node tools/verify-css.js`). 새 컴포넌트는 고유 클래스명 또는 `.parent .child` 스코프. 충돌=렌더 깨짐(.pd-step 회귀 유형).
 - [ ] **즉석 컴포넌트 0** — 공용 라이브러리에 없는 ad-hoc 컴포넌트를 쓰지 않았는가 (`node tools/verify-components.js <project>`). 정의0+미등록 pd-* 요소는 공용 컴포넌트로 만들거나 HOOK_REGISTRY에 의도적으로 등록. 변형=base 덮어쓰기 금지·modifier 추가. 컴포넌트 생성·관리 규칙 = `docs/컴포넌트_관리.md`.
 - [ ] **렌더 검증** (`node tools/verify-render.js <project>`) — 전 화면 pd-screen+스크롤컨테이너 보유·인라인스타일0·빈본문0. 내용 긴 화면은 목업 안에서 왜곡(압축) 없이 스크롤되는가(스크롤 컨테이너 .pd-app-body/.pd-content의 flex 자식은 flex-shrink로 눌리면 안 됨 = 압축 회귀 유형).
+- [ ] **IA 메뉴 모델 정합** (`node tools/verify-ia.js <project>`) — config/ia.js 사용 시 전 화면 전수 배치(미배치=치명)·유효 id·parent 동일채널·무사이클·present enum. 화면 추가/삭제 시 ia.js placements 동기화.
