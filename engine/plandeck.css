@@ -301,6 +301,32 @@
 .pd-spec-toc a { font-size: 12px; font-weight: 600; color: var(--pd-sub); background: var(--pd-soft); border-radius: 7px; padding: 4px 10px; text-decoration: none; }
 .pd-spec-toc a:hover { background: #dbeafe; color: var(--pd-primary); }
 
+/* 상세 기획서 목차 — depth 트리(채널→섹션→부모/자식, config/ia.js 있을 때). additive·고유 클래스 */
+.pd-spec-toc-tree { margin: 4px 0 22px; border: 1px solid var(--pd-line); border-radius: 12px; padding: 6px 12px 10px; background: var(--pd-soft); }
+.pd-stoc-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 2px 8px; border-bottom: 1px solid var(--pd-line); margin-bottom: 6px; }
+.pd-stoc-head-t { font-size: 12px; font-weight: 800; color: var(--pd-sub); letter-spacing: .02em; }
+.pd-stoc-toggle { font-size: 11px; font-weight: 700; color: var(--pd-sub); background: #fff; border: 1px solid var(--pd-line); border-radius: 7px; padding: 3px 10px; cursor: pointer; }
+.pd-stoc-toggle:hover { color: var(--pd-primary); border-color: var(--pd-primary); }
+.pd-stoc-chan { border-bottom: 1px solid var(--pd-line); }
+.pd-stoc-chan:last-child { border-bottom: 0; }
+.pd-stoc-chan > summary { list-style: none; cursor: pointer; font-size: 13px; font-weight: 800; color: var(--pd-ink); padding: 8px 2px; }
+.pd-stoc-chan > summary::-webkit-details-marker { display: none; }
+.pd-stoc-chan > summary::before { content: '▸'; display: inline-block; width: 1.1em; color: var(--pd-sub); transition: transform .15s; }
+.pd-stoc-chan[open] > summary::before { transform: rotate(90deg); }
+.pd-stoc-sec { margin: 0 0 3px 16px; }
+.pd-stoc-sec > summary { list-style: none; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--pd-sub); padding: 4px 2px; }
+.pd-stoc-sec > summary::-webkit-details-marker { display: none; }
+.pd-stoc-sec > summary::before { content: '▸'; display: inline-block; width: 1em; font-size: 10px; color: var(--pd-sub); transition: transform .15s; }
+.pd-stoc-sec[open] > summary::before { transform: rotate(90deg); }
+.pd-stoc-tree, .pd-stoc-children { list-style: none; margin: 2px 0; padding: 0 0 0 18px; }
+.pd-stoc-sec .pd-stoc-tree { padding-left: 10px; }
+.pd-stoc-node { margin: 2px 0; }
+.pd-stoc-link { display: inline-block; font-size: 12px; font-weight: 600; color: var(--pd-sub); background: #fff; border: 1px solid var(--pd-line); border-radius: 7px; padding: 3px 9px; text-decoration: none; }
+.pd-stoc-link:hover { background: #dbeafe; color: var(--pd-primary); border-color: var(--pd-primary); }
+.pd-stoc-node.has-kids > .pd-stoc-link { font-weight: 700; color: var(--pd-ink); }
+.pd-stoc-count { font-size: 10px; font-weight: 700; color: var(--pd-sub); background: var(--pd-soft); border: 1px solid var(--pd-line); border-radius: 999px; padding: 0 6px; margin-left: 5px; }
+.pd-stoc-chan > summary .pd-stoc-count, .pd-stoc-sec > summary .pd-stoc-count { background: #fff; }
+
 /* 역할별로 시작하기 — 각 역할 진입 카드(쉬운 온보딩) */
 .pd-roles { margin: 18px 0 8px; }
 .pd-roles-head { font-size: 15px; font-weight: 800; color: var(--pd-ink); margin-bottom: 12px; }

@@ -1135,6 +1135,58 @@
     try { wireDocFilter(el); } catch (e) {}
   }
 
+  // 상세 기획서 상단 목차(TOC) — config/ia.js(PLANDECK_IA) 있으면 채널→섹션→부모/자식 depth 트리(접기/펼치기),
+  //   없으면 기존 평면 칩 리스트로 폴백(타 프로젝트 무회귀·additive). 각 노드는 #spec-<id> 로 점프.
+  function buildSpecToc(pages) {
+    var IA = window.PLANDECK_IA || window.PDK_IA;
+    var flat = '<div class="pd-spec-toc">' + pages.map(function (p) { return '<a href="#spec-' + esc(p.id) + '">' + esc(p.label) + '</a>'; }).join('') + '</div>';
+    if (!IA || !Array.isArray(IA.placements) || !IA.placements.length) return flat;
+    var byId = {}; pages.forEach(function (p) { byId[p.id] = p; });
+    // placements 정규화(유효 id·1회만)
+    var place = {};
+    IA.placements.forEach(function (pl) { if (pl && pl.screen && byId[pl.screen] && !place[pl.screen]) place[pl.screen] = pl; });
+    if (!Object.keys(place).length) return flat;
+    // parent 정규화(유효·동일채널·무사이클)
+    Object.keys(place).forEach(function (id) {
+      var pl = place[id], par = pl.parent;
+      if (!(par && place[par] && par !== id && place[par].channel === pl.channel)) par = null;
+      if (par) { var seen = {}, cur = par; while (cur) { if (cur === id || seen[cur]) { par = null; break; } seen[cur] = 1; cur = (place[cur] && place[cur].parent) || null; } }
+      pl._parent = par;
+    });
+    var kids = {};
+    Object.keys(place).forEach(function (id) { var par = place[id]._parent; if (par) (kids[par] = kids[par] || []).push(id); });
+    function sortIds(ids) { return ids.slice().sort(function (a, b) { return ((place[a].order || 0) - (place[b].order || 0)) || String(a).localeCompare(b); }); }
+    var chMeta = {}; (IA.channels || []).forEach(function (c) { if (c && c.key) chMeta[c.key] = c; });
+    var chOrder = (IA.channels || []).map(function (c) { return c.key; });
+    Object.keys(place).forEach(function (id) { var ch = place[id].channel || '(기타)'; if (chOrder.indexOf(ch) < 0) chOrder.push(ch); });
+    // 화면 노드(부모→자식은 중첩 ul 들여쓰기; 그룹 접기는 채널·섹션 레벨에서만)
+    function node(id) {
+      var p = byId[id] || {}, pl = place[id], ck = kids[id] || [];
+      var link = '<a class="pd-stoc-link" href="#spec-' + esc(id) + '">' + esc((pl && pl.label) || p.label || id) + '</a>';
+      var sub = ck.length ? '<ul class="pd-stoc-children">' + sortIds(ck).map(node).join('') + '</ul>' : '';
+      return '<li class="pd-stoc-node' + (ck.length ? ' has-kids' : '') + '">' + link + sub + '</li>';
+    }
+    var channelsHtml = chOrder.map(function (ck) {
+      var ids = Object.keys(place).filter(function (id) { return (place[id].channel || '(기타)') === ck; });
+      if (!ids.length) return '';
+      var tops = sortIds(ids.filter(function (id) { return !place[id]._parent; }));
+      var secOrder = [], secMap = {};
+      tops.forEach(function (id) { var s = place[id].section || ''; if (secOrder.indexOf(s) < 0) { secOrder.push(s); secMap[s] = []; } secMap[s].push(id); });
+      var secHtml = secOrder.map(function (s) {
+        var tree = '<ul class="pd-stoc-tree">' + secMap[s].map(node).join('') + '</ul>';
+        return s ? '<details class="pd-stoc-sec" open><summary>' + esc(s) + ' <span class="pd-stoc-count">' + secMap[s].length + '</span></summary>' + tree + '</details>' : tree;
+      }).join('');
+      var meta = chMeta[ck] || {};
+      return '<details class="pd-stoc-chan" open><summary>' + esc(meta.label || ck) + ' <span class="pd-stoc-count">' + ids.length + '</span></summary>' + secHtml + '</details>';
+    }).join('');
+    var unplaced = pages.filter(function (p) { return !place[p.id]; });
+    var unplacedHtml = unplaced.length ? '<details class="pd-stoc-chan"><summary>기타·미배치 <span class="pd-stoc-count">' + unplaced.length + '</span></summary><ul class="pd-stoc-tree">' + unplaced.map(function (p) { return '<li class="pd-stoc-node"><a class="pd-stoc-link" href="#spec-' + esc(p.id) + '">' + esc(p.label) + '</a></li>'; }).join('') + '</ul></details>' : '';
+    return '<div class="pd-spec-toc-tree">' +
+      '<div class="pd-stoc-head"><span class="pd-stoc-head-t">화면 목차 (depth)</span>' +
+      '<button class="pd-stoc-toggle" type="button" data-state="open">모두 접기</button></div>' +
+      channelsHtml + unplacedHtml + '</div>';
+  }
+
   // ═══ 9. 상세 기획서 렌더 (#pd-spec-root) — 의사결정자/팀 열람·인쇄용 ═══
   function renderSpec() {
     var el = document.getElementById('pd-spec-root');
@@ -1178,7 +1230,7 @@
     }).join('');
     var toolbar = pages.length ? ('<div class="pd-inv-head">' + docFilterBar('화면명·ID로 찾기') +
       '<button class="pd-collapse-toggle" type="button">모두 접기</button></div>' +
-      '<div class="pd-spec-toc">' + pages.map(function (p) { return '<a href="#spec-' + esc(p.id) + '">' + esc(p.label) + '</a>'; }).join('') + '</div>') : '';
+      buildSpecToc(pages)) : '';
     var content = head + toolbar + (pages.length ? body : '<div class="pd-empty"><div class="pd-empty-icon">📄</div><div class="pd-empty-title">아직 화면이 없습니다</div></div>');
     var specActions = '<button class="pd-side-action pd-dl" type="button">⬇ 엑셀(경우의수)</button>' +
       '<a class="pd-side-action" href="#" onclick="document.querySelectorAll(\'.pd-spec-screen\').forEach(function(d){d.open=true});window.print();return false;">🖨 PDF로 저장</a>';
@@ -1199,6 +1251,15 @@
         var anyOpen = cards.some(function (d) { return d.open; });
         cards.forEach(function (d) { d.open = !anyOpen; });
         ct.textContent = anyOpen ? '모두 펼치기' : '모두 접기';
+      });
+    } catch (e) {}
+    try {
+      var st = el.querySelector('.pd-stoc-toggle');
+      if (st) st.addEventListener('click', function () {
+        var open = st.getAttribute('data-state') !== 'closed';
+        [].slice.call(el.querySelectorAll('.pd-spec-toc-tree details')).forEach(function (d) { d.open = !open; });
+        st.setAttribute('data-state', open ? 'closed' : 'open');
+        st.textContent = open ? '모두 펼치기' : '모두 접기';
       });
     } catch (e) {}
   }
