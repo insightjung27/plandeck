@@ -1184,7 +1184,8 @@
     return '<div class="pd-spec-toc-tree">' +
       '<div class="pd-stoc-head"><span class="pd-stoc-head-t">화면 목차 (depth)</span>' +
       '<button class="pd-stoc-toggle" type="button" data-state="open">모두 접기</button></div>' +
-      channelsHtml + unplacedHtml + '</div>';
+      '<div class="pd-stoc-body">' + channelsHtml + unplacedHtml + '</div>' +
+      '</div>';
   }
 
   // ═══ 9. 상세 기획서 렌더 (#pd-spec-root) — 의사결정자/팀 열람·인쇄용 ═══

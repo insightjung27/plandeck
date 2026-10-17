@@ -237,6 +237,9 @@
 .pd-appshell .pd-prd-doc, .pd-appshell .pd-flows-doc { max-width: 1360px; margin: 0; padding: 0; }
 /* IA·기능정의서·컴포넌트 = 구조/표/트리 중심 → 좌측 메뉴 제외 본문 가로폭 전체 사용(여백 최소화) */
 .pd-appshell .pd-ia-doc, .pd-appshell .pd-feat-doc, .pd-appshell .pd-catalog-doc { max-width: none; margin: 0; padding: 0; }
+/* 상세 기획서 = 목차(다단 트리)+화면카드 구조 중심 → 넓게 써서 우측 여백 최소화(PRD 본문보다 넓게).
+   ★depth 트리(config/ia.js)가 있는 프로젝트에만 적용(:has) — 트리 없는 타 프로젝트 spec은 기존 1360 유지(무회귀). :has 미지원 시 1360 폴백(트리는 1360 내 다단) */
+.pd-appshell:has(.pd-spec-toc-tree) .pd-spec-doc { max-width: 1760px; }
 
 /* ═══ 워크스페이스(와이드) + 새 프로젝트 만들기 가이드 ═══ */
 .pd-ws { max-width: 1320px; margin: 0 auto; padding: 44px 40px 90px; font-family: "Pretendard", -apple-system, sans-serif; color: var(--pd-ink); line-height: 1.6; }
@@ -302,13 +305,14 @@
 .pd-spec-toc a:hover { background: #dbeafe; color: var(--pd-primary); }
 
 /* 상세 기획서 목차 — depth 트리(채널→섹션→부모/자식, config/ia.js 있을 때). additive·고유 클래스 */
-.pd-spec-toc-tree { margin: 4px 0 22px; border: 1px solid var(--pd-line); border-radius: 12px; padding: 6px 12px 10px; background: var(--pd-soft); }
-.pd-stoc-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 2px 8px; border-bottom: 1px solid var(--pd-line); margin-bottom: 6px; }
+.pd-spec-toc-tree { margin: 4px 0 22px; border: 1px solid var(--pd-line); border-radius: 12px; padding: 10px 16px 4px; background: var(--pd-soft); }
+.pd-stoc-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 2px 10px; border-bottom: 1px solid var(--pd-line); margin-bottom: 12px; }
+/* 반응형 다단: 폭에 따라 1→2→3열 자동(column-width), 최대 3열(column-count 상한) — 넓은 PC에서 우측 여백 최소화 */
+.pd-stoc-body { columns: 3 300px; column-gap: 24px; }
 .pd-stoc-head-t { font-size: 12px; font-weight: 800; color: var(--pd-sub); letter-spacing: .02em; }
 .pd-stoc-toggle { font-size: 11px; font-weight: 700; color: var(--pd-sub); background: #fff; border: 1px solid var(--pd-line); border-radius: 7px; padding: 3px 10px; cursor: pointer; }
 .pd-stoc-toggle:hover { color: var(--pd-primary); border-color: var(--pd-primary); }
-.pd-stoc-chan { border-bottom: 1px solid var(--pd-line); }
-.pd-stoc-chan:last-child { border-bottom: 0; }
+.pd-stoc-chan { break-inside: avoid; -webkit-column-break-inside: avoid; border: 1px solid var(--pd-line); border-radius: 10px; background: #fff; padding: 2px 12px 8px; margin: 0 0 16px; }
 .pd-stoc-chan > summary { list-style: none; cursor: pointer; font-size: 13px; font-weight: 800; color: var(--pd-ink); padding: 8px 2px; }
 .pd-stoc-chan > summary::-webkit-details-marker { display: none; }
 .pd-stoc-chan > summary::before { content: '▸'; display: inline-block; width: 1.1em; color: var(--pd-sub); transition: transform .15s; }
