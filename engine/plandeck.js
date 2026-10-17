@@ -513,7 +513,7 @@
     btn.type = 'button'; btn.className = 'pdk-dock-btn pd-dock-btn pd-nav-toggle-btn';
     btn.setAttribute('data-label', '화면 목록'); btn.setAttribute('aria-label', '화면 목록 열기/닫기');
     btn.innerHTML = ICON;
-    btn.addEventListener('click', function () { nav.classList.toggle('is-hidden'); btn.classList.toggle('is-off', nav.classList.contains('is-hidden')); });
+    btn.addEventListener('click', function () { nav.classList.toggle('is-hidden'); btn.classList.toggle('is-off', nav.classList.contains('is-hidden')); try { applySurfaceDevice(); } catch (e) {} });
     dock.appendChild(btn);
   }
 
@@ -542,8 +542,25 @@
     var stage = document.querySelector('.device-stage');
     if (stage) stage.setAttribute('data-device-type', d.type || 'frame');
     var outerW = d.width + bezel * 2, outerH = d.height + bezel * 2;
-    var availW = Math.max(260, window.innerWidth - 640), availH = Math.max(340, window.innerHeight - 90);
-    var scale = Math.min(1, availW / outerW, availH / outerH);
+    // 가시 패널(좌 화면목록·우 Description/Flow)만큼만 좌우 예약 → 패널이 닫히면 목업이 남은 폭을 채운다(중앙 100vw 고정 여백 해소).
+    function sideW(sel) {
+      var e = document.querySelector(sel);
+      if (!e || e.classList.contains('is-hidden')) return 0;
+      var cs; try { cs = getComputedStyle(e); } catch (_e) { return 0; }
+      if (cs.display === 'none' || cs.visibility === 'hidden') return 0;
+      return e.offsetWidth || 0;
+    }
+    var availH = Math.max(340, window.innerHeight - 90), availW;
+    if (window.innerWidth > 960 && stage) {
+      var leftW = sideW('.page-nav'), rightW = Math.max(sideW('.page-detail'), sideW('.page-flow'));
+      var padL = leftW ? leftW + 16 : 24, padR = rightW ? rightW + 28 : 24;
+      stage.style.paddingLeft = padL + 'px'; stage.style.paddingRight = padR + 'px';
+      availW = Math.max(260, window.innerWidth - padL - padR);
+    } else {
+      if (stage) { stage.style.paddingLeft = ''; stage.style.paddingRight = ''; }
+      availW = Math.max(260, window.innerWidth - 640);
+    }
+    var scale = Math.min(2, availW / outerW, availH / outerH);   // ★1배 상한 제거 → 넓은 화면에서 목업이 가용영역을 채움(상한 2, availW/availH로 자연 bound)
     root.style.setProperty('--pdk-device-scale', scale.toFixed(3));
   }
 
@@ -1809,6 +1826,17 @@
     try { bindActions(); } catch (e) {}
     try { setupReviewMode(); } catch (e) {}
     try { enhanceInteractions(); } catch (e) {}
+    // 목업 스케일: 패널(좌 목록·우 Description/Flow) 렌더 후 남은 폭을 채우도록 재계산 + 리사이즈/패널토글 시 재계산
+    try { applySurfaceDevice(); } catch (e) {}
+    try {
+      if (!window.__pdkScaleBound) {
+        window.__pdkScaleBound = 1;
+        var _rt; var _recalc = function () { clearTimeout(_rt); _rt = setTimeout(function () { try { applySurfaceDevice(); } catch (e) {} }, 110); };
+        window.addEventListener('resize', _recalc);
+        var _mo = new MutationObserver(_recalc);
+        ['.page-nav', '.page-detail', '.page-flow'].forEach(function (s) { var e = document.querySelector(s); if (e) _mo.observe(e, { attributes: true, attributeFilter: ['class', 'style'] }); });
+      }
+    } catch (e) {}
   }
   // common.js 의 동기 init 이 끝난 뒤 실행
   if (document.readyState === 'loading') {
