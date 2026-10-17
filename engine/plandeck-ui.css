@@ -175,7 +175,8 @@
 .pd-table td:last-child, .pd-table th:last-child { border-right: none; }
 
 /* ─── 배너 / 빈 상태(흑백) ─── */
-.pd-banner { background: var(--w-fill); border: 1px solid var(--w-line); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: var(--w-sub); display: flex; align-items: center; gap: 8px; }
+.pd-banner { background: var(--w-fill); border: 1px solid var(--w-line); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: var(--w-sub); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pd-banner > span { min-width: 0; flex: 1 1 auto; line-height: 1.55; }
 .pd-empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 40px 20px; color: var(--w-label); }
 .pd-empty-state .ico { width: 56px; height: 56px; border: 1px solid var(--w-line); border-radius: 10px; background: var(--w-fill); display: flex; align-items: center; justify-content: center; }
 .pd-empty-state .t { font-size: 15px; font-weight: 700; color: var(--w-sub); }

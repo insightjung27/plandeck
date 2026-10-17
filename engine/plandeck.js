@@ -886,7 +886,7 @@
     var sec = function (t, html) { return '<div class="pd-prd-sec"><h2>' + t + '</h2>' + html + '</div>'; };
     el.className = 'pd-appshell';
     var body =
-      '<div class="pd-banner" style="margin-bottom:16px">이 화면은 <b>config/prd.js</b>(정본 <b>docs/PRD.md</b>의 렌더 미러)를 렌더합니다. 수정은 <b>docs/PRD.md</b>를 고친 뒤 <code>/pd-prd</code>로 동기화하세요(둘을 항상 같은 버전·내용으로 유지).</div>' +
+      '<div class="pd-banner" style="margin-bottom:16px"><span>이 화면은 <b>config/prd.js</b>(정본 <b>docs/PRD.md</b>의 렌더 미러)를 렌더합니다. 수정은 <b>docs/PRD.md</b>를 고친 뒤 <code>/pd-prd</code>로 동기화하세요(둘을 항상 같은 버전·내용으로 유지).</span></div>' +
       '<h1>' + esc(PROJECT.name || '제품요구정의서(PRD)') + '</h1>' +
       '<div class="pd-prd-sub">' + esc(PROJECT.description || '') + '</div>' +
       (d.northStar ? sec('북극성(North Star)', '<p>' + esc(d.northStar) + '</p>') : '') +
@@ -914,7 +914,7 @@
       })) +
       (function () {
         var t = prdTraceability();
-        if (!t.reqs.length) return sec('⑧ 요구사항 추적(PRD ↔ 화면)', '<div class="pd-banner">PRD에 <code>requirements[]</code>가 아직 없습니다. <code>/pd-prd</code>로 요구사항을 정의하면 화면과 자동으로 추적·커버리지 검사됩니다.</div>');
+        if (!t.reqs.length) return sec('⑧ 요구사항 추적(PRD ↔ 화면)', '<div class="pd-banner"><span>PRD에 <code>requirements[]</code>가 아직 없습니다. <code>/pd-prd</code>로 요구사항을 정의하면 화면과 자동으로 추적·커버리지 검사됩니다.</span></div>');
         var rows = t.reqs.map(function (r) {
           var _id = r.reqId || r.id, _text = r.text || r.title || '',   // 호환: reqId/text/surfaces(구) · id/title/surface(신)
             _surf = r.surfaces || (r.surface ? [r.surface] : []);
