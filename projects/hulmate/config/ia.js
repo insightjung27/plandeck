@@ -539,6 +539,33 @@ window.PLANDECK_IA = {
    "section": "설정"
   },
   {
+   "screen": "SCR-ADM-021",
+   "channel": "admin",
+   "parent": "SCR-ADM-013",
+   "order": 1,
+   "present": "page",
+   "section": "알림",
+   "note": "전체 알림 보내기(Web Push 브로드캐스트) — 알림 관리·발송 하위"
+  },
+  {
+   "screen": "SCR-ADM-022",
+   "channel": "admin",
+   "parent": "SCR-ADM-016",
+   "order": 1,
+   "present": "page",
+   "section": "설정",
+   "note": "CMS 출금이체 신청(구독 결제수단) — 요금제·사용현황 하위"
+  },
+  {
+   "screen": "SCR-ADM-020",
+   "channel": "admin",
+   "parent": null,
+   "order": 15,
+   "present": "page",
+   "section": "설정",
+   "note": "운영 가이드(공개페이지·성도앱 일상 운영 안내)"
+  },
+  {
    "screen": "SCR-SUP-001",
    "channel": "super",
    "parent": null,
@@ -612,6 +639,24 @@ window.PLANDECK_IA = {
    "order": 6,
    "present": "page",
    "section": "운영로그"
+  },
+  {
+   "screen": "SCR-SUP-010",
+   "channel": "super",
+   "parent": null,
+   "order": 7,
+   "present": "page",
+   "section": "상담·결제",
+   "note": "도입 상담 문의 조회(랜딩 LandingInquiry 리드·후속연락)"
+  },
+  {
+   "screen": "SCR-SUP-011",
+   "channel": "super",
+   "parent": null,
+   "order": 8,
+   "present": "page",
+   "section": "상담·결제",
+   "note": "CMS 출금이체 신청 심사 큐(승인/반려·출력)"
   },
   {
    "screen": "SCR-SEAL-A01",

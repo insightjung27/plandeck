@@ -3,9 +3,9 @@
 window.PLANDECK_FLOWS = [
   // ── 종단 연결(개설 퍼널) ──
   {
-    id: 'FLOW-ONBOARD', name: '대표사이트 방문→교회 개설 신청', surface: '대표사이트',
-    desc: '[종단 1~2] 대표사이트에서 상품·가격 확인 → 회원가입 → 교회정보·요금제 선택 → 개설 신청 → 접수완료·상태 확인',
-    steps: [{ screen: 'SCR-LND-001' }, { screen: 'SCR-LND-005', via: '가격 안내' }, { screen: 'SCR-LND-013', via: '회원가입' }, { screen: 'SCR-LND-009', via: '교회 개설 신청' }, { screen: 'SCR-LND-011', via: '접수완료·상태' }],
+    id: 'FLOW-ONBOARD', name: '랜딩 미리보기→개설 신청(?start=apply)', surface: '대표사이트→교회 관리자',
+    desc: '[종단 1~2 · 2026-10 전환 재설계] 랜딩 히어로에서 교회 이름·대표색 실시간 미리보기 → "이 화면으로 개설 신청"(church ?start=apply&name=○○) → 교회관리 진입이 로그인 대신 개설 신청 안내(①계정 만들기→②신청서→③1~2일 승인)로 맞이·가입 → 신청서(교회명 프리필·로그인 후 막다른 화면 없이 직행) → 접수완료·상태. 저관여 방문자는 일반 도입 상담(문의)으로 분기.',
+    steps: [{ screen: 'SCR-LND-001', via: '미리보기 이름 입력' }, { screen: 'SCR-ADM-001', via: '교회 개설(?start=apply)·가입' }, { screen: 'SCR-LND-009', via: '신청서(교회명 프리필)' }, { screen: 'SCR-LND-011', via: '접수완료·상태' }],
   },
   {
     id: 'FLOW-PROVISION', name: '개설 승인→Tenant 자동 프로비저닝', surface: '슈퍼관리자',
@@ -31,6 +31,16 @@ window.PLANDECK_FLOWS = [
     id: 'FLOW-NOTIFY', name: '공지 작성→Web Push→교인 확인', surface: '교회 관리자',
     desc: '[종단 9] 공지 작성(알림 ON) → Notification Gateway 알림 발송(즉시/예약·전체회원) → 교인 알림 수신 → Deep Link로 공지 이동',
     steps: [{ screen: 'SCR-ADM-009' }, { screen: 'SCR-ADM-013', via: '알림 발송' }, { screen: 'SCR-APP-010', via: '교인 알림 수신' }, { screen: 'SCR-APP-005', via: 'Deep Link→공지' }],
+  },
+  {
+    id: 'FLOW-CMS', name: '구독 결제수단(CMS 출금이체) 신청→심사', surface: '교회 관리자→슈퍼관리자',
+    desc: '[결제수단 · 2026-10-16 신규] 교회가 요금제·결제에서 CMS 출금이체 신청서 양식 다운로드 → 작성·서명·스캔 업로드 제출 → 슈퍼관리자 심사(승인/반려·출력) → 교회 확인(승인 시 구독 결제수단 연계). 계좌 등 민감정보는 서류 이미지(documentFileId)로만 보관. 교회 ADMIN 접근(BILLING_MANAGE operational화).',
+    steps: [{ screen: 'SCR-ADM-016', via: '요금제·결제' }, { screen: 'SCR-ADM-022', via: 'CMS 출금이체 신청' }, { screen: 'SCR-SUP-011', via: '슈퍼 심사·승인' }, { screen: 'SCR-ADM-016', via: '승인 확인·결제수단 연계' }],
+  },
+  {
+    id: 'FLOW-BROADCAST', name: '관리자 전체 알림(Web Push 브로드캐스트)', surface: '교회 관리자',
+    desc: '[알림 · 2026-10-15 Web Push 구현] 관리자 "전체 알림 보내기" → 제목·본문 작성 → 교회 전체 회원에 인앱 알림함 + 휴대폰 Web Push 동시 발송(POST /api/admin/notifications/broadcast·VAPID 자체키) → 성도앱 알림 수신(휴대폰 알림 받기 토글 구독자).',
+    steps: [{ screen: 'SCR-ADM-003' }, { screen: 'SCR-ADM-021', via: '전체 알림 보내기' }, { screen: 'SCR-APP-010', via: '교인 알림 수신' }],
   },
   // ── 공개홈(방문자) ──
   {

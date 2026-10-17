@@ -1,14 +1,15 @@
 window.PLANDECK_PROJECT = {
   name: '훌메이트 (HurMate) V2.0',
-  description: '소규모 교회용 멀티테넌트 교회 플랫폼. 하나의 플랫폼으로 교회마다 독립 Web + PWA(+ Web Push)를 설정값(Config)만으로 발행 — 교회·교인에게는 "우리 교회 전용 디지털 서비스"처럼 보이게 한다. 기본 상품 = Responsive Web + PWA, Native App은 필요한 교회에만 Premium Add-on(차기).',
-  version: '2.0.0',
-  updatedAt: '2026-10-08',
+  description: '소규모 교회용 멀티테넌트 교회 플랫폼. 하나의 플랫폼으로 교회마다 독립 Web + PWA(+ Web Push)를 설정값(Config)만으로 발행 — 교회·교인에게는 "우리 교회 전용 디지털 서비스"처럼 보이게 한다. 기본 상품 = Responsive Web + PWA, Native App은 필요한 교회에만 Premium Add-on(차기). ★브랜드 네이밍(2026-10-15): 훌메이트 = 운영 회사명 / H-우리교회 = 서비스(제품)명 — 전 앱 UI는 서비스명 H-우리교회 + 신규 승인 로고를 쓴다(회사명 훌메이트는 법적 표기·도메인 hurmate.com에만).',
+  version: '2.1.0',
+  updatedAt: '2026-10-17',
   // 버전(브랜치) 레지스트리 — 같은 프로젝트의 여러 버전을 페이지 상단 ⎇ 스위처로 전환.
   versions: [
-    { id: '2.0.0', label: '최신 · 5채널', path: '../hulmate/', current: true },
+    { id: '2.1.0', label: '최신 · 5채널', path: '../hulmate/', current: true },
     { id: '1.1.4', label: '아카이브', path: '../hulmate-v1/' },
   ],
   changelog: [
+    { version: '2.1.0', date: '2026-10-17', note: 'dev-plan(a41a083) 운영 반영 정합 — ① 대표 랜딩 전환중심 전면 재설계(개발자 push): 히어로 실시간 미리보기 위젯(교회 이름·대표색→PC/휴대폰 목업 즉시 반영)·고민→해결(데모 실캡처)·관리자 화면·기본 포함 12칩·WEB/APP 상품+CMS 출금이체 결제안내·도입절차 4단계·FAQ 8문항·전환 CTA. ② ?start=apply 온보딩 퍼널: 랜딩 "교회 개설"→교회관리 진입이 개설 신청 안내(계정→신청서→1~2일 승인)로 맞이+교회명 프리필+로그인 후 신청서 직행(막다른 화면 제거)·일반 도입 상담(LandingInquiry) 경로. ③ CMS 출금이체 신청 기능(구독 결제수단 서류 워크플로·ChurchCmsApplication·교회 ADMIN 결제권한 BILLING_MANAGE 개방) → SCR-ADM-022·SCR-SUP-011 신규. ④ 누락분 정합: 운영 가이드(SCR-ADM-020)·전체 알림 보내기 Web Push 브로드캐스트(SCR-ADM-021)·슈퍼 도입 상담 문의 조회(SCR-SUP-010)·설교 라이브(관리자 토글+성도앱 LIVE)·공지 푸시 발송·공개홈 주보 아카이브 페이징·리브랜드(H-우리교회 서비스명). ⑤ §57 단일 DS 서술을 HOME Home Variant 선택제(V2.1)로 정교화. ⑥ 데이터 흐름도(교회 생애주기 6단계) = church-service docs/02-design/data-flow.html.' },
     { version: '2.0.1', date: '2026-10-13', note: 'J 선행게이트 결정 반영(church-service PRD V2.0 PART B·의사결정 문서·작업계획 v2와 동기화) — G1 §57=A안(브랜드·콘텐츠·메뉴 On/Off만·레이아웃 영구 불변)·G2=CI 미수집(소셜 4사 동일인 식별 = 가입 시 휴대폰 SMS 인증 번호 기준키 + ★AuthIdentity 엔티티 신설로 카카오·네이버·구글·애플 계정 연결, CI는 구글·애플 없음·카카오 저장금지로 부적합)·G3=네이버 지도 API·G4=초기 무료→추후 유료(결제는 연동·확인). 데이터모델에 AuthIdentity 추가, Member는 CI·민감 PII 미수집(§34) + phone 암호화·유니크.' },
     { version: '2.0.0', date: '2026-10-08', note: 'V2.0 재기준화(re-baseline) — 정본 PRD V2.0(76섹션)+작업계획(재기준화 v1) 반영. ① 단일 통합앱+교회검색(V1) 폐기 → 교회별 독립 Web/PWA 기본 상품(교회 URL/PWA 진입이 Tenant 결정·church_id 자동바인딩). ② 기본 상품 = Responsive Web + PWA + Web Push, Native App은 선택형 Premium Add-on(차기·Phase6). ③ 대표사이트(www.hurmate.com)·교회 개설 Wizard(8STEP)·Web Push·Notification Gateway·ChannelConfig/PwaConfig/AppConfig 신설. ④ 교인 메뉴 5개 고정(HOME·교회소개·설교·주보·공지), V1의 넓은 기능셋(커뮤니티·아나바다·성도매장·교회학교·출석·헌금 실결제·전자기부금영수증 등)은 삭제 아닌 feature-flag OFF 봉인(향후 Add-on 자산). ⑤ 디자인 = 교회별 4요소(로고·대표색·커버·교회명)만 변경하는 단일 Design System(템플릿 선택 폐기). ⑥ 개발 순서 강제 Backend→Admin→Web→PWA→Web Push→Native, 1차 검증 3~5교회(Native 제외). 가격은 구조(WEB vs APP)만 확정·금액 미확정(§66). surface 재편(대표사이트 신설·4채널 종단). ★추출→합성→적대 충실도검증(13에이전트) 거쳐 원문 충실화(월 3~5만 등 비근거 수치 미확정 처리).' },
     { version: '1.1.4', date: '2026-10-03', note: '[V1] 3차 재검수 조건부 해소(→통과) — M3 .pd-process 컴포넌트 고아 해소, SSOT↔DOM 정합. 적대검수 3R 통과.' },
@@ -31,7 +32,7 @@ window.PLANDECK_PROJECT = {
     domains: '브랜드 도메인 hurmate.com 통일 — www(대표사이트)·{slug}(교회 Web/PWA)·church(교회 관리자)·console(슈퍼관리자)',
     errorConvention: 'RFC 9457 Problem Details (application/problem+json)',
     naming: 'SCR-<약어>-<3자리>. 멀티테넌트 절대조건: 모든 데이터 tenant_id 귀속·모든 API tenant 검증(A교회↔B교회 완전 격리)',
-    designSystem: '단일 Design System — 교회별 변경은 로고·대표색·커버이미지·교회명(+도메인·PWA Icon/Name)만, Layout/Navigation/Grid/Typography 고정(Template 아님)',
+    designSystem: '단일 Design System — 교회별 변경은 로고·대표색·커버이미지·교회명(+도메인·PWA Icon/Name)만. ★HOME은 V2.1(2026-10-14) 개정으로 Home Variant(홈 스타일) 선택제 — 플랫폼 제공 5종(welcome 환영형·sermon 교회이야기·community 열린문·content 이번주·demo 말씀의서가) 중 교회가 1택, 선택 Variant의 토큰(서체·모서리·대표색 파생)은 전 세부페이지 전파. 공통 Shell·Slot·Navigation·메뉴는 5종 동일(닫힌 enum·자유 맞춤 금지 = Template 아님)',
     notify: 'Notification Gateway 공통 모듈 — MVP 채널 = Web Push(+설계상 Native Push), 향후 Kakao/SMS. 구조화 Deep Link(type+content_id)',
   },
   get device() { return (this.surfaces && this.surfaces[0] && this.surfaces[0].device) || 'mobile'; },

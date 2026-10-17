@@ -1,6 +1,7 @@
 /* 훌메이트 V2.0 — 교회 멀티테넌트 플랫폼. 전체 화면 와이어프레임.
  * ★V2.0 재기준화: 대표사이트(landing)·교회 공개홈(site)·교인 Web/PWA(app)·교회 관리자(admin)·슈퍼관리자(super) 5채널.
- *   활성 56화면 + 봉인 25화면(V1 제외·feature-flag OFF·삭제 아님). 교인 5메뉴 고정·단일 Design System·church_id 자동.
+ *   활성 74화면 + 봉인 25화면(V1 제외·feature-flag OFF·삭제 아님). 교인 5메뉴 고정·단일 Design System·church_id 자동.
+ *   2026-10-17 정합: 랜딩 전환중심 재설계(SCR-LND-001 전면·l-features/pricing/process/faq/contact/login/signup/apply context) + 신규 5종(SCR-ADM-020 운영 가이드·ADM-021 전체 알림 보내기·ADM-022 CMS 출금이체 신청·SUP-010 도입 상담 문의·SUP-011 CMS 출금이체 심사) + 터치업(설교 라이브·공지 푸시·CMS 결제·주보 아카이브). 서비스명=H-우리교회(회사명 훌메이트).
  * 기본은 흑백 와이어프레임. screens.js↔HTML·flow·REQ 추적성 정합. /pd-scaffold·/pd-wireframe */
 window.PLANDECK_SCREENS = [
   {
@@ -18,82 +19,143 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-001"
         ],
-        "context": "훌메이트 플랫폼 소개 랜딩. 히어로('교회마다 독립 Web·PWA를 설정만으로')·핵심가치 3·채널 소개·CTA '교회 개설 신청'. 플랫폼 비가시성(교회 독립 서비스처럼 보이게).",
+        "context": "전환중심 랜딩(원장 A1·2026-10-15 전면 재설계). 서비스명 H-우리교회. 섹션 순서=고정 헤더(로고·nav·'교회 개설' CTA)→히어로('주보·설교·공지, 한 번 올리면 끝.' + 개설 신청/데모 둘러보기 + 설득 3점 + 실시간 미리보기 위젯)→도입 혜택 띠→고민→해결 3쌍→관리자 화면 2카드→기본 포함 기능 12칩→상품·혜택(WEB 기본/APP 옵션·CMS 결제안내)→도입 절차 4단계→FAQ 8문항→전환 CTA→푸터. 개발자 없이·앱 비용 없이·1~2일 개설. 가격 금액 미표시(§66)·지어낸 숫자/후기 금지.",
         "components": [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 + 로그인·교회 개설 신청",
+            "label": "고정 헤더 — 로고(H-우리교회)·nav(달라지는 점·상품/혜택·도입 절차·FAQ·로그인) + '교회 개설' CTA + 모바일 삼선 메뉴",
             "action": {
               "on": "click",
-              "do": "go:SCR-LND-002"
+              "do": "go:SCR-LND-009"
             }
           },
           {
             "role": ".pd-hero",
             "kind": "banner",
-            "label": "히어로 — '교회마다 독립 Web·PWA를 설정만으로' (교회 멀티테넌트 플랫폼)",
+            "label": "히어로 — '주보·설교·공지, 한 번 올리면 끝.' + 설득 3점(개발자 없이·앱 비용 없이·1~2일 개설) + '개설 신청'/'데모 교회 둘러보기' CTA",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-009"
             }
           },
           {
-            "role": ".pd-feature",
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "실시간 미리보기 위젯 — 교회 이름·대표색 입력폼(입력 시 'OO 이름으로 개설 신청' 버튼 활성)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-009"
+            }
+          },
+          {
+            "role": ".pd-herocard",
+            "kind": "card",
+            "label": "미리보기 틀 — PC 브라우저 목업 + 휴대폰 목업(이름·대표색 즉시 반영)"
+          },
+          {
+            "role": ".pd-cardgrid",
             "kind": "tiles",
-            "label": "핵심 가치 3 — 독립 브랜드 · 설정만으로 오픈 · Web Push 알림",
+            "label": "고민→해결 3쌍(주보 한번만·설교 자동정리·앱없이 홈화면) + 관리자 화면 2카드(주보 등록·대시보드) — 데모 실화면 캡처 자리",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SITE-001"
+            }
+          },
+          {
+            "role": ".pd-chips",
+            "kind": "tiles",
+            "label": "기본 포함 기능 12칩 — 교회소개·연혁/예배·오시는길/설교 다시보기/주보PDF/공지·상단고정/회원가입/알림·예약발송/로고·대표색/홈화면 스타일/전용 주소/글자크기/자체 도메인(옵션)",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-002"
             }
           },
           {
-            "role": ".pd-cardgrid",
-            "kind": "tiles",
-            "label": "서비스 채널 — 교회 공개홈(Web) · 교인 PWA(설치형) · 관리자 콘솔",
+            "role": ".pd-pricerow",
+            "kind": "card",
+            "label": "상품·혜택 — WEB(기본)/APP(옵션) + CMS 출금이체 결제안내(금액 미표시)",
             "action": {
               "on": "click",
-              "do": "go:SCR-LND-003"
+              "do": "go:SCR-LND-005"
+            }
+          },
+          {
+            "role": ".pd-stepper",
+            "kind": "steps",
+            "label": "도입 절차 4단계 — 개설 신청 · 검토·승인(영업일 1~2일) · 초기 설정 · 오픈",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-006"
+            }
+          },
+          {
+            "role": ".pd-acc-item",
+            "kind": "list",
+            "label": "FAQ 8문항 — 비용·실제화면 미리보기·앱 필수 아님·iOS 알림·첫화면 스타일·검색 불필요·개인정보 암호화·자체도메인",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-LND-007"
             }
           },
           {
             "role": ".pd-cta",
             "kind": "button",
-            "label": "하단 CTA — 교회 개설 신청 · 도입 절차 보기",
+            "label": "전환 CTA — 개설 신청 · 데모 둘러보기 · 먼저 상담받기",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-009"
             }
           },
           {
-            "role": ".pd-btn",
-            "kind": "button",
-            "label": "가격 보기 / 자세한 요금 보기",
+            "role": ".pd-legal",
+            "kind": "card",
+            "label": "푸터 — 서비스명 H-우리교회 · 이용약관 · 개인정보처리방침 · © 2026 훌메이트",
             "action": {
               "on": "click",
-              "do": "go:SCR-LND-005"
+              "do": "go:SCR-LND-010"
             }
           }
         ],
         "description": [
           {
-            "text": "상단 GNB — 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 메뉴와 로그인·교회 개설 신청 버튼. 메뉴 선택 시 기능 소개로 이동(SCR-LND-002)",
+            "text": "고정 헤더(sticky) — 로고 'H-우리교회'와 nav(달라지는 점·상품/혜택·도입 절차·FAQ·로그인), 우측 '교회 개설' CTA는 교회 개설 신청(SCR-LND-009)으로 이동(덱에서는 개설 신청 화면이 ?start=apply 경유를 대신). 모바일에서는 삼선 메뉴로 접힌다.",
             "target": ".pd-gnb"
           },
           {
-            "text": "히어로 — '교회마다 독립 Web·PWA를 설정만으로'. 별도 개발 없이 설정만으로 공개홈·교인 PWA를 열고 교회 데이터는 테넌트로 격리, 전용 주소 접속 시 소속 교회 자동 지정. 주 CTA는 교회 개설 신청으로(SCR-LND-009), 보조 버튼은 가격 보기(SCR-LND-005)",
+            "text": "히어로 — '주보·설교·공지, 한 번 올리면 끝.' 대표 카피와 설득 3점(개발자 없이·앱 비용 없이·1~2일 개설). 주 CTA '이 화면으로 개설 신청'은 교회 개설 신청(SCR-LND-009), 보조 CTA '데모 교회 둘러보기'는 교회 공개홈(SCR-SITE-001), 저관여 '일반 도입 상담'은 도입 상담 문의(SCR-LND-010)로 간다.",
             "target": ".pd-hero"
           },
           {
-            "text": "핵심 가치 3 카드 — 독립 브랜드·설정만으로 오픈(church_id 자동 부여)·Web Push 알림(네이티브 앱은 차기 과제). 카드를 누르면 기능 소개로 이동(SCR-LND-002)",
-            "target": ".pd-feature"
+            "text": "실시간 미리보기 위젯 — 교회 이름·대표색을 입력하면 PC 브라우저 목업과 휴대폰 목업(상태바·메뉴탭·공지띠·대표카드·바로가기·설교·홈화면추가·탭바)에 즉시 반영된다. 이름 입력 시 'OO 이름으로 개설 신청' 버튼이 활성화되어 입력한 교회명을 프리필한 채 개설 신청(SCR-LND-009)으로 이동한다. 와이어프레임에서는 입력폼과 미리보기 틀로만 표현한다.",
+            "target": ".pd-form"
           },
           {
-            "text": "서비스 채널 카드 — 교회 공개홈(Web·소개/설교/주보/공지 공개)·교인 PWA(설치형·홈/설교/주보/공지/마이 5메뉴)·관리자 콘솔. 카드를 누르면 WEB 상품 소개로 이동(SCR-LND-003)",
+            "text": "미리보기 틀 — 브라우저 창틀(.pd-herocard 안)에 PC/휴대폰 목업을 나란히 두어 입력값이 어떻게 보이는지 보여준다. 도입 혜택 띠는 내용 미확정으로 '상담 때 안내' placeholder를 유지한다.",
+            "target": ".pd-herocard"
+          },
+          {
+            "text": "고민→해결 3쌍(주보 한번만 올리면 공개홈·앱 동시 반영 / 설교 YouTube 링크만 넣으면 자동 정리 / 앱 설치·심사 없이 홈 화면 바로가기)과 관리자 화면 2카드(주보 등록 화면·대시보드)를 데모 실화면 캡처 자리로 배치. 카드를 누르면 데모 교회 공개홈(SCR-SITE-001)으로 이동한다.",
             "target": ".pd-cardgrid"
           },
           {
-            "text": "하단 CTA — 교회 개설 신청(SCR-LND-009)과 도입 절차 보기. 요금 안내 섹션의 '자세한 요금 보기'는 가격 안내로 이동(SCR-LND-005)",
+            "text": "기본 포함 기능 12칩 — 교회소개·연혁/예배·오시는길/설교 다시보기/주보PDF/공지·상단고정/교회별 회원가입/알림·예약발송/로고·대표색/홈화면 스타일/교회 전용 주소/글자크기 조절/자체 도메인(옵션). 칩을 누르면 기능 상세(SCR-LND-002)로 이동한다.",
+            "target": ".pd-chips"
+          },
+          {
+            "text": "상품·혜택 — WEB(기본: PC/모바일웹+PWA)과 APP(옵션: 전용앱·상담 후 견적)을 두 카드로 보여주고, 결제는 CMS 출금이체(신청서 양식 다운로드)로 안내한다. 금액은 미표시(§66). '상품 자세히/결제 안내'는 가격·상품 안내(SCR-LND-005)로 이동한다.",
+            "target": ".pd-pricerow"
+          },
+          {
+            "text": "도입 절차 가로 타임라인 4단계 — 개설 신청 / 검토·승인(영업일 1~2일) / 초기 설정 / 오픈. '절차 자세히'는 도입 절차(SCR-LND-006)로 이동한다.",
+            "target": ".pd-stepper"
+          },
+          {
+            "text": "FAQ 8문항 아코디언 — 비용(규모별·상담)·실제화면 미리보기·앱 필수 아님·iOS 16.4+ 알림·첫화면 스타일 선택·교회 검색 불필요(전용 주소)·개인정보 암호화·자체도메인(Premium). 단일 항목만 열림. '전체 FAQ'는 SCR-LND-007로 이동한다.",
+            "target": ".pd-acc-item"
+          },
+          {
+            "text": "전환 CTA — '개설 신청'(SCR-LND-009)·'데모 교회 둘러보기'(SCR-SITE-001)·'먼저 상담받기'(SCR-LND-010) 3버튼. 푸터는 서비스명 H-우리교회·이용약관·개인정보처리방침·© 2026 훌메이트(회사명)로 구성한다.",
             "target": ".pd-cta"
           }
         ],
@@ -168,7 +230,7 @@ window.PLANDECK_SCREENS = [
             "result": "깨진 블록만 정적 기본 카피로 대체하고 페이지 렌더 지속(FAQ 아코디언은 단일 항목만 열림 유지)",
             "message": "",
             "placement": "inline",
-            "target": ".pd-feature",
+            "target": ".pd-cardgrid",
             "api": {
               "endpoint": "GET /public/landing",
               "status": 200
@@ -223,36 +285,58 @@ window.PLANDECK_SCREENS = [
           "events": [
             {
               "name": "cta.apply.click",
-              "intent": "'교회 개설 신청' CTA 클릭",
-              "when": "히어로/하단 CTA의 교회 개설 신청 버튼 클릭",
+              "intent": "'교회 개설' / '개설 신청' CTA 클릭",
+              "when": "헤더·히어로·전환 CTA의 개설 신청 버튼 클릭",
               "to": "SCR-LND-009",
               "target": ".pd-cta"
             },
             {
-              "name": "cta.pricing.click",
-              "intent": "'가격 보기/자세한 요금 보기' 클릭",
-              "when": "히어로 보조 버튼 또는 요금 안내의 가격 버튼 클릭",
-              "to": "SCR-LND-005",
-              "target": ".pd-btn"
+              "name": "preview.apply.click",
+              "intent": "미리보기 위젯의 '○○ 이름으로 개설 신청' 클릭(교회명 프리필)",
+              "when": "미리보기 입력폼에 교회 이름 입력 후 개설 신청 버튼 클릭",
+              "to": "SCR-LND-009",
+              "target": ".pd-form"
             },
             {
-              "name": "channel.card.click",
-              "intent": "서비스 채널 카드 클릭",
-              "when": "교회 공개홈/교인 PWA/관리자 콘솔 카드 클릭",
-              "to": "SCR-LND-003",
+              "name": "cta.demo.click",
+              "intent": "'데모 교회 둘러보기' 클릭",
+              "when": "히어로·전환 CTA·관리자 화면 카드에서 데모 보기 클릭",
+              "to": "SCR-SITE-001",
               "target": ".pd-cardgrid"
             },
             {
-              "name": "feature.card.click",
-              "intent": "핵심 가치 카드 클릭",
-              "when": "독립 브랜드/설정만으로 오픈/Web Push 카드 클릭",
+              "name": "cta.consult.click",
+              "intent": "'먼저 상담받기' / 일반 도입 상담 클릭",
+              "when": "히어로 저관여 링크·전환 CTA의 상담 버튼 클릭",
+              "to": "SCR-LND-010",
+              "target": ".pd-cta"
+            },
+            {
+              "name": "pricing.detail.click",
+              "intent": "상품·혜택/결제 안내 자세히 클릭",
+              "when": "상품 카드 또는 CMS 결제안내의 '자세히' 클릭",
+              "to": "SCR-LND-005",
+              "target": ".pd-pricerow"
+            },
+            {
+              "name": "features.chip.click",
+              "intent": "기본 포함 기능 칩 클릭",
+              "when": "12개 기능 칩 중 하나 클릭",
               "to": "SCR-LND-002",
-              "target": ".pd-feature"
+              "target": ".pd-chips"
+            },
+            {
+              "name": "process.detail.click",
+              "intent": "도입 절차 자세히 클릭",
+              "when": "도입 절차 타임라인의 '절차 자세히' 클릭",
+              "to": "SCR-LND-006",
+              "target": ".pd-stepper"
             },
             {
               "name": "faq.accordion.toggle",
               "intent": "FAQ 아코디언 펼침·접힘",
               "when": "자주 묻는 질문 항목 토글(클라이언트 전용, 단일 항목 열림 유지)",
+              "to": "SCR-LND-007",
               "target": ".pd-acc-item"
             }
           ]
@@ -260,23 +344,44 @@ window.PLANDECK_SCREENS = [
         "flow": {
           "to": [
             {
-              "screen": "SCR-LND-002",
-              "via": "기능 소개",
-              "trigger": ".pd-gnb"
-            },
-            {
-              "screen": "SCR-LND-003",
-              "via": "WEB 상품",
-              "trigger": ".pd-cardgrid"
-            },
-            {
-              "screen": "SCR-LND-005",
-              "via": "가격 안내"
-            },
-            {
               "screen": "SCR-LND-009",
               "via": "교회 개설 신청",
               "trigger": ".pd-cta"
+            },
+            {
+              "screen": "SCR-SITE-001",
+              "via": "데모 교회 둘러보기",
+              "trigger": ".pd-cardgrid"
+            },
+            {
+              "screen": "SCR-LND-010",
+              "via": "먼저 상담받기",
+              "trigger": ".pd-cta"
+            },
+            {
+              "screen": "SCR-LND-005",
+              "via": "상품·혜택 / 결제 안내",
+              "trigger": ".pd-pricerow"
+            },
+            {
+              "screen": "SCR-LND-002",
+              "via": "기본 포함 기능",
+              "trigger": ".pd-chips"
+            },
+            {
+              "screen": "SCR-LND-006",
+              "via": "도입 절차",
+              "trigger": ".pd-stepper"
+            },
+            {
+              "screen": "SCR-LND-007",
+              "via": "FAQ",
+              "trigger": ".pd-acc-item"
+            },
+            {
+              "screen": "SCR-ADM-001",
+              "via": "로그인",
+              "trigger": ".pd-gnb"
             }
           ]
         }
@@ -292,7 +397,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-001"
         ],
-        "context": "제품 기능 소개 — 교회 공개홈·교인 PWA·관리자 콘솔·Web Push·개설 Wizard. 카드그리드로 기능별 가치 전달.",
+        "context": "'기본으로 들어 있어요' 12개 기능 칩 그리드(플랫폼 나열이 아님·2026-10-15 전환중심 개편) — 교회소개·연혁 / 예배·오시는길 / 설교 다시보기 / 주보PDF / 공지·상단고정 / 교회별 회원가입 / 알림·예약발송 / 로고·대표색 / 홈화면 스타일 / 교회 전용 주소 / 글자크기 조절 / 자체 도메인(옵션). 랜딩(SCR-LND-001)의 기능 칩에서 진입.",
         "components": [
           {
             "role": ".pd-gnb",
@@ -507,7 +612,7 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 · 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 (로고=홈)",
+            "label": "상단 네비 — H-우리교회 · 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 (로고=홈)",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -544,7 +649,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "상단 네비 — 훌메이트 로고와 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 메뉴(WEB 상품 활성), 로고로 홈(SCR-LND-001)·우측 로그인(SCR-LND-008)·교회 개설 신청(SCR-LND-009)으로 이동",
+            "text": "상단 네비 — H-우리교회 로고와 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 메뉴(WEB 상품 활성), 로고로 홈(SCR-LND-001)·우측 로그인(SCR-LND-008)·교회 개설 신청(SCR-LND-009)으로 이동",
             "target": ".pd-gnb"
           },
           {
@@ -724,7 +829,7 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비게이션 — 훌메이트 · 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의",
+            "label": "상단 네비게이션 — H-우리교회 · 홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -933,12 +1038,12 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-024"
         ],
-        "context": "WEB vs APP 상품 구조 비교표. 금액은 '시장검증 후 확정(미확정)' 명시. APP은 BASIC에 미포함.",
+        "context": "상품·혜택(2026-10-15 전환중심 개편) — WEB(기본: 초기 등록비+월 이용료)·APP(옵션: WEB 요금+앱비용 별도·상담 후 견적) 상품 구조. 결제수단=CMS 출금이체(신청서 양식 다운로드). 정책주석: 금액은 확정 후 공개(미표시·§66)·자체도메인 Premium·앱 심사일정 미보장. 금액 미표시.",
         "components": [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 로고·홈·기능·WEB 상품·APP 상품·가격(현재)·도입 절차·FAQ·문의",
+            "label": "상단 네비 — H-우리교회 로고·홈·기능·WEB 상품·APP 상품·가격(현재)·도입 절차·FAQ·문의",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -971,7 +1076,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "상품 구조 섹션 — 훌메이트는 교회마다 독립된 Web·PWA를 설정만으로 제공하고(교회별 데이터는 테넌트 격리), WEB이 기본 상품·Native APP은 차기 Premium Add-on임을 안내. 금액은 모두 '미확정'(시장 검증 후 확정)",
+            "text": "상품 구조 섹션 — H-우리교회는 교회마다 독립된 Web·PWA를 설정만으로 제공하고(교회별 데이터는 테넌트 격리), WEB이 기본 상품·Native APP은 차기 Premium Add-on임을 안내. 금액은 모두 '미확정'(시장 검증 후 확정)",
             "target": ".pd-section-title"
           },
           {
@@ -1151,12 +1256,12 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-001"
         ],
-        "context": "개설 9단계 종단(가입→개설신청→요금제→승인→Tenant생성→Wizard→오픈→교인가입→알림) 스테퍼.",
+        "context": "도입 절차 가로 타임라인 4단계(2026-10-15 전환중심 개편) — 개설 신청 / 검토·승인(영업일 1~2일) / 초기 설정 / 오픈. 랜딩(SCR-LND-001) 도입 절차 섹션에서 진입.",
         "components": [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 로고·홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 / 로그인·교회 개설 신청",
+            "label": "상단 네비 — H-우리교회 로고·홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의 / 로그인·교회 개설 신청",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -1189,7 +1294,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "상단 네비 — 훌메이트 로고와 주요 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의), 우측에 로그인(SCR-LND-008)·교회 개설 신청(SCR-LND-009) 버튼",
+            "text": "상단 네비 — H-우리교회 로고와 주요 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의), 우측에 로그인(SCR-LND-008)·교회 개설 신청(SCR-LND-009) 버튼",
             "target": ".pd-gnb"
           },
           {
@@ -1343,7 +1448,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-001"
         ],
-        "context": "FAQ 아코디언 — Web/앱 차이·PWA·Web Push·도메인·가격·데이터 소유 등.",
+        "context": "FAQ 8문항 아코디언(2026-10-15 전환중심 개편) — 비용(규모별·상담)·개설 전 실제화면 미리보기·앱 필수 아님·홈화면 아이콘(iOS 16.4+ 알림)·첫화면 스타일 선택(개별 맞춤 없음)·교회 검색 불필요(전용 주소)·개인정보 암호화·자체도메인 Premium. 단일 항목만 열림 유지.",
         "components": [
           {
             "role": ".pd-gnb",
@@ -1567,12 +1672,12 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-002"
         ],
-        "context": "대표사이트 로그인(전역 계정 AppUser). 소셜 4사+아이디. 로그인 후 개설 신청 또는 내 교회로.",
+        "context": "관리자 로그인(전역 계정 AppUser). 소셜 4사+아이디. 로그인 후 관리 교회 없으면 개설 신청으로 유도, 있으면 내 교회로. ★랜딩 '교회 개설'은 ?start=apply로 진입 — 제목 'OO 개설 신청', 3단계 안내(①계정 만들기→②신청서→③영업일 1~2일 내 승인)로 맞이, 기본 가입(signup) 모드·보조 '아이디로 가입하기'·교회명 프리필(initialChurchName).",
         "components": [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 로고·홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의·로그인·교회 개설 신청",
+            "label": "상단 네비 — H-우리교회 로고·홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의·로그인·교회 개설 신청",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -1605,7 +1710,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "상단 네비 — '훌메이트' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동",
+            "text": "상단 네비 — 'H-우리교회' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동",
             "target": ".pd-gnb"
           },
           {
@@ -1898,12 +2003,12 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-002"
         ],
-        "context": "개설 신청 폼 — 회원가입→교회정보(교회명·대표자·담당자·전화·이메일·주소·규모·희망slug)→요금제(WEB/WEB+APP) 선택→제출. OnboardingApplication(신청) 생성. 제출 후 '슈퍼 승인 대기' 안내.",
+        "context": "교회 개설 신청서 — 회원가입→교회정보(교회명·대표자·담당자·전화·이메일·주소·규모·희망slug)→요금제(WEB/WEB+APP) 선택→제출. OnboardingApplication(신청) 생성. ★랜딩 미리보기에서 입력한 교회명이 첫 칸에 프리필(initialChurchName)·?start=apply 경유. 제출 후 '검토·승인(영업일 1~2일) 대기' 안내, 완료 화면(SCR-LND-011)로 이동.",
         "components": [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청",
+            "label": "상단 네비 — H-우리교회 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -2198,7 +2303,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-001"
         ],
-        "context": "도입 문의 폼(교회명·연락처·문의내용). 전송 확인.",
+        "context": "도입 상담 문의(LandingInquiry·2026-10-15 전환중심 개편) — 두 진입: 일반 도입 상담(히어로·전환 CTA)과 APP 상담(상품 카드). 교회명·연락처만 남기면 영업일 1일 내 연락. 리드는 슈퍼 '도입 상담 문의'(SCR-SUP-010)에서 조회·후속연락. 전송 확인.",
         "components": [
           {
             "role": ".pd-gnb",
@@ -2484,7 +2589,7 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청(현재 플로우 활성)",
+            "label": "상단 네비 — H-우리교회 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청(현재 플로우 활성)",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -2755,7 +2860,7 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 로고·홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의·로그인(활성)·교회 개설 신청",
+            "label": "상단 네비 — H-우리교회 로고·홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의·로그인(활성)·교회 개설 신청",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -2806,7 +2911,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "상단 네비 — '훌메이트' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동하고, 우측 로그인은 현재 인증 영역이라 활성 표시",
+            "text": "상단 네비 — 'H-우리교회' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동하고, 우측 로그인은 현재 인증 영역이라 활성 표시",
             "target": ".pd-gnb"
           },
           {
@@ -2988,12 +3093,12 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-002"
         ],
-        "context": "전역 계정 회원가입(아이디). 소셜 외 경로. 개설 신청 관리자 계정 연결.",
+        "context": "회원가입(교회 관리자 계정·전역 AppUser·아이디). 소셜 외 경로. ★?start=apply 시 기본 가입 모드·'아이디로 가입하기' 노출. 가입 후 개설 신청(SCR-LND-009)으로 연결.",
         "components": [
           {
             "role": ".pd-gnb",
             "kind": "tabbar",
-            "label": "상단 네비 — 훌메이트 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청",
+            "label": "상단 네비 — H-우리교회 로고·메뉴(홈·기능·WEB 상품·APP 상품·가격·도입 절차·FAQ·문의)·로그인·교회 개설 신청",
             "action": {
               "on": "click",
               "do": "go:SCR-LND-001"
@@ -3036,7 +3141,7 @@ window.PLANDECK_SCREENS = [
         "description": [
           {
             "target": ".pd-gnb",
-            "text": "상단 네비 — '훌메이트' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동하며, 현재 화면은 교회 개설 신청 흐름의 가입 단계라 '교회 개설 신청'이 활성 표시"
+            "text": "상단 네비 — 'H-우리교회' 로고와 메뉴(홈·기능·WEB/APP 상품·가격·도입 절차·FAQ·문의). 로고·메뉴 클릭 시 대표사이트 홈(SCR-LND-001)으로 이동하며, 현재 화면은 교회 개설 신청 흐름의 가입 단계라 '교회 개설 신청'이 활성 표시"
           },
           {
             "target": ".pd-form",
@@ -5680,7 +5785,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-008"
         ],
-        "context": "공개 주보(방문자·이번 주 주보 열람). ★공개 범위=교회별 공개 토글 권장(개인정보).",
+        "context": "공개 주보(방문자·이번 주 주보 열람). ★공개 범위=교회별 공개 토글 권장(개인정보). ★주보 아카이브 페이징(2026-10-16) — top5 고정이 아니라 전체 공개주보를 '더보기' 페이징으로 열람(BulletinGallery).",
         "components": [
           {
             "role": ".pd-appbar",
@@ -5735,6 +5840,11 @@ window.PLANDECK_SCREENS = [
             "role": ".pd-empty-state",
             "kind": "group",
             "label": "빈 상태 — '다음 주 주보는 아직이에요'(교회 확인 후 게재)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "주보 더보기 — 전체 공개 주보 아카이브 페이징(BulletinGallery·top5 고정 아님)"
           }
         ],
         "description": [
@@ -5757,6 +5867,10 @@ window.PLANDECK_SCREENS = [
           {
             "text": "빈 상태 — 해당 주차 주보가 아직 미발행이면 '다음 주 주보는 아직이에요 · 교회 확인 후 게재됩니다' 안내로 빈 화면 없이 상태를 명확히 표기",
             "target": ".pd-empty-state"
+          },
+          {
+            "text": "주보 더보기(2026-10-16) — 이번 주 top5 고정이 아니라 전체 공개 주보를 '더보기' 페이징으로 과거 주보까지 열람한다(BulletinGallery).",
+            "target": ".pd-btn"
           }
         ],
         "cases": [
@@ -5931,7 +6045,7 @@ window.PLANDECK_SCREENS = [
           "REQ-005",
           "REQ-006"
         ],
-        "context": "교인 HOME(§29). 교회 브랜드·이번주 설교·최근공지·이번주 주보 바로가기. 5메뉴 탭바(홈·설교·주보·공지·마이) + 알림 아이콘. 교회별 브랜드=로고/색/커버/교회명만, 레이아웃은 단일 Design System 고정.",
+        "context": "교인 HOME(§29). 교회 브랜드·이번주 설교·최근공지·이번주 주보 바로가기. 5메뉴 탭바(홈·설교·주보·공지·마이) + 알림 아이콘. 교회별 브랜드=로고/색/커버/교회명만, 레이아웃은 단일 Design System 고정. ★라이브 설교 시 홈 상단에 LIVE 카드(Sermon.live·2026-10-16) 노출 — 관리자가 라이브 토글(SCR-ADM-006)을 켜면 상단에 LIVE 배지 카드가 뜬다.",
         "components": [
           {
             "role": ".pd-apptop",
@@ -5940,6 +6054,15 @@ window.PLANDECK_SCREENS = [
             "action": {
               "on": "click",
               "do": "go:SCR-APP-010"
+            }
+          },
+          {
+            "role": ".pd-live",
+            "kind": "card",
+            "label": "LIVE 설교 카드(Sermon.live) — 라이브 중일 때만 홈 상단에 LIVE 배지 카드 노출",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-APP-002"
             }
           },
           {
@@ -5999,6 +6122,10 @@ window.PLANDECK_SCREENS = [
           {
             "text": "하단 5메뉴 탭(홈·설교·주보·공지·마이) — 마이 탭은 마이페이지로(SCR-APP-006)",
             "target": ".pd-tabbar"
+          },
+          {
+            "text": "LIVE 설교 카드(Sermon.live·2026-10-16) — 관리자가 설교 라이브 토글(SCR-ADM-006)을 켜면 홈 상단에 LIVE 배지 카드가 뜨고, 누르면 설교 보기(SCR-APP-002)로 이동한다.",
+            "target": ".pd-live"
           }
         ],
         "cases": [
@@ -6164,7 +6291,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-007"
         ],
-        "context": "교인 설교 목록(YouTube). 최신·시리즈. 자체 영상 저장 없음(YouTube 임베드).",
+        "context": "교인 설교 목록(YouTube). 최신·시리즈. 자체 영상 저장 없음(YouTube 임베드). ★라이브 중 설교에 LIVE 배지(Sermon.live·2026-10-16) — 관리자 라이브 토글(SCR-ADM-006)이 켜진 설교에 LIVE 배지가 표시된다.",
         "components": [
           {
             "role": ".pd-list",
@@ -6183,6 +6310,11 @@ window.PLANDECK_SCREENS = [
               "on": "click",
               "do": "go:SCR-APP-003"
             }
+          },
+          {
+            "role": ".pd-live-dot",
+            "kind": "badge",
+            "label": "LIVE 배지(Sermon.live) — 관리자 라이브 토글이 켜진 설교에 표시"
           },
           {
             "role": ".pd-tabbar",
@@ -6208,6 +6340,10 @@ window.PLANDECK_SCREENS = [
           {
             "text": "하단 탭 — 홈(SCR-APP-001) · 설교(현재) · 주보(SCR-APP-004) · 공지(SCR-APP-015) · 마이(SCR-APP-006)",
             "target": ".pd-tabbar"
+          },
+          {
+            "text": "LIVE 배지(Sermon.live·2026-10-16) — 관리자 라이브 토글(SCR-ADM-006)이 켜진 설교 항목에 LIVE 배지가 표시된다.",
+            "target": ".pd-live-dot"
           }
         ],
         "cases": [
@@ -10848,7 +10984,7 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-sidebar",
             "kind": "list",
-            "label": "운영·설정·계정 메뉴(대시보드·성도 관리·설교 관리·주보 관리·공지 관리·알림 발송 / 교회 설정·브랜딩·교회소개 콘텐츠·PWA 관리·앱 관리(차기)·요금제·사용현황 / 관리자 계정·로그아웃)"
+            "label": "운영·설정·계정 메뉴(대시보드·운영 가이드·성도 관리·설교 관리·주보 관리·공지 관리·알림 발송 / 교회 설정·브랜딩·교회소개 콘텐츠·PWA 관리·앱 관리(차기)·요금제·사용현황 / 관리자 계정·로그아웃)"
           },
           {
             "role": ".pd-kpi",
@@ -11081,6 +11217,11 @@ window.PLANDECK_SCREENS = [
             {
               "screen": "SCR-ADM-013",
               "via": "알림 발송",
+              "trigger": ".pd-sidebar"
+            },
+            {
+              "screen": "SCR-ADM-020",
+              "via": "운영 가이드",
               "trigger": ".pd-sidebar"
             }
           ]
@@ -11694,7 +11835,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-007"
         ],
-        "context": "설교 CRUD — 제목·설교자·날짜·성경본문·설명·YouTube URL·썸네일. 자체 영상 저장 없음(YouTube 임베드만). 목록에서 등록/수정 폼(SCR-ADM-007) 진입.",
+        "context": "설교 CRUD — 제목·설교자·날짜·성경본문·설명·YouTube URL·썸네일. 자체 영상 저장 없음(YouTube 임베드만). 목록에서 등록/수정 폼(SCR-ADM-007) 진입. ★설교 라이브 토글(Sermon.live·2026-10-16) — 각 설교 행에 '라이브' 스위치, ON 시 공개홈(SCR-SITE-001)·성도앱 홈/설교(SCR-APP-001/002)에 LIVE 배지가 노출된다.",
         "components": [
           {
             "role": ".pd-pagehead",
@@ -11720,6 +11861,11 @@ window.PLANDECK_SCREENS = [
             }
           },
           {
+            "role": ".pd-toggle",
+            "kind": "toggle",
+            "label": "설교 라이브 토글(Sermon.live) — 각 설교 행의 '라이브' 스위치, ON 시 공개홈·성도앱에 LIVE 배지"
+          },
+          {
             "role": ".pd-btn",
             "kind": "button",
             "label": "등록"
@@ -11741,6 +11887,10 @@ window.PLANDECK_SCREENS = [
           {
             "text": "설교 목록 테이블 — 제목·설교자·날짜·상태(게시/숨김)를 표시하고, 제목 또는 행의 '수정'을 누르면 설교 수정 폼(SCR-ADM-007)으로 이동",
             "target": ".pd-table"
+          },
+          {
+            "text": "설교 라이브 토글(Sermon.live·2026-10-16) — 각 설교 행의 '라이브' 스위치를 켜면 공개홈(SCR-SITE-001)과 성도앱 홈/설교(SCR-APP-001/002)에 LIVE 배지가 즉시 노출된다.",
+            "target": ".pd-toggle"
           }
         ],
         "cases": [
@@ -12609,7 +12759,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-009"
         ],
-        "context": "공지 CRUD — 제목·본문·이미지·첨부·게시일·중요공지·상단고정·알림 발송 여부(Web Push 연동). 발송 선택 시 알림 관리(SCR-ADM-013)로 연계.",
+        "context": "공지 CRUD — 제목·본문·이미지·첨부·게시일·중요공지·상단고정·알림 발송 여부(Web Push 연동). 발송 선택 시 알림 관리(SCR-ADM-013)로 연계. ★공지 푸시 발송 버튼(Notice.pushed·2026-10-16) — 공지 행/상세에 '발송' 버튼(1회·교회 전체 Web Push·발송완료 플래그로 중복 발송 차단).",
         "components": [
           {
             "role": ".pd-pagehead",
@@ -12625,6 +12775,11 @@ window.PLANDECK_SCREENS = [
             "role": ".pd-table",
             "kind": "table",
             "label": "공지 목록 — 제목·노출기간·배너·상태"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "공지 푸시 발송(Notice.pushed) — 공지 행/상세에서 교회 전체 Web Push 1회 발송(발송완료 플래그로 중복 차단)"
           },
           {
             "role": ".pd-btn",
@@ -12652,6 +12807,10 @@ window.PLANDECK_SCREENS = [
           {
             "target": ".pd-btn",
             "text": "'게시' 버튼 — 등록 시 알림 발송을 선택하면 알림 발송(SCR-ADM-013)으로 연계되어 전체 교인에게 Web Push 발송(대량 발송 전 확인)."
+          },
+          {
+            "target": ".pd-btn",
+            "text": "'공지 푸시 발송' 버튼(Notice.pushed·2026-10-16) — 공지 행/상세에서 교회 전체에 Web Push를 1회 보낸다. 발송 완료 플래그로 같은 공지의 중복 발송을 막는다."
           }
         ],
         "cases": [
@@ -13761,12 +13920,21 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-016"
         ],
-        "context": "Notification Gateway 경유 알림 발송 — MVP=Web Push. 대상=전체회원 broadcast. 즉시/예약. 대량발송은 비가역이므로 확인·멱등키 필수. SMS/Kakao 슬롯은 비활성.",
+        "context": "Notification Gateway 경유 알림 발송 — MVP=Web Push. 대상=전체회원 broadcast. 즉시/예약. 대량발송은 비가역이므로 확인·멱등키 필수. SMS/Kakao 슬롯은 비활성. ★전체 알림 보내기(Web Push 브로드캐스트)는 전용 화면 SCR-ADM-021(c-broadcast)로 분리(2026-10-16) — 알림 관리에서 바로가기로 진입한다.",
         "components": [
           {
             "role": ".pd-pagehead",
             "kind": "banner",
             "label": "문자·알림(문자지갑) — 설정 / 문자·알림 · '+ 발송'"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "전체 알림 보내기 — Web Push 브로드캐스트 전용 화면으로 바로가기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-021"
+            }
           },
           {
             "role": ".pd-form",
@@ -13810,6 +13978,10 @@ window.PLANDECK_SCREENS = [
           },
           {
             "text": "고지 배너 — 야간(21~08시) 문자 발송은 차단되고(423), 수신거부 성도는 자동 제외된다(PIPA)."
+          },
+          {
+            "text": "'전체 알림 보내기' 바로가기 — 교회 전체 Web Push 브로드캐스트는 제목·본문만 쓰는 전용 화면(SCR-ADM-021·c-broadcast)으로 분리됐다. 버튼을 누르면 해당 화면으로 이동한다.",
+            "target": ".pd-btn"
           }
         ],
         "cases": [
@@ -14145,6 +14317,10 @@ window.PLANDECK_SCREENS = [
               "screen": "SCR-ADM-003",
               "via": "발송 후 대시보드",
               "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-ADM-021",
+              "via": "전체 알림 보내기"
             }
           ]
         }
@@ -14714,7 +14890,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-024"
         ],
-        "context": "현재 요금제(WEB/WEB+APP)·결제 상태·사용현황(회원수·스토리지·발송 수). 금액은 미확정 placeholder. 플랜 변경 요청 가능(슈퍼 처리).",
+        "context": "현재 요금제(WEB/WEB+APP)·결제 상태·사용현황(회원수·스토리지·발송 수). 금액은 미확정 placeholder. 플랜 변경 요청 가능(슈퍼 처리). ★결제수단=CMS 출금이체 신청(SCR-ADM-022·c-cms-application)으로 진입. 교회 ADMIN 접근(BILLING_MANAGE operational화 2026-10-16·기존 OWNER 대표전용 해제).",
         "components": [
           {
             "role": ".pd-pagehead",
@@ -14739,12 +14915,25 @@ window.PLANDECK_SCREENS = [
               "on": "click",
               "do": "go:SCR-ADM-003"
             }
+          },
+          {
+            "role": ".pd-action-card",
+            "kind": "card",
+            "label": "결제수단 신청(CMS 출금이체) — 신청서 양식 다운로드·제출 화면으로 이동",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-022"
+            }
           }
         ],
         "description": [
           {
             "text": "페이지 헤더 — breadcrumb '설정 / 요금제·사용현황'과 '대시보드로' 버튼(관리자 대시보드 SCR-ADM-003로 복귀). 상단 안내 배너로 '요금은 시장검증 후 확정 예정이에요(미확정) · 사용현황은 본인 교회 데이터만 표시됩니다(tenant 격리)'를 고지",
             "target": ".pd-pagehead"
+          },
+          {
+            "text": "결제수단 신청 카드 — 구독 결제수단(CMS 출금이체) 신청·심사 상태를 보여주고, 누르면 신청서 양식 다운로드·제출 화면(SCR-ADM-022·c-cms-application)으로 이동한다. 교회 ADMIN이면 접근 가능(BILLING_MANAGE operational화·대표 전용 해제).",
+            "target": ".pd-action-card"
           },
           {
             "text": "현재 요금제·결제 상태 패널(금액 미확정) — 현재 플랜 'WEB 상품', 구성 '교회 공개홈 + 교인 PWA · 단일 디자인셋(이용 중)', Web Push 알림 '제공', 'WEB+APP(네이티브 앱)'은 '차기 과제', 월 요금 '금액 미확정', 결제 상태 '준비 중'",
@@ -15004,6 +15193,11 @@ window.PLANDECK_SCREENS = [
               "screen": "SCR-ADM-003",
               "via": "요청 후 대시보드",
               "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-ADM-022",
+              "via": "결제수단 신청(CMS 출금이체)",
+              "trigger": ".pd-action-card"
             }
           ]
         }
@@ -16153,6 +16347,842 @@ window.PLANDECK_SCREENS = [
             }
           ]
         }
+      },
+      {
+        "id": "SCR-ADM-020",
+        "label": "운영 가이드",
+        "href": "c-guide.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-018"
+        ],
+        "context": "교회 공개페이지·성도앱 일상 운영 가이드(2026-10-15 신설). 핵심 기능(설교·주보·공지 등록, 알림 발송, 홈 화면 설치 안내)을 '무엇을 어디서 어떻게'로 단계 안내하고 각 항목에서 해당 관리 화면으로 바로가기. 개발자 없이 목회자가 스스로 운영.",
+        "components": [
+          {
+            "role": ".pd-sidebar",
+            "kind": "list",
+            "label": "운영·설정·계정 메뉴(현재 '운영 가이드' 활성) — 대시보드·성도 관리·설교 관리·주보 관리·공지 관리·알림 발송 등으로 분기"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "운영 가이드 — '개발자 없이, 이 순서대로 올리면 끝' · '대시보드로' 복귀"
+          },
+          {
+            "role": ".pd-cardgrid",
+            "kind": "tiles",
+            "label": "운영 항목 카드 — 설교 올리기 · 주보 올리기 · 공지 올리기 · 전체 알림 보내기 · 홈 화면 설치 안내",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-006"
+            }
+          },
+          {
+            "role": ".pd-action-card",
+            "kind": "card",
+            "label": "단계 안내 — '무엇을(설교 등록) / 어디서(설교 관리) / 어떻게(제목·설교자·YouTube URL 입력)' + '지금 하러 가기' 바로가기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-009"
+            }
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "시작 체크리스트 — 교회소개 작성·첫 설교·첫 주보·첫 공지·알림 테스트 완료 여부(본인 교회)"
+          }
+        ],
+        "description": [
+          {
+            "text": "좌측 사이드바 — 현재 '운영 가이드' 메뉴가 활성. 가이드 각 항목의 '지금 하러 가기'로 설교 관리(SCR-ADM-006)·주보 관리(SCR-ADM-011)·공지 관리(SCR-ADM-009)·전체 알림 보내기(SCR-ADM-021)로 분기한다.",
+            "target": ".pd-sidebar"
+          },
+          {
+            "text": "페이지 헤더 — '개발자 없이, 이 순서대로 올리면 끝' 안내와 '대시보드로' 버튼으로 관리자 대시보드(SCR-ADM-003)로 복귀한다.",
+            "target": ".pd-pagehead"
+          },
+          {
+            "text": "운영 항목 카드 그리드 — 설교 올리기·주보 올리기·공지 올리기·전체 알림 보내기·홈 화면 설치 안내를 큰 카드로 배열. 카드를 누르면 설교 관리(SCR-ADM-006) 등 해당 관리 화면으로 바로 이동한다.",
+            "target": ".pd-cardgrid"
+          },
+          {
+            "text": "단계 안내 카드 — 각 기능을 '무엇을/어디서/어떻게' 3줄로 설명하고, 홈 화면 설치 안내는 PWA 관리(SCR-ADM-014)로, 공지 올리기는 공지 관리(SCR-ADM-009)로 '지금 하러 가기'를 건다.",
+            "target": ".pd-action-card"
+          },
+          {
+            "text": "시작 체크리스트 패널 — 교회소개 작성·첫 설교·첫 주보·첫 공지·알림 테스트의 완료 여부를 본인 교회(tenant) 기준으로 표시하고, 미완료 항목은 해당 관리 화면으로 연결한다.",
+            "target": ".pd-wpanel"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "관리자 로그인 후 운영 가이드 진입",
+            "guard": "JWT role=admin·tenantId 확인, 셸·사이드바 먼저 렌더",
+            "result": "GNB·사이드바·페이지헤드 표시, 가이드 카드·체크리스트는 자리만 확보",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-sidebar"
+          },
+          {
+            "state": "로딩",
+            "trigger": "가이드·진행률 조회 중",
+            "guard": "GET /admin/guide 응답 대기",
+            "result": "카드·체크리스트 스켈레톤 표시",
+            "message": "운영 가이드를 불러오는 중이에요",
+            "placement": "inline",
+            "target": ".pd-cardgrid"
+          },
+          {
+            "state": "정상",
+            "trigger": "가이드 응답 수신",
+            "guard": "교회 status=활성",
+            "result": "운영 항목 카드·단계 안내·시작 체크리스트(완료 여부 반영) 전체 렌더",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-cardgrid",
+            "api": {
+              "endpoint": "GET /admin/guide",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "가이드 응답 수신(신규 개설)",
+            "guard": "콘텐츠 0건(설교·주보·공지 미등록)",
+            "result": "체크리스트 전 항목 미완료로 표시하고 첫 등록 유도",
+            "message": "아직 올린 콘텐츠가 없어요. 설교 올리기부터 순서대로 시작해 보세요.",
+            "placement": "inline",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "GET /admin/guide",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "가이드 응답 실패",
+            "guard": "서버 오류(500)",
+            "result": "진행률 영역에 재시도 배너 표시(가이드 본문은 정적 폴백)",
+            "message": "가이드 진행 상태를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-cardgrid",
+            "api": {
+              "endpoint": "GET /admin/guide",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입·조회",
+            "guard": "role≠admin 또는 타 테넌트 토큰(교차테넌트 차단)",
+            "result": "접근 차단 후 관리자 로그인 유도",
+            "message": "이 교회 관리자 권한이 없어요. 다시 로그인해 주세요.(SCR-ADM-001)",
+            "placement": "full-page",
+            "target": ".pd-pagehead",
+            "api": {
+              "endpoint": "GET /admin/guide",
+              "status": 403
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "가이드 응답 수신(serviceStatus=일시정지)",
+            "guard": "구독 overdue→서비스 일시정지(§47)",
+            "result": "읽기전용 안내 배너 노출(발송 등 일부 바로가기 비활성)",
+            "message": "구독 상태를 확인해 주세요. 결제 전까지 일부 기능이 제한돼요.",
+            "placement": "banner",
+            "target": ".pd-pagehead",
+            "api": {
+              "endpoint": "GET /admin/guide",
+              "status": 200
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "guide",
+              "intent": "운영 가이드 항목·시작 체크리스트 진행 상태 조회(본인 교회 tenant 격리)",
+              "method": "GET",
+              "path": "/admin/guide",
+              "response": "{ steps:[{key, title, where, how, targetScreen}], checklist:{intro, firstSermon, firstBulletin, firstNotice, notifyTested}, serviceStatus } — 완료 여부는 '{entities.Sermon}'·'{entities.Bulletin}'·'{entities.Notice}' 존재로 집계, tenantId=JWT 스코프",
+              "auth": "Bearer(admin)",
+              "target": ".pd-wpanel",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미인증·토큰 만료",
+                  "message": "로그인이 필요해요.(SCR-ADM-001)"
+                },
+                {
+                  "status": 403,
+                  "when": "관리자 권한 없음·타 테넌트 접근",
+                  "message": "이 교회에 접근 권한이 없어요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "가이드 진행 상태를 불러오지 못했어요."
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "note": "운영 가이드는 쓰기 없음 — 실제 등록·발송은 각 관리 화면(설교 SCR-ADM-006·주보 SCR-ADM-011·공지 SCR-ADM-009·알림 SCR-ADM-021)에서 수행한다. 이 화면의 액션은 모두 내비게이션.",
+              "intent": "동작 처리"
+            }
+          ],
+          "events": [
+            {
+              "name": "guide.card.click",
+              "intent": "운영 항목 카드 클릭 → 해당 관리 화면 이동",
+              "when": "설교 올리기/주보 올리기/공지 올리기 카드 클릭",
+              "to": "SCR-ADM-006",
+              "target": ".pd-cardgrid"
+            },
+            {
+              "name": "guide.broadcast.click",
+              "intent": "'전체 알림 보내기' 바로가기 클릭",
+              "when": "알림 보내기 항목의 '지금 하러 가기' 클릭",
+              "to": "SCR-ADM-021",
+              "target": ".pd-action-card"
+            },
+            {
+              "name": "guide.install.click",
+              "intent": "'홈 화면 설치 안내' 바로가기 클릭",
+              "when": "홈 화면 설치 안내 항목의 '지금 하러 가기' 클릭",
+              "to": "SCR-ADM-014",
+              "target": ".pd-action-card"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-006",
+              "via": "설교 올리기",
+              "trigger": ".pd-cardgrid"
+            },
+            {
+              "screen": "SCR-ADM-011",
+              "via": "주보 올리기",
+              "trigger": ".pd-cardgrid"
+            },
+            {
+              "screen": "SCR-ADM-009",
+              "via": "공지 올리기",
+              "trigger": ".pd-cardgrid"
+            },
+            {
+              "screen": "SCR-ADM-021",
+              "via": "전체 알림 보내기",
+              "trigger": ".pd-action-card"
+            },
+            {
+              "screen": "SCR-ADM-014",
+              "via": "홈 화면 설치 안내",
+              "trigger": ".pd-action-card"
+            },
+            {
+              "screen": "SCR-ADM-003",
+              "via": "대시보드로",
+              "trigger": ".pd-pagehead"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-ADM-021",
+        "label": "전체 알림 보내기",
+        "href": "c-broadcast.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-016",
+          "REQ-015"
+        ],
+        "context": "Web Push 브로드캐스트(2026-10-15 구현). 제목·본문 작성 → 교회 전체 회원에게 인앱 알림함 + 휴대폰 Web Push 동시 발송(POST /api/admin/notifications/broadcast·VAPID 자체키). 발송 전 확인(대상 수·멱등). 성도앱은 '휴대폰 알림 받기' 토글 구독자에게 도달.",
+        "components": [
+          {
+            "role": ".pd-sidebar",
+            "kind": "list",
+            "label": "운영·설정·계정 메뉴(현재 '알림 발송' 하위 '전체 알림 보내기' 활성)"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "전체 알림 보내기 — 알림 관리로 돌아가기"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "새 알림 — 제목·본문 작성(교회 전체 대상 고정)"
+          },
+          {
+            "role": ".pd-stat",
+            "kind": "kpi",
+            "label": "받는 사람 — 전체 회원 128명 중 휴대폰 알림 받기 켠 118명(Web Push 구독)"
+          },
+          {
+            "role": ".pd-confirm",
+            "kind": "card",
+            "label": "발송 확인 — '전체 128명에게 보낼까요?(인앱+휴대폰 Web Push)' · 멱등키로 중복 발송 차단"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "128명에게 보내기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-013"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "좌측 사이드바 — '알림 발송' 그룹에서 진입. 알림 관리(SCR-ADM-013)에서 '전체 알림 보내기' 바로가기로 들어오는 전용 발송 화면이다.",
+            "target": ".pd-sidebar"
+          },
+          {
+            "text": "페이지 헤더 — '알림 관리로 돌아가기' 버튼으로 발송 내역·예약을 보는 알림 관리(SCR-ADM-013)로 복귀한다.",
+            "target": ".pd-pagehead"
+          },
+          {
+            "text": "새 알림 폼 — 제목·본문만 작성하면 교회 전체 회원에게 보낸다. 발송 시 인앱 알림함과 휴대폰 Web Push(VAPID 자체키)로 동시에 도달한다.",
+            "target": ".pd-form"
+          },
+          {
+            "text": "받는 사람 집계 — 전체 회원 128명 중 성도앱에서 '휴대폰 알림 받기'를 켠 118명이 휴대폰 알림을 받는다. 끈 회원도 인앱 알림함에는 쌓인다.",
+            "target": ".pd-stat"
+          },
+          {
+            "text": "발송 확인 — '전체 128명에게 보낼까요?' 확인 후 전송. Idempotency-Key로 더블클릭·재시도 중복 발송을 차단하고, 완료 시 알림 관리(SCR-ADM-013)로 이동한다.",
+            "target": ".pd-confirm"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "관리자 인증·tenant 스코프 확인 후 받는 사람 수 로드",
+            "result": "제목·본문 빈 폼과 받는 사람 집계(128명 중 118명 구독) 표시",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-form"
+          },
+          {
+            "state": "로딩",
+            "trigger": "진입 직후",
+            "guard": "구독자 수 조회 응답 대기",
+            "result": "받는 사람 카드 로딩 상태 표시",
+            "message": "받는 사람을 확인하는 중이에요",
+            "placement": "inline",
+            "target": ".pd-stat",
+            "api": {
+              "endpoint": "GET /admin/notifications/audience",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "발송 확정",
+            "guard": "제목·본문 유효·확인 모달 승인·Idempotency-Key 부여",
+            "result": "인앱 알림함 적재 + 휴대폰 Web Push broadcast 접수(구독자 118명 도달)",
+            "message": "전체 회원에게 알림을 보냈어요. 휴대폰 알림은 '알림 받기'를 켠 118명에게 도달해요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/notifications/broadcast",
+              "status": 202
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "진입",
+            "guard": "Web Push 구독자 0명(아무도 휴대폰 알림을 켜지 않음)",
+            "result": "휴대폰 도달 0명 안내·인앱 알림함만 쌓임을 고지",
+            "message": "아직 휴대폰 알림을 켠 분이 없어요. 보내면 앱 안 알림함에만 쌓여요.",
+            "placement": "inline",
+            "target": ".pd-stat",
+            "api": {
+              "endpoint": "GET /admin/notifications/audience",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "발송",
+            "guard": "Web Push 게이트웨이 오류",
+            "result": "발송 실패·작성 내용 보존",
+            "message": "알림을 보내지 못했어요. 잠시 후 다시 시도해 주세요. 작성한 내용은 그대로 남겨뒀어요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/notifications/broadcast",
+              "status": 502
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입·발송",
+            "guard": "세션 만료 또는 role≠admin, 또는 타 교회 tenant 접근(격리 위반)",
+            "result": "접근 차단→관리자 로그인 유도",
+            "message": "접근 권한이 없어요. 관리자 계정으로 다시 로그인해 주세요.(SCR-ADM-001)",
+            "placement": "full-page",
+            "target": ".pd-pagehead",
+            "api": {
+              "endpoint": "POST /admin/notifications/broadcast",
+              "status": 403
+            }
+          },
+          {
+            "state": "입력검증(필수누락)",
+            "trigger": "보내기 클릭",
+            "guard": "제목 또는 본문 미입력",
+            "result": "발송 차단·필드 강조",
+            "message": "제목과 본문을 입력해 주세요.",
+            "placement": "inline",
+            "api": {
+              "endpoint": "POST /admin/notifications/broadcast",
+              "status": 400
+            }
+          },
+          {
+            "state": "입력검증(중복충돌)",
+            "trigger": "보내기 재클릭·재요청",
+            "guard": "동일 Idempotency-Key 재전송(더블클릭·네트워크 재시도)",
+            "result": "중복 발송 차단·기존 접수 결과 반영",
+            "message": "이미 보낸 알림이에요. 중복 발송은 막았어요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /admin/notifications/broadcast",
+              "status": 409
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "serviceStatus=일시정지 상태에서 발송 시도",
+            "guard": "구독 overdue→서비스 일시정지(§47)",
+            "result": "발송 비활성·결제 안내",
+            "message": "구독 상태를 확인해 주세요. 결제 전까지 알림 발송이 제한돼요.",
+            "placement": "banner",
+            "target": ".pd-pagehead"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "audience",
+              "intent": "받는 사람(전체 회원 수·휴대폰 알림 구독자 수) 조회",
+              "method": "GET",
+              "path": "/admin/notifications/audience",
+              "response": "{total:128, pushSubscribers:118} — '{entities.Member}'(active)·'{entities.PushSubscription}' 집계, tenantId=JWT 스코프",
+              "auth": "Bearer(admin)",
+              "target": ".pd-stat",
+              "errors": [
+                {
+                  "status": 403,
+                  "when": "타 교회 tenant 접근",
+                  "message": "권한이 없어요."
+                },
+                {
+                  "status": 500,
+                  "when": "집계 오류",
+                  "message": "받는 사람을 불러오지 못했어요."
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "broadcast",
+              "intent": "교회 전체 회원에게 알림 발송(인앱+휴대폰 Web Push·비가역)",
+              "method": "POST",
+              "path": "/admin/notifications/broadcast",
+              "body": "{title, body, target:'전체회원', Idempotency-Key} — VAPID 자체키로 Web Push, 동시에 교인별 '{entities.Notification}' 인앱 적재",
+              "response": "{accepted:true, estTargets:128, pushReach:118} — '{entities.Message}'(status=sending) 생성",
+              "auth": "Bearer(admin)",
+              "idempotent": true,
+              "confirm": "pd-confirm 발송 확인 모달('전체 128명에게 보낼까요?')·Idempotency-Key로 중복 발송 차단·감사추적 기록",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "제목·본문 누락",
+                  "message": "제목과 본문을 입력해 주세요."
+                },
+                {
+                  "status": 409,
+                  "when": "동일 멱등키 재요청",
+                  "message": "이미 보낸 알림이에요."
+                },
+                {
+                  "status": 502,
+                  "when": "Web Push 게이트웨이 오류",
+                  "message": "알림을 보내지 못했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "broadcast.sent",
+              "intent": "전체 알림 발송 접수",
+              "when": "발송 접수(202)",
+              "effect": "인앱 알림함 적재 + VAPID Web Push 전달(구독자 118명)·DeepLink로 성도앱 알림함(SCR-APP-010) 이동·감사추적 기록",
+              "to": "SCR-ADM-013"
+            },
+            {
+              "name": "broadcast.back.click",
+              "intent": "'알림 관리로 돌아가기' 클릭",
+              "when": "페이지 헤더 복귀 버튼 클릭",
+              "to": "SCR-ADM-013",
+              "target": ".pd-pagehead"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-013",
+              "via": "발송 후 알림 관리",
+              "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-ADM-003",
+              "via": "대시보드로",
+              "trigger": ".pd-sidebar"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-ADM-022",
+        "label": "CMS 출금이체 신청",
+        "href": "c-cms-application.html",
+        "surface": "admin",
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-024"
+        ],
+        "context": "구독 결제수단(CMS 출금이체) 신청(2026-10-16 신설·ChurchCmsApplication V60). 신청서 양식 다운로드 → 작성·서명·스캔 → 업로드 제출 → 심사 상태(제출됨/승인/반려) 확인. 계좌 등 민감정보는 서류 이미지로만 보관. 교회 ADMIN 접근(BILLING_MANAGE operational화). 요금제·사용현황(c-billing)에서 진입.",
+        "components": [
+          {
+            "role": ".pd-sidebar",
+            "kind": "list",
+            "label": "운영·설정·계정 메뉴(현재 '요금제·사용현황' 하위 'CMS 출금이체 신청' 활성)"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "CMS 출금이체 신청 — 요금제·사용현황으로 돌아가기"
+          },
+          {
+            "role": ".pd-step",
+            "kind": "steps",
+            "label": "신청 3단계 — 양식 다운로드 · 작성·서명·스캔 · 업로드 제출"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "신청서 양식 다운로드(PDF/이미지) · 수납기관 ㈜에스앤데크"
+          },
+          {
+            "role": ".pd-form",
+            "kind": "form",
+            "label": "서류 업로드 — 작성·서명한 신청서 스캔 이미지 첨부(계좌 등 민감정보는 이미지로만 보관)"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "심사 상태(제출됨·승인·반려)"
+          },
+          {
+            "role": ".pd-confirm",
+            "kind": "card",
+            "label": "제출 확인 — '신청서를 제출할까요?' · 제출 후 슈퍼 심사 대기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-ADM-016"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "좌측 사이드바 — '요금제·사용현황'에서 진입하는 결제수단 신청 전용 화면. 요금제·사용현황(SCR-ADM-016)의 '결제수단 신청' 버튼으로 들어온다.",
+            "target": ".pd-sidebar"
+          },
+          {
+            "text": "페이지 헤더 — '요금제·사용현황으로 돌아가기' 버튼으로 SCR-ADM-016로 복귀한다. 교회 ADMIN이면 접근 가능(BILLING_MANAGE operational화, 기존 대표 전용 해제).",
+            "target": ".pd-pagehead"
+          },
+          {
+            "text": "신청 3단계 스텝 — ①신청서 양식 다운로드 ②작성·서명·스캔 ③업로드 제출. 각 단계 상태를 스텝 인디케이터로 표시한다.",
+            "target": ".pd-step"
+          },
+          {
+            "text": "양식 다운로드 — CMS 출금이체 신청서 양식(수납기관 ㈜에스앤데크)을 내려받아 계좌주·계좌번호를 적고 서명한다. 받은 서류는 스캔해 업로드한다.",
+            "target": ".pd-btn"
+          },
+          {
+            "text": "서류 업로드 폼 — 작성·서명한 신청서 스캔 이미지를 첨부해 제출한다. 계좌 등 민감정보는 입력 필드가 아니라 서류 이미지(document_file_id)로만 보관한다(평문 저장 없음).",
+            "target": ".pd-form"
+          },
+          {
+            "text": "심사 상태 뱃지 — 제출됨/승인/반려를 색으로 구분. 반려 시 사유와 함께 재제출을 안내한다. 승인되면 구독 결제수단으로 연계된다.",
+            "target": ".pd-badge"
+          },
+          {
+            "text": "제출 확인 — '신청서를 제출할까요?' 확인 후 접수. 제출 후 슈퍼 심사 대기 상태가 되고, 요금제·사용현황(SCR-ADM-016)으로 이동한다.",
+            "target": ".pd-confirm"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "진입",
+            "guard": "관리자 인증·BILLING_MANAGE 권한 확인 후 기존 신청 상태 로드",
+            "result": "신청 3단계 스텝과 양식 다운로드·업로드 폼 표시(기존 신청 없음)",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-step"
+          },
+          {
+            "state": "로딩",
+            "trigger": "진입 직후",
+            "guard": "기존 신청 상태 조회 응답 대기",
+            "result": "상태 뱃지·스텝 로딩 상태 표시",
+            "message": "신청 상태를 불러오는 중이에요",
+            "placement": "inline",
+            "target": ".pd-badge",
+            "api": {
+              "endpoint": "GET /admin/cms-application",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "제출 확정",
+            "guard": "서류 이미지 첨부·확인 모달 승인·Idempotency-Key 부여",
+            "result": "CMS 신청 접수(status=SUBMITTED)·슈퍼 심사 대기",
+            "message": "신청서를 제출했어요. 심사 결과는 확인되는 대로 알려드릴게요.",
+            "placement": "toast",
+            "target": ".pd-confirm",
+            "api": {
+              "endpoint": "POST /admin/cms-application",
+              "status": 201
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "진입",
+            "guard": "아직 신청 이력 없음",
+            "result": "'미신청' 상태로 양식 다운로드부터 안내",
+            "message": "아직 신청한 결제수단이 없어요. 신청서 양식을 내려받아 작성해 주세요.",
+            "placement": "inline",
+            "target": ".pd-step",
+            "api": {
+              "endpoint": "GET /admin/cms-application",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "제출",
+            "guard": "서버 오류(500)·파일 저장 실패",
+            "result": "제출 실패·첨부 보존",
+            "message": "제출에 실패했어요. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-form",
+            "api": {
+              "endpoint": "POST /admin/cms-application",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "진입·제출",
+            "guard": "미인증(401) 또는 BILLING_MANAGE 없음·타 교회 접근(403)",
+            "result": "접근 차단→관리자 로그인 유도",
+            "message": "결제수단 신청 권한이 없어요. 관리자 로그인 후 이용해 주세요.(SCR-ADM-001)",
+            "placement": "full-page",
+            "target": ".pd-pagehead",
+            "api": {
+              "endpoint": "GET /admin/cms-application",
+              "status": 403
+            }
+          },
+          {
+            "state": "입력검증(필수누락)",
+            "trigger": "제출 클릭",
+            "guard": "서류 이미지 미첨부",
+            "result": "제출 차단·첨부 요구",
+            "message": "작성·서명한 신청서 스캔 이미지를 첨부해 주세요.",
+            "placement": "inline",
+            "api": {
+              "endpoint": "POST /admin/cms-application",
+              "status": 400
+            }
+          },
+          {
+            "state": "입력검증(형식오류)",
+            "trigger": "파일 첨부",
+            "guard": "허용 형식(PNG/JPG/PDF) 외 또는 용량 초과",
+            "result": "업로드 거절·형식 안내",
+            "message": "이미지(PNG·JPG) 또는 PDF로 10MB 이하만 올릴 수 있어요.",
+            "placement": "inline",
+            "api": {
+              "endpoint": "POST /admin/files",
+              "status": 422
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "제출 시도",
+            "guard": "이미 제출된 신청 존재(church_id UNIQUE·심사 중)",
+            "result": "중복 제출 차단·현재 상태 안내",
+            "message": "이미 접수된 신청이 있어요. 심사 결과를 기다려 주세요.",
+            "placement": "banner",
+            "target": ".pd-badge",
+            "api": {
+              "endpoint": "POST /admin/cms-application",
+              "status": 409
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "상태 조회",
+            "guard": "직전 신청이 반려(REJECTED)됨",
+            "result": "반려 사유 노출·재제출 허용",
+            "message": "신청이 반려됐어요. 사유를 확인하고 다시 제출해 주세요.",
+            "placement": "banner",
+            "target": ".pd-badge"
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "cmsApplication",
+              "intent": "본인 교회 CMS 출금이체 신청 상태 조회",
+              "method": "GET",
+              "path": "/admin/cms-application",
+              "response": "'{entities.ChurchCmsApplication}'({status:SUBMITTED|APPROVED|REJECTED, documentFileId, rejectReason, submittedAt}) — church_id UNIQUE, tenantId=JWT 스코프",
+              "auth": "Bearer(admin·BILLING_MANAGE)",
+              "target": ".pd-badge",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미인증",
+                  "message": "로그인이 필요해요.(SCR-ADM-001)"
+                },
+                {
+                  "status": 403,
+                  "when": "BILLING_MANAGE 없음·타 교회 접근",
+                  "message": "결제수단 신청 권한이 없어요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "신청 상태를 불러오지 못했어요."
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "uploadDocument",
+              "intent": "작성·서명한 신청서 스캔 이미지 업로드(민감정보는 이미지로만 보관)",
+              "method": "POST",
+              "path": "/admin/files",
+              "body": "multipart(file, purpose=CMS_APPLICATION) → documentFileId 반환",
+              "response": "{ fileId } — 계좌 등 민감정보는 평문 저장 없이 서류 이미지로만 보관",
+              "auth": "Bearer(admin·BILLING_MANAGE)",
+              "idempotent": false,
+              "target": ".pd-form",
+              "errors": [
+                {
+                  "status": 422,
+                  "when": "허용 형식 외·용량 초과",
+                  "message": "이미지(PNG·JPG) 또는 PDF로 10MB 이하만 올릴 수 있어요."
+                }
+              ]
+            },
+            {
+              "id": "submitApplication",
+              "intent": "CMS 출금이체 신청 제출(비가역·슈퍼 심사 대기)",
+              "method": "POST",
+              "path": "/admin/cms-application",
+              "body": "{ documentFileId, Idempotency-Key } — '{entities.ChurchCmsApplication}' 생성(status=SUBMITTED)",
+              "response": "{ applicationId, status:'SUBMITTED', submittedAt }",
+              "auth": "Bearer(admin·BILLING_MANAGE)",
+              "idempotent": true,
+              "confirm": "pd-confirm 제출 확인 모달('신청서를 제출할까요?')·church_id UNIQUE로 중복 신청 차단·감사로그 기록",
+              "target": ".pd-confirm",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "서류 미첨부",
+                  "message": "작성·서명한 신청서 스캔 이미지를 첨부해 주세요."
+                },
+                {
+                  "status": 409,
+                  "when": "이미 제출된 신청 존재(심사 중)",
+                  "message": "이미 접수된 신청이 있어요."
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "제출에 실패했어요. 잠시 후 다시 시도해 주세요."
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "cms.application.submitted",
+              "intent": "CMS 신청 제출 접수",
+              "when": "제출 접수(201)",
+              "effect": "슈퍼 심사 큐(SCR-SUP-011)에 등재·감사로그 기록",
+              "to": "SCR-SUP-011"
+            },
+            {
+              "name": "cms.form.download",
+              "intent": "신청서 양식 다운로드",
+              "when": "'신청서 양식 다운로드' 클릭(수납기관 ㈜에스앤데크 양식)",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "cms.application.reviewed",
+              "intent": "슈퍼 심사 결과 통지",
+              "when": "슈퍼가 승인/반려하면 교회 관리자에게 '{entities.Notification}'(in_app/web_push)으로 통지",
+              "target": ".pd-badge"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-ADM-016",
+              "via": "제출 후 요금제·사용현황",
+              "trigger": ".pd-confirm"
+            },
+            {
+              "screen": "SCR-ADM-016",
+              "via": "요금제·사용현황으로 돌아가기",
+              "trigger": ".pd-pagehead"
+            }
+          ]
+        }
       }
     ]
   },
@@ -16519,12 +17549,38 @@ window.PLANDECK_SCREENS = [
               "on": "click",
               "do": "go:SCR-SUP-003"
             }
+          },
+          {
+            "role": ".pd-action-card",
+            "kind": "card",
+            "label": "도입 상담 문의(리드) 바로가기 — 랜딩 LandingInquiry 조회·후속연락",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-010"
+            }
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "CMS 출금이체 심사 대기 — 결제수단 신청 심사 큐로 바로가기",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-011"
+            }
           }
         ],
         "description": [
           {
             "text": "전체 교회·상태 집계 KPI — 전체 교회 6·활성 4·일시정지 1·해지 1(데모·tenant 격리). 활성 항목은 월 구독·금액 미확정 표기",
             "target": ".pd-kpi"
+          },
+          {
+            "text": "도입 상담 문의 바로가기 — 랜딩에서 접수된 도입 상담(LandingInquiry) 리드를 조회·후속연락하는 화면(SCR-SUP-010)으로 이동한다.",
+            "target": ".pd-action-card"
+          },
+          {
+            "text": "CMS 출금이체 심사 바로가기 — 교회가 제출한 결제수단 신청을 심사하는 큐(SCR-SUP-011)로 이동한다.",
+            "target": ".pd-badge"
           },
           {
             "text": "신규 개설 신청 · 처리 대기(심사) 건수(데모 2건) — 승인 전에는 공개 노출 안 됨, 클릭 시 개설 검토·승인(SCR-SUP-004). 승인 시 church_id 자동 할당·tenant 발행",
@@ -16751,6 +17807,20 @@ window.PLANDECK_SCREENS = [
               "when": "전체 교회 현황 테이블 행·상세 클릭",
               "target": ".pd-table",
               "to": "SCR-SUP-003"
+            },
+            {
+              "name": "dashboard.openInquiries",
+              "intent": "도입 상담 문의 열기",
+              "when": "도입 상담 문의 바로가기 카드 클릭",
+              "target": ".pd-action-card",
+              "to": "SCR-SUP-010"
+            },
+            {
+              "name": "dashboard.openCmsReview",
+              "intent": "CMS 출금이체 심사 열기",
+              "when": "CMS 심사 대기 뱃지 클릭",
+              "target": ".pd-badge",
+              "to": "SCR-SUP-011"
             }
           ]
         },
@@ -16770,6 +17840,16 @@ window.PLANDECK_SCREENS = [
               "screen": "SCR-SUP-008",
               "via": "서비스 콘솔",
               "trigger": ".pd-wpanel"
+            },
+            {
+              "screen": "SCR-SUP-010",
+              "via": "도입 상담 문의",
+              "trigger": ".pd-action-card"
+            },
+            {
+              "screen": "SCR-SUP-011",
+              "via": "CMS 출금이체 심사",
+              "trigger": ".pd-badge"
             }
           ]
         }
@@ -17674,7 +18754,7 @@ window.PLANDECK_SCREENS = [
         "reqIds": [
           "REQ-024"
         ],
-        "context": "요금제(WEB/WEB+APP)·결제 상태·연체 관리. APP은 BASIC 미포함(과금 분리). 금액 미확정. 연체 30일+→일시정지 연동.",
+        "context": "요금제(WEB/WEB+APP)·결제 상태·연체 관리. APP은 BASIC 미포함(과금 분리). 금액 미확정. 연체 30일+→일시정지 연동. ★CMS 출금이체 신청 심사(SCR-SUP-011·x-cms-applications) 연계 — 교회가 제출한 결제수단 신청을 승인/반려하고 승인 시 구독 결제수단으로 연계한다.",
         "components": [
           {
             "role": ".pd-table",
@@ -17690,12 +18770,25 @@ window.PLANDECK_SCREENS = [
             "role": ".pd-badge",
             "kind": "badge",
             "label": "결제 상태 — 정상·미구독"
+          },
+          {
+            "role": ".pd-action-card",
+            "kind": "card",
+            "label": "CMS 출금이체 심사 — 교회 제출 신청 심사 큐로 이동(승인 시 결제수단 연계)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-011"
+            }
           }
         ],
         "description": [
           {
             "text": "상단 요약 지표 4종 — 월 매출·활성 구독·연체·이번 달 발행을 한눈에 요약. 표시 금액은 시장검증 전 예시이며 금액 정책은 미확정",
             "target": ".pd-stat"
+          },
+          {
+            "text": "CMS 출금이체 심사 바로가기 — 교회가 제출한 결제수단(CMS 출금이체) 신청을 심사하는 큐(SCR-SUP-011)로 이동한다. 승인 시 해당 교회 구독의 결제수단으로 연계된다.",
+            "target": ".pd-action-card"
           },
           {
             "text": "구독 현황 테이블 — 교회·플랜·월 요금·결제일·상태. 교회명 클릭 시 테넌트 상세(SCR-SUP-005)로 이동",
@@ -17905,6 +18998,11 @@ window.PLANDECK_SCREENS = [
               "screen": "SCR-SUP-005",
               "via": "일시정지 전환·테넌트 상세",
               "trigger": ".pd-confirm"
+            },
+            {
+              "screen": "SCR-SUP-011",
+              "via": "CMS 출금이체 심사",
+              "trigger": ".pd-action-card"
             }
           ]
         }
@@ -18549,6 +19647,608 @@ window.PLANDECK_SCREENS = [
               "screen": "SCR-SUP-002",
               "via": "대시보드 복귀",
               "trigger": ".pd-btn"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-010",
+        "label": "도입 상담 문의",
+        "href": "x-inquiries.html",
+        "surface": "super",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-001"
+        ],
+        "context": "랜딩 도입 상담(LandingInquiry) 리드 조회·후속연락(2026-10-15 신설·GET /api/super/inquiries). 교회명·담당자·연락처·문의내용·접수일·처리상태(접수/연락완료/종료) 목록과 상세. 리드 전환 관리.",
+        "components": [
+          {
+            "role": ".pd-sidebar",
+            "kind": "list",
+            "label": "슈퍼 운영 메뉴(현재 '도입 상담 문의' 활성) — 대시보드·전체 교회·개설 검토·구독/결제·CMS 심사 등"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "도입 상담 문의 — 랜딩에서 들어온 리드"
+          },
+          {
+            "role": ".pd-stat",
+            "kind": "kpi",
+            "label": "접수 현황 — 신규 접수·연락 대기·연락완료·종료 건수"
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "문의 목록 — 교회명·담당자·연락처·접수일·처리상태",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-004"
+            }
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "처리상태 뱃지(접수·연락완료·종료)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "처리상태 변경(연락완료·종료) · 개설 검토로 전환",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-004"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "좌측 사이드바 — 슈퍼 운영 메뉴에서 '도입 상담 문의' 활성. 대시보드(SCR-SUP-002)·전체 교회 관리(SCR-SUP-003) 등으로 분기한다.",
+            "target": ".pd-sidebar"
+          },
+          {
+            "text": "페이지 헤더 — 랜딩 도입 상담(LandingInquiry)으로 접수된 리드를 조회하는 화면임을 안내하고 '대시보드로' 복귀를 제공한다.",
+            "target": ".pd-pagehead"
+          },
+          {
+            "text": "접수 현황 KPI — 신규 접수·연락 대기·연락완료·종료 건수를 요약해 후속연락이 필요한 리드를 한눈에 식별한다.",
+            "target": ".pd-stat"
+          },
+          {
+            "text": "문의 목록 테이블 — 교회명·담당자·연락처·문의내용 요약·접수일·처리상태를 한 행씩 표시. 행을 누르면 상세(문의내용 전문·연락 메모)를 열고, 전환 시 개설 검토·승인(SCR-SUP-004)으로 넘긴다.",
+            "target": ".pd-table"
+          },
+          {
+            "text": "처리상태 뱃지·변경 — 접수/연락완료/종료 상태를 색으로 구분하고, 담당자가 후속연락 후 상태를 바꾼다. 개설로 이어질 리드는 개설 검토·승인(SCR-SUP-004)으로 전환한다. 연락처 등 개인정보 열람은 감사로그에 기록된다.",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "화면 진입",
+            "guard": "슈퍼 인증·권한 확인 전",
+            "result": "KPI·테이블 스켈레톤만 노출",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "로딩",
+            "trigger": "문의 목록 조회 요청",
+            "guard": "GET /super/inquiries 응답 대기",
+            "result": "스켈레톤 유지·로딩 인디케이터 표시",
+            "message": "도입 상담 문의를 불러오는 중입니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "조회 성공",
+            "guard": "문의 1건 이상",
+            "result": "문의 목록·처리상태 뱃지·접수 현황 KPI 표시",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/inquiries?cursor=&limit=20",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "조회 성공",
+            "guard": "문의 0건(또는 필터 결과 없음)",
+            "result": "빈 목록 안내 노출",
+            "message": "아직 접수된 도입 상담 문의가 없어요.",
+            "placement": "inline",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/inquiries",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "조회 실패",
+            "guard": "서버 오류(5xx)",
+            "result": "목록 미표시·재시도 안내",
+            "message": "문의 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/inquiries",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "화면 진입",
+            "guard": "role≠super 또는 토큰 만료(401/403)",
+            "result": "슈퍼 로그인(SCR-SUP-001)으로 리다이렉트",
+            "message": "슈퍼 관리자 권한이 필요합니다. 다시 로그인해 주세요.",
+            "placement": "full-page",
+            "api": {
+              "endpoint": "GET /super/inquiries",
+              "status": 403
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "처리상태 변경(연락완료·종료)",
+            "guard": "상태 전이 유효·확인",
+            "result": "처리상태 전이·연락 메모 저장·감사로그 기록",
+            "message": "처리상태를 변경했어요.",
+            "placement": "toast",
+            "target": ".pd-badge",
+            "api": {
+              "endpoint": "PATCH /super/inquiries/{id}",
+              "status": 200
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "처리상태 변경 충돌",
+            "guard": "이미 종료된 문의 등 전이 불가",
+            "result": "상태 미변경·충돌 안내",
+            "message": "이미 처리된 문의예요. 목록을 새로고침해 주세요.",
+            "placement": "toast",
+            "target": ".pd-badge",
+            "api": {
+              "endpoint": "PATCH /super/inquiries/{id}",
+              "status": 409
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "inquiryList",
+              "intent": "도입 상담 문의(리드) 목록 조회",
+              "method": "GET",
+              "path": "/super/inquiries?cursor=&limit=20",
+              "response": "'{entities.LandingInquiry}'[](churchName·contactName·phone·message·createdAt·status=접수|연락완료|종료)",
+              "auth": "Bearer(super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미인증",
+                  "message": "로그인이 필요합니다"
+                },
+                {
+                  "status": 403,
+                  "when": "슈퍼 권한 아님",
+                  "message": "접근 권한이 없습니다"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "문의 목록을 불러오지 못했습니다"
+                }
+              ]
+            },
+            {
+              "id": "inquiryDetail",
+              "intent": "문의 상세 조회(문의내용 전문·연락 메모)",
+              "method": "GET",
+              "path": "/super/inquiries/{id}",
+              "response": "'{entities.LandingInquiry}'",
+              "auth": "Bearer(super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "문의 없음",
+                  "message": "해당 문의를 찾을 수 없습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "updateInquiry",
+              "intent": "처리상태 변경·연락 메모 저장(후속연락 관리)",
+              "method": "PATCH",
+              "path": "/super/inquiries/{id}",
+              "body": "{ status:'접수'|'연락완료'|'종료', memo }",
+              "response": "'{entities.LandingInquiry}'(status 전이)",
+              "auth": "Bearer(super)",
+              "idempotent": true,
+              "audit": "개인정보(연락처) 열람·상태 변경은 감사로그 기록",
+              "target": ".pd-badge",
+              "errors": [
+                {
+                  "status": 403,
+                  "when": "슈퍼 권한 아님",
+                  "message": "접근 권한이 없습니다"
+                },
+                {
+                  "status": 409,
+                  "when": "이미 종료 등 전이 불가",
+                  "message": "이미 처리된 문의예요"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "inquiry.row.clicked",
+              "intent": "문의 행 클릭 → 상세 열기",
+              "when": "문의 목록 행 클릭",
+              "target": ".pd-table"
+            },
+            {
+              "name": "inquiry.convert.clicked",
+              "intent": "리드를 개설 검토·승인으로 전환",
+              "when": "'개설 검토로 전환' 클릭",
+              "to": "SCR-SUP-004",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "inquiry.status.changed",
+              "intent": "처리상태 전이 확정",
+              "when": "연락완료·종료로 상태 변경 확정",
+              "target": ".pd-badge"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-004",
+              "via": "개설 검토로 전환",
+              "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-SUP-002",
+              "via": "대시보드로",
+              "trigger": ".pd-sidebar"
+            }
+          ]
+        }
+      },
+      {
+        "id": "SCR-SUP-011",
+        "label": "CMS 출금이체 심사",
+        "href": "x-cms-applications.html",
+        "surface": "super",
+        "entry": false,
+        "status": "wireframed",
+        "designed": false,
+        "figmaLink": "",
+        "reqIds": [
+          "REQ-024"
+        ],
+        "context": "교회가 제출한 CMS 출금이체 신청 심사 큐(2026-10-16 신설). 제출 목록(교회·제출일·상태) → 상세에서 신청서 서류 이미지 확인 → 승인/반려(사유)·출력. 승인 시 구독 결제수단 연계. GET/POST /api/super/cms-applications[/{id}/approve|reject].",
+        "components": [
+          {
+            "role": ".pd-sidebar",
+            "kind": "list",
+            "label": "슈퍼 운영 메뉴(현재 'CMS 출금이체 심사' 활성) — 대시보드·전체 교회·구독/결제·도입 상담 등"
+          },
+          {
+            "role": ".pd-pagehead",
+            "kind": "banner",
+            "label": "CMS 출금이체 심사 — 교회 제출 신청 심사 큐"
+          },
+          {
+            "role": ".pd-table",
+            "kind": "table",
+            "label": "제출 목록 — 교회·제출일·상태(제출됨/승인/반려)",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-006"
+            }
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "신청 상세 — 제출된 신청서 서류 이미지(계좌주·계좌번호·서명) 뷰어·출력"
+          },
+          {
+            "role": ".pd-badge",
+            "kind": "badge",
+            "label": "심사 상태 뱃지(제출됨·승인·반려)"
+          },
+          {
+            "role": ".pd-btn",
+            "kind": "button",
+            "label": "승인 · 반려(사유) · 출력",
+            "action": {
+              "on": "click",
+              "do": "go:SCR-SUP-006"
+            }
+          }
+        ],
+        "description": [
+          {
+            "text": "좌측 사이드바 — 슈퍼 운영 메뉴에서 'CMS 출금이체 심사' 활성. 대시보드(SCR-SUP-002)·구독/결제(SCR-SUP-006) 등으로 분기한다.",
+            "target": ".pd-sidebar"
+          },
+          {
+            "text": "페이지 헤더 — 교회가 제출한 CMS 출금이체 신청을 심사하는 큐임을 안내하고 '대시보드로' 복귀를 제공한다.",
+            "target": ".pd-pagehead"
+          },
+          {
+            "text": "제출 목록 테이블 — 교회명·제출일·상태(제출됨/승인/반려)를 한 행씩 표시. 행을 누르면 신청 상세(서류 이미지 뷰어)를 연다.",
+            "target": ".pd-table"
+          },
+          {
+            "text": "신청 상세 패널 — 제출된 신청서 서류 이미지(계좌주·계좌번호·서명)를 확인·확대·출력한다. 민감정보는 서류 이미지로만 존재하며, 열람은 감사로그에 기록된다.",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "승인·반려 — 승인 시 구독 결제수단(CMS 출금이체)으로 연계되고 교회 관리자에게 통지된다. 반려 시 사유를 입력해 통지하며 교회가 재제출할 수 있다. 처리는 비가역·멱등키.",
+            "target": ".pd-btn"
+          }
+        ],
+        "cases": [
+          {
+            "state": "초기",
+            "trigger": "화면 진입",
+            "guard": "슈퍼 인증·권한 확인 전",
+            "result": "제출 목록 스켈레톤만 노출, 상세 패널은 비어 있음",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "로딩",
+            "trigger": "제출 목록 조회 요청",
+            "guard": "GET /super/cms-applications 응답 대기",
+            "result": "스켈레톤 유지·로딩 인디케이터 표시",
+            "message": "심사 대기 신청을 불러오는 중입니다",
+            "placement": "inline",
+            "target": ".pd-table"
+          },
+          {
+            "state": "정상",
+            "trigger": "조회 성공",
+            "guard": "제출 1건 이상",
+            "result": "제출 목록·상태 뱃지 표시, 행 선택 시 서류 이미지 상세",
+            "message": "",
+            "placement": "inline",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/cms-applications?status=submitted",
+              "status": 200
+            }
+          },
+          {
+            "state": "빈데이터",
+            "trigger": "조회 성공",
+            "guard": "심사 대기 0건",
+            "result": "빈 큐 안내 노출",
+            "message": "심사 대기 중인 CMS 신청이 없습니다.",
+            "placement": "inline",
+            "target": ".pd-table",
+            "api": {
+              "endpoint": "GET /super/cms-applications",
+              "status": 200
+            }
+          },
+          {
+            "state": "에러",
+            "trigger": "승인·반려 처리",
+            "guard": "서버 오류(5xx)",
+            "result": "처리 실패·재시도 안내",
+            "message": "심사 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+            "placement": "banner",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "POST /super/cms-applications/{id}/approve",
+              "status": 500
+            }
+          },
+          {
+            "state": "권한없음",
+            "trigger": "화면 진입·처리",
+            "guard": "role≠super 또는 토큰 만료(401/403)",
+            "result": "슈퍼 로그인(SCR-SUP-001)으로 리다이렉트",
+            "message": "슈퍼 관리자 권한이 필요합니다. 다시 로그인해 주세요.",
+            "placement": "full-page",
+            "api": {
+              "endpoint": "GET /super/cms-applications",
+              "status": 403
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "승인 확정",
+            "guard": "서류 확인 완료·확인 모달 승인·Idempotency-Key 부여",
+            "result": "신청 승인(status=APPROVED)·구독 결제수단 연계·교회 통지",
+            "message": "신청을 승인했어요. 구독 결제수단으로 연계되고 교회에 안내돼요.",
+            "placement": "toast",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /super/cms-applications/{id}/approve",
+              "status": 200
+            }
+          },
+          {
+            "state": "입력검증(필수누락)",
+            "trigger": "반려 확정",
+            "guard": "반려 사유 미입력",
+            "result": "반려 차단·사유 입력 요구",
+            "message": "반려 사유를 입력해 주세요.",
+            "placement": "inline",
+            "target": ".pd-btn",
+            "api": {
+              "endpoint": "POST /super/cms-applications/{id}/reject",
+              "status": 400
+            }
+          },
+          {
+            "state": "엣지",
+            "trigger": "승인·반려 처리",
+            "guard": "다른 운영자가 이미 처리함(동시 처리)·멱등키 중복",
+            "result": "중복 처리 차단·현재 상태 안내",
+            "message": "이미 처리된 신청입니다. 목록을 새로고침해 주세요.",
+            "placement": "banner",
+            "target": ".pd-wpanel",
+            "api": {
+              "endpoint": "POST /super/cms-applications/{id}/approve",
+              "status": 409
+            }
+          }
+        ],
+        "interface": {
+          "reads": [
+            {
+              "id": "cmsAppList",
+              "intent": "CMS 출금이체 신청 심사 큐 조회",
+              "method": "GET",
+              "path": "/super/cms-applications?status=submitted&cursor=&limit=20",
+              "response": "'{entities.ChurchCmsApplication}'[](church·submittedAt·status=SUBMITTED|APPROVED|REJECTED)",
+              "auth": "Bearer(super)",
+              "target": ".pd-table",
+              "errors": [
+                {
+                  "status": 401,
+                  "when": "미인증",
+                  "message": "로그인이 필요합니다"
+                },
+                {
+                  "status": 403,
+                  "when": "슈퍼 권한 아님",
+                  "message": "접근 권한이 없습니다"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "신청 목록을 불러오지 못했습니다"
+                }
+              ]
+            },
+            {
+              "id": "cmsAppDetail",
+              "intent": "신청 상세·서류 이미지 조회",
+              "method": "GET",
+              "path": "/super/cms-applications/{id}",
+              "response": "'{entities.ChurchCmsApplication}'(documentFileId→서류 이미지 URL) — 서류 열람은 감사로그 기록",
+              "auth": "Bearer(super)",
+              "target": ".pd-wpanel",
+              "errors": [
+                {
+                  "status": 404,
+                  "when": "신청 없음",
+                  "message": "해당 신청을 찾을 수 없습니다"
+                }
+              ]
+            }
+          ],
+          "writes": [
+            {
+              "id": "approveCmsApp",
+              "intent": "CMS 신청 승인→구독 결제수단 연계(비가역)",
+              "method": "POST",
+              "path": "/super/cms-applications/{id}/approve",
+              "idempotency": "Idempotency-Key 필수(중복 승인 방지)",
+              "confirm": "pd-confirm 비가역 확인 모달 — 승인 시 '{entities.ChurchCmsApplication}' status→APPROVED·'{entities.Subscription}' CMS mandate 연계·교회 관리자 통지·감사로그 기록",
+              "response": "'{entities.ChurchCmsApplication}'(status=APPROVED)",
+              "auth": "Bearer(super)",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 403,
+                  "when": "슈퍼 권한 아님",
+                  "message": "승인 권한이 없습니다"
+                },
+                {
+                  "status": 409,
+                  "when": "이미 처리된 신청",
+                  "message": "이미 다른 운영자가 처리한 신청입니다"
+                },
+                {
+                  "status": 500,
+                  "when": "서버 오류",
+                  "message": "심사 처리에 실패했습니다"
+                }
+              ]
+            },
+            {
+              "id": "rejectCmsApp",
+              "intent": "CMS 신청 반려(사유 통지)",
+              "method": "POST",
+              "path": "/super/cms-applications/{id}/reject",
+              "request": "{reason}",
+              "idempotency": "Idempotency-Key 권장(중복 반려 통지 방지)",
+              "confirm": "반려 확정 모달 — 사유 입력 후 교회 관리자 통지(재제출 가능)·감사로그 기록",
+              "response": "'{entities.ChurchCmsApplication}'(status=REJECTED)",
+              "auth": "Bearer(super)",
+              "target": ".pd-btn",
+              "errors": [
+                {
+                  "status": 400,
+                  "when": "반려 사유 누락",
+                  "message": "반려 사유를 입력해 주세요"
+                },
+                {
+                  "status": 409,
+                  "when": "이미 처리된 신청",
+                  "message": "이미 다른 운영자가 처리한 신청입니다"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "cms.app.row.clicked",
+              "intent": "신청 행 클릭 → 서류 상세 열기",
+              "when": "제출 목록 행 클릭",
+              "target": ".pd-table"
+            },
+            {
+              "name": "cms.app.approved",
+              "intent": "CMS 신청 승인 확정",
+              "when": "슈퍼가 비가역 확인 모달에서 승인 확정 시",
+              "effect": "'{entities.Subscription}' CMS 결제수단 연계(SCR-SUP-006)·교회 통지",
+              "to": "SCR-SUP-006",
+              "target": ".pd-btn"
+            },
+            {
+              "name": "cms.app.rejected",
+              "intent": "CMS 신청 반려 통지",
+              "when": "슈퍼가 사유 입력 후 반려 확정 시",
+              "target": ".pd-btn"
+            }
+          ]
+        },
+        "flow": {
+          "to": [
+            {
+              "screen": "SCR-SUP-006",
+              "via": "승인 후 구독/결제 연계",
+              "trigger": ".pd-btn"
+            },
+            {
+              "screen": "SCR-SUP-002",
+              "via": "대시보드로",
+              "trigger": ".pd-sidebar"
             }
           ]
         }

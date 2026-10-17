@@ -124,6 +124,19 @@ window.PLANDECK_ENTITIES = {
       { name: 'webMonthly', type: 'string', example: '미확정', note: '월 이용료(§66 — 시장검증 후 확정)' },
       { name: 'appAnnual', type: 'string', example: '미확정', note: 'APP 연간 유지비(Add-on·§68)' },
       { name: 'status', type: 'string', enum: ['trial', 'active', 'overdue', 'canceled'], required: true, note: 'overdue→서비스 상태 일시정지 연계' },
+      { name: 'paymentMethod', type: 'string', enum: ['none', 'cms_withdrawal'], example: 'cms_withdrawal', note: '구독 결제수단 — CMS 출금이체(ChurchCmsApplication 승인 시 연계). 실 출금 집행은 후속(현재 Mock)' },
+    ],
+  },
+  ChurchCmsApplication: {
+    name: 'CMS 출금이체 신청 (V2 신규·구독 결제수단)', description: '교회 구독료 결제수단 = CMS 출금이체. 교회가 신청서(서류) 다운로드→작성·서명→스캔 업로드 제출 → 슈퍼관리자 심사(승인/반려) → 교회 확인·슈퍼 출력 워크플로(church-service dev-plan 2026-10-16·V60). ★계좌번호 등 민감정보는 DB 평문 저장이 아니라 서류 이미지(documentFileId)로만 보관. church_id UNIQUE(교회당 1건). 교회 ADMIN 접근(BILLING_MANAGE operational화 — 기존 OWNER 대표전용 해제). 수납기관=㈜에스앤데크. 실 출금 집행·과금 연계는 후속.',
+    fields: [
+      { name: 'id', type: 'string', format: 'uuid', required: true },
+      { name: 'tenantId', type: 'string', format: 'uuid', required: true, note: 'church_id UNIQUE — 교회당 1건' },
+      { name: 'documentFileId', type: 'string', format: 'uuid', required: true, note: '작성·서명·스캔한 신청서 이미지(POST /api/admin/files purpose=CMS_APPLICATION) — 계좌 등 민감정보는 이 서류로만 보관' },
+      { name: 'status', type: 'string', enum: ['SUBMITTED', 'APPROVED', 'REJECTED'], required: true, example: 'SUBMITTED', note: '슈퍼 심사 상태' },
+      { name: 'rejectReason', type: 'string', note: '반려 사유(REJECTED 시)' },
+      { name: 'submittedAt', type: 'string', format: 'date-time', required: true },
+      { name: 'reviewedAt', type: 'string', format: 'date-time', note: '슈퍼 승인/반려 시각' },
     ],
   },
 
@@ -164,10 +177,11 @@ window.PLANDECK_ENTITIES = {
       { name: 'description', type: 'string' },
       { name: 'youtubeUrl', type: 'string', format: 'uri', example: 'https://youtu.be/…' },
       { name: 'thumbnail', type: 'string', format: 'uri', note: '썸네일(§31)' },
+      { name: 'live', type: 'boolean', example: false, note: '★라이브(현재 생중계 중) — 관리자 토글(PATCH /api/admin/sermons/{id}/live), 성도앱/공개홈 LIVE 배지 노출. dev-plan V58(2026-10-16)' },
     ],
   },
   Bulletin: {
-    name: '주보', description: '주간 주보(§32). 관리자 발행, 교인 열람.',
+    name: '주보', description: '주간 주보(§32). 관리자 발행, 교인 열람. ★공개홈은 top5 고정→전체 공개주보 페이징(BulletinGallery 더보기 · GET /api/churches/{slug}/bulletins · dev-plan 2026-10-16).',
     fields: [
       { name: 'id', type: 'string', format: 'uuid', required: true },
       { name: 'tenantId', type: 'string', format: 'uuid', required: true },
@@ -191,6 +205,7 @@ window.PLANDECK_ENTITIES = {
       { name: 'important', type: 'boolean', example: false, note: '중요공지' },
       { name: 'pinned', type: 'boolean', example: false, note: '상단고정' },
       { name: 'notify', type: 'boolean', example: true, note: '알림 발송 여부→Web Push' },
+      { name: 'pushed', type: 'boolean', example: false, note: '★푸시 발송 완료 플래그 — 관리자 "발송" 버튼(POST /api/admin/notices/{id}/push=교회 전체 Web Push)으로 1회 발송·영속. dev-plan V59(2026-10-16)' },
     ],
   },
   SiteContent: {

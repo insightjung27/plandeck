@@ -10,16 +10,24 @@
 <body>
   <div class="device-stage"><div class="device-mockup"><div class="device-frame"><div class="device-screen">
     <div class="pd-screen">
-<header class="pd-gnb"><a class="logo" href="l-home.html">훌메이트</a><nav class="menu"><a href="l-features.html">기능</a><a href="l-web.html">WEB 상품</a><a href="l-app.html">APP 상품</a><a href="l-pricing.html">가격</a><a href="l-process.html">도입 절차</a><a href="l-faq.html">FAQ</a><a href="l-contact.html">문의</a></nav><div class="gnb-right"><a class="pd-btn secondary is-active" href="l-login.html">로그인</a><a class="pd-btn primary" href="l-apply.html">교회 개설 신청</a></div></header>
+<header class="pd-gnb"><a class="logo" href="l-home.html">H-우리교회</a><nav class="menu"><a href="l-features.html">기능</a><a href="l-web.html">WEB 상품</a><a href="l-app.html">APP 상품</a><a href="l-pricing.html">가격</a><a href="l-process.html">도입 절차</a><a href="l-faq.html">FAQ</a><a href="l-contact.html">문의</a></nav><div class="gnb-right"><a class="pd-btn secondary is-active" href="l-login.html">로그인</a><a class="pd-btn primary" href="l-apply.html">교회 개설 신청</a></div></header>
 <main class="pd-content">
   <div class="pd-auth">
     <div class="pd-auth-card">
       <div class="pd-auth-brand">
         <div class="pd-hero-img square"></div>
-        <div class="pd-wf-title">훌메이트 로그인</div>
-        <div class="pd-wf-text">전역 계정(AppUser)으로 로그인하면, 교회 개설을 신청하거나 이미 속한 내 교회로 이동합니다. 교회 검색 과정은 없습니다.</div>
+        <div class="pd-wf-title">'○○교회' 개설 신청</div>
+        <div class="pd-wf-text">랜딩 미리보기에서 입력한 교회 이름(○○교회)으로 개설을 시작해요. 먼저 로그인하면 이 계정이 교회 관리자 계정으로 연결됩니다. 교회를 검색하는 과정은 없어요. <span class="pd-badge">?start=apply</span></div>
       </div>
 
+      <div class="pd-stepper">
+        <div class="pd-step is-active"><div class="pd-step-dot">1</div><div class="pd-step-label">계정 만들기</div></div>
+        <div class="pd-step"><div class="pd-step-dot">2</div><div class="pd-step-label">신청서 작성</div></div>
+        <div class="pd-step"><div class="pd-step-dot">3</div><div class="pd-step-label">1~2일 내 승인</div></div>
+      </div>
+      <div class="pd-wf-label">개설 신청은 계정 만들기(회원가입)부터 시작해요. 이미 관리자 계정이 있다면 아래에서 로그인하세요.</div>
+
+      <div class="pd-section-title">이미 계정이 있어요 · 로그인</div>
       <form class="pd-form pd-auth-form">
         <div class="pd-field">
           <label class="pd-field-label">아이디</label>
@@ -55,18 +63,19 @@
 
       <div class="pd-divider"></div>
 
-      <div class="pd-wf-text">아직 계정이 없나요? 회원가입 후 소속 교회로 가입 신청(관리자 승인 대기)하거나, 새 교회 개설을 신청할 수 있어요.</div>
-      <a class="pd-btn secondary block" href="l-signup.html">회원가입</a>
+      <div class="pd-wf-text">아직 계정이 없나요? 교회 개설은 계정 만들기(회원가입)부터 시작해요. ?start=apply로 들어오면 기본 가입 모드로 맞이하고, 보조로 '아이디로 가입하기'를 제공합니다.</div>
+      <a class="pd-btn primary block" href="l-signup.html">계정 만들고 개설 신청 시작</a>
+      <a class="pd-btn secondary block" href="l-signup.html">아이디로 가입하기</a>
 
       <div class="pd-confirm" role="group" aria-label="로그인 후 이동 안내">
         <div class="pd-confirm-head">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
           <span>로그인 후 이동 안내</span>
         </div>
-        <div class="pd-confirm-msg">로그인하면 전역 계정 상태에 따라 자동 분기합니다. 소속 교회가 없으면 교회 개설 신청으로, 이미 교회에 속해 있으면 관리자 콘솔로 이동합니다.</div>
+        <div class="pd-confirm-msg">로그인하면 전역 계정 상태에 따라 자동 분기합니다. 관리하는 교회가 없으면 교회 개설 신청으로, 이미 교회에 속해 있으면 관리자 콘솔로 이동합니다.</div>
         <div class="pd-confirm-actions">
-          <a class="pd-btn primary" href="l-apply.html">소속 교회 없음 · 개설 신청</a>
-          <a class="pd-btn secondary" href="c-dashboard.html">소속 교회 있음 · 관리자</a>
+          <a class="pd-btn primary" href="l-apply.html">관리 교회 없음 · 개설 신청</a>
+          <a class="pd-btn secondary" href="c-dashboard.html">관리 교회 있음 · 관리자</a>
         </div>
       </div>
     </div>
