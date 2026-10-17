@@ -181,7 +181,7 @@ window.PLANDECK_SCREENS = [
             "state": "정상",
             "trigger": "응답 수신",
             "guard": "200 OK · 마케팅 블록 수신",
-            "result": "히어로·핵심 가치 3·서비스 채널·요금 안내·FAQ·CTA 전체 렌더",
+            "result": "히어로·실시간 미리보기·고민→해결·관리자 화면·기본 포함 12칩·상품/혜택·도입 절차·FAQ·전환 CTA 전체 렌더",
             "message": "",
             "placement": "inline",
             "target": ".pd-hero",
@@ -241,10 +241,10 @@ window.PLANDECK_SCREENS = [
           "reads": [
             {
               "id": "landing",
-              "intent": "랜딩 마케팅 블록 조회(히어로·핵심 가치·서비스 채널)",
+              "intent": "랜딩 마케팅 블록 조회(히어로·고민→해결·기본 포함 기능·상품/혜택·도입 절차·FAQ)",
               "method": "GET",
               "path": "/public/landing",
-              "response": "{hero, values[], channels[]} (대표사이트 마케팅 블록 · 비테넌트 공개 콘텐츠)",
+              "response": "{hero, previews, benefits, stories[], features[], plans, process[], faq[], cta} (대표사이트 마케팅 블록 · 비테넌트 공개 콘텐츠)",
               "auth": "none(공개)",
               "target": ".pd-hero",
               "errors": [
@@ -3076,7 +3076,7 @@ window.PLANDECK_SCREENS = [
             {
               "screen": "SCR-LND-008",
               "via": "재설정 안내 확인 후 로그인으로 돌아가기",
-              "trigger": ".pd-btn"
+              "trigger": ".ghost"
             }
           ]
         }
@@ -3475,7 +3475,7 @@ window.PLANDECK_SCREENS = [
             {
               "screen": "SCR-LND-008",
               "via": "이미 계정이 있으면 로그인",
-              "trigger": ".pd-btn"
+              "trigger": ".ghost"
             }
           ]
         }
@@ -3758,7 +3758,7 @@ window.PLANDECK_SCREENS = [
           "REQ-005",
           "REQ-006"
         ],
-        "context": "교회 공개 HOME(§29). 교회 로고·대표이미지(히어로)·예배안내 요약·최근공지·최근설교·이번주 주보 요약. 화이트라벨은 로고/대표색/커버/교회명 4요소만 교회별이고 Layout/Nav/Grid/Typography는 단일 Design System 고정. 방문자용 5메뉴 탭바(HOME·교회소개·설교·주보·공지).",
+        "context": "교회 공개 HOME(§29). 교회 로고·대표이미지(히어로)·예배안내 요약·최근공지·최근설교·이번주 주보 요약. 화이트라벨은 로고/대표색/커버/교회명 4요소만 교회별이고 Layout/Nav/Grid/Typography는 단일 Design System 고정. 선택된 Home Variant(5종)가 공개/교인 HOME 메인 스타일을 결정하며 Layout/Nav/Grid/Typography는 불변. 방문자용 5메뉴 탭바(HOME·교회소개·설교·주보·공지).",
         "components": [
           {
             "role": ".pd-hero-img",
@@ -6045,7 +6045,7 @@ window.PLANDECK_SCREENS = [
           "REQ-005",
           "REQ-006"
         ],
-        "context": "교인 HOME(§29). 교회 브랜드·이번주 설교·최근공지·이번주 주보 바로가기. 5메뉴 탭바(홈·설교·주보·공지·마이) + 알림 아이콘. 교회별 브랜드=로고/색/커버/교회명만, 레이아웃은 단일 Design System 고정. ★라이브 설교 시 홈 상단에 LIVE 카드(Sermon.live·2026-10-16) 노출 — 관리자가 라이브 토글(SCR-ADM-006)을 켜면 상단에 LIVE 배지 카드가 뜬다.",
+        "context": "교인 HOME(§29). 교회 브랜드·이번주 설교·최근공지·이번주 주보 바로가기. 5메뉴 탭바(홈·설교·주보·공지·마이) + 알림 아이콘. 교회별 브랜드=로고/색/커버/교회명만, 레이아웃은 단일 Design System 고정. 선택된 Home Variant(5종)가 공개/교인 HOME 메인 스타일을 결정하며 Layout/Nav/Grid/Typography는 불변. ★라이브 설교 시 홈 상단에 LIVE 카드(Sermon.live·2026-10-16) 노출 — 관리자가 라이브 토글(SCR-ADM-006)을 켜면 상단에 LIVE 배지 카드가 뜬다.",
         "components": [
           {
             "role": ".pd-apptop",
@@ -11008,7 +11008,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "좌측 사이드바 — 운영·설정·계정 그룹에서 성도 관리(SCR-ADM-010)·설교 관리(SCR-ADM-006)·주보 관리(SCR-ADM-011)·공지 관리(SCR-ADM-009)·알림 발송(SCR-ADM-013)·교회 설정·브랜딩(SCR-ADM-004)·PWA 관리(SCR-ADM-014) 등 전 메뉴로 분기. 현재 '대시보드' 메뉴가 활성 상태.",
+            "text": "좌측 사이드바 — 운영·설정·계정 그룹에서 성도 관리(SCR-ADM-010)·설교 관리(SCR-ADM-006)·주보 관리(SCR-ADM-008)·공지 관리(SCR-ADM-009)·알림 발송(SCR-ADM-013)·교회 설정·브랜딩(SCR-ADM-004)·PWA 관리(SCR-ADM-014) 등 전 메뉴로 분기. 현재 '대시보드' 메뉴가 활성 상태.",
             "target": ".pd-sidebar"
           },
           {
@@ -11239,7 +11239,7 @@ window.PLANDECK_SCREENS = [
           "REQ-019",
           "REQ-014"
         ],
-        "context": "화이트라벨 4요소(로고·대표색·커버이미지·교회명) 설정 — 저장 시 즉시 반영. Layout/Nav/Grid/Typography는 단일 DS 고정(변경불가 안내). PWA 설정(SCR-ADM-014)과 연계.",
+        "context": "화이트라벨 4요소(로고·대표색·커버이미지·교회명) 설정 — 저장 시 즉시 반영. Layout/Nav/Grid/Typography는 불변·HOME 스타일만 5종 선택 가능. HOME 스타일(Home Variant) 5종 중 1택 선택(미리보기→확인→반영, 레이아웃/네비/메뉴·데이터 불변). PWA 설정(SCR-ADM-014)과 연계.",
         "components": [
           {
             "role": ".pd-pagehead",
@@ -11262,6 +11262,11 @@ window.PLANDECK_SCREENS = [
             "label": "브랜드"
           },
           {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "홈 스타일(Home Variant) — welcome 환영형·sermon 교회이야기·community 열린문·content 이번주·demo 말씀의서가 중 1택"
+          },
+          {
             "role": ".pd-btn",
             "kind": "button",
             "label": "저장",
@@ -11278,6 +11283,10 @@ window.PLANDECK_SCREENS = [
           },
           {
             "text": "'브랜드' 패널 — 화이트라벨 요소만 편집하는 영역. 레이아웃·네비·그리드·타이포는 플랫폼 단일 Design System으로 고정(변경 불가)이며, 교회별 변경은 브랜드 요소에 한정된다.",
+            "target": ".pd-wpanel"
+          },
+          {
+            "text": "'홈 스타일(Home Variant)' 패널 — 공개홈 HOME 메인 스타일을 플랫폼 제공 5종(welcome 환영형·sermon 교회이야기·community 열린문·content 이번주·demo 말씀의서가) 중 1택으로 고른다. 선택 시 미리보기로 확인 후 저장하며, Layout/Nav/Grid/Typography·메뉴·데이터는 불변이고 선택 Variant 토큰(서체·모서리·대표색)만 전 세부페이지에 전파된다(V2.1 §57).",
             "target": ".pd-wpanel"
           },
           {
@@ -11324,6 +11333,19 @@ window.PLANDECK_SCREENS = [
             "message": "브랜딩이 저장돼 공개홈·앱에 바로 반영됐어요",
             "placement": "toast",
             "target": ".pd-btn",
+            "api": {
+              "endpoint": "PUT /admin/branding",
+              "status": 200
+            }
+          },
+          {
+            "state": "정상",
+            "trigger": "홈 스타일(Home Variant) 선택 후 '저장' 클릭",
+            "guard": "5종(welcome·sermon·community·content·demo) 중 1택 선택·미리보기 확인",
+            "result": "선택 Variant 저장·공개홈 HOME 메인 스타일 반영, 데이터 무손상(레이아웃/네비/메뉴 불변)",
+            "message": "홈 스타일이 저장돼 공개홈 HOME에 반영됐어요",
+            "placement": "toast",
+            "target": ".pd-wpanel",
             "api": {
               "endpoint": "PUT /admin/branding",
               "status": 200
@@ -16397,7 +16419,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "좌측 사이드바 — 현재 '운영 가이드' 메뉴가 활성. 가이드 각 항목의 '지금 하러 가기'로 설교 관리(SCR-ADM-006)·주보 관리(SCR-ADM-011)·공지 관리(SCR-ADM-009)·전체 알림 보내기(SCR-ADM-021)로 분기한다.",
+            "text": "좌측 사이드바 — 현재 '운영 가이드' 메뉴가 활성. 가이드 각 항목의 '지금 하러 가기'로 설교 관리(SCR-ADM-006)·주보 관리(SCR-ADM-008)·공지 관리(SCR-ADM-009)·전체 알림 보내기(SCR-ADM-021)로 분기한다.",
             "target": ".pd-sidebar"
           },
           {
@@ -16533,7 +16555,7 @@ window.PLANDECK_SCREENS = [
           ],
           "writes": [
             {
-              "note": "운영 가이드는 쓰기 없음 — 실제 등록·발송은 각 관리 화면(설교 SCR-ADM-006·주보 SCR-ADM-011·공지 SCR-ADM-009·알림 SCR-ADM-021)에서 수행한다. 이 화면의 액션은 모두 내비게이션.",
+              "note": "운영 가이드는 쓰기 없음 — 실제 등록·발송은 각 관리 화면(설교 SCR-ADM-006·주보 SCR-ADM-008·공지 SCR-ADM-009·알림 SCR-ADM-021)에서 수행한다. 이 화면의 액션은 모두 내비게이션.",
               "intent": "동작 처리"
             }
           ],
@@ -16569,7 +16591,7 @@ window.PLANDECK_SCREENS = [
               "trigger": ".pd-cardgrid"
             },
             {
-              "screen": "SCR-ADM-011",
+              "screen": "SCR-ADM-008",
               "via": "주보 올리기",
               "trigger": ".pd-cardgrid"
             },
@@ -18143,7 +18165,7 @@ window.PLANDECK_SCREENS = [
             "text": "처리대기 개설 신청 — 대시보드 처리대기 카드(SCR-SUP-002)에서 진입, 신청 행 선택 시 교회 정보 패널이 열림"
           },
           {
-            "text": "교회 정보 패널 — 교회명(○○교회)·slug 주소(eunsung)·담당자 연락처(010-)·요금제(WEB/WEB+APP)를 검토. 목업의 공개홈 템플릿·이단심사 선택은 V2.0에서 봉인(단일 Design System로 템플릿 선택 없음, 이단심사는 슈퍼 개설 승인으로 대체)",
+            "text": "교회 정보 패널 — 교회명(○○교회)·slug 주소(eunsung)·담당자 연락처(010-)·요금제(WEB/WEB+APP)를 검토. 목업의 공개홈 템플릿·이단심사 선택은 V2.0에서 봉인(자유 템플릿 선택은 없음(단일 Design System) — HOME만 V2.1 Home Variant 선택제로 플랫폼 제공 5종 중 1택(레이아웃/네비/메뉴 불변), 이단심사는 슈퍼 개설 승인으로 대체)",
             "target": ".pd-wpanel"
           },
           {
@@ -18525,7 +18547,7 @@ window.PLANDECK_SCREENS = [
         ],
         "description": [
           {
-            "text": "테넌트 정보 패널 — 교회명(은성교회)·slug(eunsung)·개설일(2026-09-01)을 표 형태로 표시. 모든 교회는 단일 디자인 시스템이라 템플릿 선택은 없고, 교회별 차이는 로고·대표색·커버·교회명뿐",
+            "text": "테넌트 정보 패널 — 교회명(은성교회)·slug(eunsung)·개설일(2026-09-01)을 표 형태로 표시. 모든 교회가 단일 Design System을 공유(Layout/Nav/Grid/Typography·메뉴 불변)하되, HOME만 V2.1 Home Variant 선택제로 공개홈 메인 스타일 5종(welcome 환영형·sermon 교회이야기·community 열린문·content 이번주·demo 말씀의서가) 중 1택이며, 그 외 교회별 차이는 로고·대표색·커버·교회명뿐",
             "target": ".pd-wpanel"
           },
           {
@@ -19683,11 +19705,12 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-table",
             "kind": "table",
-            "label": "문의 목록 — 교회명·담당자·연락처·접수일·처리상태",
-            "action": {
-              "on": "click",
-              "do": "go:SCR-SUP-004"
-            }
+            "label": "문의 목록 — 교회명·담당자·연락처·접수일·처리상태"
+          },
+          {
+            "role": ".pd-wpanel",
+            "kind": "card",
+            "label": "문의 상세 — 교회·담당자·연락처·문의내용·연락 메모(행 클릭 시 열림)"
           },
           {
             "role": ".pd-badge",
@@ -19718,8 +19741,12 @@ window.PLANDECK_SCREENS = [
             "target": ".pd-stat"
           },
           {
-            "text": "문의 목록 테이블 — 교회명·담당자·연락처·문의내용 요약·접수일·처리상태를 한 행씩 표시. 행을 누르면 상세(문의내용 전문·연락 메모)를 열고, 전환 시 개설 검토·승인(SCR-SUP-004)으로 넘긴다.",
+            "text": "문의 목록 테이블 — 교회명·담당자·연락처·문의내용 요약·접수일·처리상태를 한 행씩 표시. 행을 누르면 같은 화면 내 '문의 상세' 패널이 열린다.",
             "target": ".pd-table"
+          },
+          {
+            "text": "문의 상세 패널 — 행 클릭 시 열리며 교회·담당자·연락처·문의내용 전문·연락 메모를 보여준다. 개설로 이어질 리드는 전용 버튼으로 개설 검토·승인(SCR-SUP-004)으로 전환한다.",
+            "target": ".pd-wpanel"
           },
           {
             "text": "처리상태 뱃지·변경 — 접수/연락완료/종료 상태를 색으로 구분하고, 담당자가 후속연락 후 상태를 바꾼다. 개설로 이어질 리드는 개설 검토·승인(SCR-SUP-004)으로 전환한다. 연락처 등 개인정보 열람은 감사로그에 기록된다.",
@@ -19958,11 +19985,7 @@ window.PLANDECK_SCREENS = [
           {
             "role": ".pd-table",
             "kind": "table",
-            "label": "제출 목록 — 교회·제출일·상태(제출됨/승인/반려)",
-            "action": {
-              "on": "click",
-              "do": "go:SCR-SUP-006"
-            }
+            "label": "제출 목록 — 교회·제출일·상태(제출됨/승인/반려)"
           },
           {
             "role": ".pd-wpanel",

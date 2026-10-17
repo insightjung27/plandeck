@@ -5,7 +5,7 @@
 window.PLANDECK_ENTITIES = {
   // ══════════ 1) 플랫폼·테넌트 코어 ══════════
   Church: {
-    name: '교회(Tenant 겸용)', description: '화이트라벨 테넌트 — 교회별 독립 브랜드·설정. 모든 데이터의 격리 단위(tenant_id = church.id). ★V2.0: homeConcept 4종 선택 폐기→단일 Design System, features 플래그는 ChannelConfig로 이관, status는 서비스 상태 6단계(§47)',
+    name: '교회(Tenant 겸용)', description: '화이트라벨 테넌트 — 교회별 독립 브랜드·설정. 모든 데이터의 격리 단위(tenant_id = church.id). ★V2.0 단일 Design System 기반(교회별 변경=로고·대표색·커버·교회명만) + ★V2.1(§57): HOME에 한해 Home Variant 선택제(플랫폼 5종 welcome·sermon·community·content·demo 중 1택, 레이아웃·메뉴 불변·토큰만 파생). features 플래그는 ChannelConfig로 이관, status는 서비스 상태 6단계(§47)',
     fields: [
       { name: 'id', type: 'string', format: 'uuid', required: true, example: 'chr_eunsung', note: 'tenant_id 겸용(§54·O1 2계층 분리는 확장 시점)' },
       { name: 'slug', type: 'string', required: true, example: 'eunsung', note: '기본 도메인 {slug}.hurmate.com — 진입이 Tenant 결정(§35·56)' },
@@ -14,6 +14,7 @@ window.PLANDECK_ENTITIES = {
       { name: 'primaryColor', type: 'string', example: '#53634b', note: '교회별 변경 4요소 ②(대표색)' },
       { name: 'coverImage', type: 'string', format: 'uri', note: '교회별 변경 4요소 ③(대표이미지)' },
       { name: 'intro', type: 'object', note: '교회소개(§30): 담임목사·소개·주소·연락처·예배시간·지도' },
+      { name: 'homeVariant', type: 'string', enum: ['welcome', 'sermon', 'community', 'content', 'demo'], required: true, example: 'welcome', note: 'HOME 스타일 선택(플랫폼 5종 중 1택·§57 V2.1) — 레이아웃/메뉴 불변, 선택 Variant 토큰(서체·모서리·대표색 파생)만 전 세부페이지 전파' },
       { name: 'status', type: 'string', enum: ['신청', '검토', '개설', '활성', '일시정지', '해지'], required: true, note: '서비스 상태 라이프사이클 6단계(§47)' },
     ],
   },
