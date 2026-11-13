@@ -68,5 +68,27 @@ window.PLANDECK_ENTITIES = {
       { name: 'content', type: 'string', required: true },
     ],
   },
+  Coupon: {
+    name: '쿠폰', description: '사용 가능한 할인 쿠폰(보유 포인트는 Guest.points)',
+    fields: [
+      { name: 'id', type: 'string', format: 'uuid', required: true },
+      { name: 'code', type: 'string', example: 'WELCOME10', note: '쿠폰 코드' },
+      { name: 'title', type: 'string', required: true, example: '첫 구매 10% 할인' },
+      { name: 'discountType', type: 'string', enum: ['rate', 'amount'], required: true, note: 'rate=정률(%), amount=정액(원)' },
+      { name: 'discount', type: 'integer', required: true, example: 10 },
+      { name: 'minOrder', type: 'integer', example: 10000, note: '최소 주문 금액(원)' },
+      { name: 'expiresAt', type: 'string', format: 'date-time', required: true },
+      { name: 'status', type: 'string', enum: ['available', 'used', 'expired'], required: true },
+    ],
+  },
+  Guest: {
+    name: '게스트', description: '비회원 구매자(주문번호/연락처 기반 — 회원가입 없음)',
+    fields: [
+      { name: 'token', type: 'string', required: true, example: 'gst_abc123', note: '게스트 세션 토큰' },
+      { name: 'phone', type: 'string', example: '010-1234-5678', note: '주문 조회 키' },
+      { name: 'points', type: 'integer', example: 2000, note: '보유 포인트(원)' },
+      { name: 'orderCount', type: 'integer', example: 3 },
+    ],
+  },
 };
 window.PDK_ENTITIES = window.PLANDECK_ENTITIES;
